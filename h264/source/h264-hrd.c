@@ -9,7 +9,9 @@ void h264_hrd_parameters(bitstream_t* stream)
 	int cpb_cnt_minus1 = bitstream_read_ue(stream);
 	int bit_rate_scale = bitstream_read_bits(stream, 4);
 	int cpb_size_scale = bitstream_read_bits(stream, 4);
-	for (int SchedSelIdx = 0; SchedSelIdx <= cpb_cnt_minus1; ++SchedSelIdx)
+	
+	int SchedSelIdx;
+	for (SchedSelIdx = 0; SchedSelIdx <= cpb_cnt_minus1; ++SchedSelIdx)
 	{
 		bit_rate_value_minus1[SchedSelIdx] = bitstream_read_ue(stream);
 		cpb_size_value_minus1[SchedSelIdx] = bitstream_read_ue(stream);

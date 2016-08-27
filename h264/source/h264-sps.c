@@ -1,6 +1,10 @@
+// Rec. ITU-T H.264 (02/2016)
+// 7.3.2.1.1 Sequence parameter set data syntax (p66)
+
 #include "h264-sps.h"
 #include "h264-nalu.h"
 #include "h264-vui.h"
+#include "h264-scaling.h"
 #include "h264-internal.h"
 #include <errno.h>
 #include <stdio.h>
@@ -9,6 +13,7 @@
 
 void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 {
+	int i;
 	sps->chroma_format_idc = 1;
 	sps->profile_idc = (uint8_t)bitstream_read_bits(stream, 8);
 	sps->constraint_set_flag = (uint8_t)bitstream_read_bits(stream, 8);
@@ -29,20 +34,20 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->chroma.seq_scaling_matrix_present_flag = (bool_t)bitstream_read_bit(stream);
 		if(sps->chroma.seq_scaling_matrix_present_flag)
 		{
-			for(int i=0; i<((sps->chroma_format_idc!=3)?8:12); i++)
+			for(i=0; i<((sps->chroma_format_idc!=3)?8:12); i++)
 			{
-				//sps->chroma.pic_scaling_list_present_flag[ i ] = bitstream_read_bit(stream);
-				//if(sps->chroma.pic_scaling_list_present_flag[ i ])
-				//{
-				//	if(i < 6)
-				//	{
-				//		h264_scaling_list(stream, sps->chroma.ScalingList4x4[i], 16, &sps->chroma.UseDefaultScalingMatrix4x4Flag[i]);
-				//	}
-				//	else
-				//	{
-				//		h264_scaling_list(stream, sps->chroma.ScalingList8x8[i-6], 64, &sps->chroma.UseDefaultScalingMatrix8x8Flag[i-6]);
-				//	}
-				//}
+				sps->chroma.pic_scaling_list_present_flag[ i ] = bitstream_read_bit(stream);
+				if(sps->chroma.pic_scaling_list_present_flag[ i ])
+				{
+					if(i < 6)
+					{
+						h264_scaling_list_4x4(stream, sps->chroma.ScalingList4x4[i], &sps->chroma.UseDefaultScalingMatrix4x4Flag[i]);
+					}
+					else
+					{
+						h264_scaling_list_8x8(stream, sps->chroma.ScalingList8x8[i-6], &sps->chroma.UseDefaultScalingMatrix8x8Flag[i-6]);
+					}
+				}
 			}
 		}
 	}
@@ -60,7 +65,7 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->offset_for_top_to_bottom_field = (int32_t)bitstream_read_se(stream);
 		sps->num_ref_frames_in_pic_order_cnt_cycle = (uint8_t)bitstream_read_ue(stream);
 		sps->offset_for_ref_frame = (int*)malloc(sps->num_ref_frames_in_pic_order_cnt_cycle * sizeof(int));
-		for(int i=0; i<sps->num_ref_frames_in_pic_order_cnt_cycle; i++)
+		for(i=0; i<sps->num_ref_frames_in_pic_order_cnt_cycle; i++)
 			sps->offset_for_ref_frame[i] = (int32_t)bitstream_read_se(stream);
 	}
 
@@ -90,9 +95,9 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 }
 
 #if defined(DEBUG) || defined(_DEBUG)
-void h264_seq_parameter_set_print(const struct h264_sps_t* sps)
+void h264_sps_print(const struct h264_sps_t* sps)
 {
-	printf("H.264 seq_parameter_set:\n");
+	printf("H.264 Sequence parameter set:\n");
 	printf(" profile_idc: %hhu\n", sps->profile_idc);
 	printf(" constraint_set_flag: %02hhx\n", sps->constraint_set_flag);
 	printf(" level_idc: %hhu\n", sps->level_idc);
@@ -144,7 +149,7 @@ void h264_seq_parameter_set_print(const struct h264_sps_t* sps)
 }
 #endif
 
-int h264_parse_sps(const void* data, uint32_t bytes, struct h264_sps_t* sps)
+int h264_sps_parse(const void* data, uint32_t bytes, struct h264_sps_t* sps)
 {
 	bitstream_t* stream;
 	stream = bitstream_create((const unsigned char*)data, bytes);

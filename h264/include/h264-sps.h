@@ -20,12 +20,15 @@ struct h264_sps_t
 		uint8_t bit_depth_luma_minus8; // [0, 6]
 		uint8_t bit_depth_chroma_minus8; // [0, 6]
 		bool_t qpprime_y_zero_transform_bypass_flag; // bool
+
 		bool_t seq_scaling_matrix_present_flag; // bool
-												//int ScalingList4x4[6][16];
-												//int ScalingList8x8[6][64];
-												//int UseDefaultScalingMatrix4x4Flag[6];
-												//int UseDefaultScalingMatrix8x8Flag[6];
-												//int pic_scaling_list_present_flag[12];
+		//if( seq_scaling_matrix_present_flag ) {
+			bool_t pic_scaling_list_present_flag[12];
+			bool_t UseDefaultScalingMatrix4x4Flag[6];
+			bool_t UseDefaultScalingMatrix8x8Flag[6];
+			int32_t ScalingList4x4[6][16];
+			int32_t ScalingList8x8[6][64];
+		//}
 	} chroma;
 
 	uint8_t log2_max_frame_num_minus4; // [0, 12]
@@ -55,6 +58,6 @@ struct h264_sps_t
 	bool_t vui_parameters_present_flag;
 };
 
-int h264_parse_sps(const void* data, uint32_t bytes, struct h264_sps_t* sps);
+int h264_sps_parse(const void* data, uint32_t bytes, struct h264_sps_t* sps);
 
 #endif /* !_h264_sps_h_ */
