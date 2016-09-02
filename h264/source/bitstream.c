@@ -1,47 +1,50 @@
 #include "bitstream.h"
 #include <stdlib.h>
+#include <memory.h>
 #include <assert.h>
 
-#define BIT_NUM (sizeof(char)*8)
+#define BIT_NUM 8
+//#define BIT_NUM (sizeof(char)*8)
 
-bitstream_t* bitstream_create(const unsigned char* stream, int bytes)
+void bitstream_init(bitstream_t* stream, const unsigned char* h264, size_t bytes)
 {
-	int i, j;
-	bitstream_t* o;
+	memset(stream, 0, sizeof(bitstream_t));
+	stream->h264 = h264;
+	stream->bytes = bytes;
+	stream->offsetBits = 0;
+	stream->offsetBytes = 0;
+}
 
-	o = (bitstream_t*)malloc(sizeof(bitstream_t) + bytes);
-	if(!o)
-		return o;
-
-	//o->stream = stream;
-	o->stream = (unsigned char*)(o + 1);
-	for(i=j=0; i<bytes; i++)
+inline void bitstream_move_next_bit(bitstream_t* stream)
+{
+	++stream->offsetBits;
+	if (stream->offsetBits >= BIT_NUM)
 	{
-		if(stream[i] == 0x03 && i>1 && stream[i-1]==0 && stream[i-2]==0)
-			continue;
+		stream->offsetBits %= BIT_NUM;
 
-		o->stream[j++] = stream[i];
+		if (stream->offsetBytes + 1 <= stream->bytes)
+		{
+			++stream->offsetBytes;
+
+			// 0x00 0x00 0x03 -> next
+			if (stream->offsetBytes < stream->bytes 
+				&& 0x03 == stream->h264[stream->offsetBytes] 
+				&& stream->offsetBytes > 1 
+				&& 0x00 == stream->h264[stream->offsetBytes - 1] 
+				&& 0x00 == stream->h264[stream->offsetBytes - 2])
+				++stream->offsetBytes;
+		}
 	}
-	o->bytes = j;
-	o->offsetBits = 0;
-	o->offsetBytes = 0;
-	return o;
 }
 
-void bitstream_destroy(bitstream_t* stream)
-{
-	if(stream)
-		free(stream);
-}
-
-int bitstream_get_offset(bitstream_t* stream, int* bytes, int* bits)
+int bitstream_get_offset(bitstream_t* stream, size_t* bytes, size_t* bits)
 {
 	*bytes = stream->offsetBytes;
 	*bits = stream->offsetBits;
 	return 0;
 }
 
-int bitstream_set_offset(bitstream_t* stream, int bytes, int bits)
+int bitstream_set_offset(bitstream_t* stream, size_t bytes, size_t bits)
 {
 	if(bytes > stream->bytes || bits > sizeof(unsigned char))
 		return -1;
@@ -53,50 +56,31 @@ int bitstream_set_offset(bitstream_t* stream, int bytes, int bits)
 
 int bitstream_next_bit(bitstream_t* stream)
 {
-	assert(stream && stream->stream && stream->bytes>0);
+	assert(stream && stream->h264 && stream->bytes>0);
 	if(stream->offsetBytes >= stream->bytes)
 		return 0; // throw exception
 
-	return (stream->stream[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
+	return (stream->h264[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
 }
 
 int bitstream_next_bits(bitstream_t* stream, int bits)
 {
-	int i, bit, value;
-	int offsetBytes, offsetBits;
-
-	offsetBits = stream->offsetBits;
-	offsetBytes = stream->offsetBytes;
-	assert(stream && stream->stream && stream->bytes>0);
-
-	for(value = i = 0; i < bits; i++)
-	{
-		if(offsetBytes >= stream->bytes)
-			return value; // throw exception
-
-		bit = (stream->stream[offsetBytes] >> (BIT_NUM-1-offsetBits)) & 0x01;
-
-		assert(0 == bit || 1 == bit);
-		value = (value << 1) | bit;
-		offsetBytes += (offsetBits + 1) / BIT_NUM;
-		offsetBits = (offsetBits + 1) % BIT_NUM;
-	}
-	return value;
+	bitstream_t s;
+	bitstream_init(&s, stream->h264, stream->bytes);
+	s.offsetBits = stream->offsetBits;
+	s.offsetBytes = stream->offsetBytes;
+	return bitstream_read_bits(&s, bits);
 }
 
 int bitstream_read_bit(bitstream_t* stream)
 {
 	int bit;
-	assert(stream && stream->stream && stream->bytes>0);
+	assert(stream && stream->h264 && stream->bytes>0);
 	if(stream->offsetBytes >= stream->bytes)
 		return 0; // throw exception
 
-	bit = (stream->stream[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
-
-	// update offset
-	stream->offsetBytes += (stream->offsetBits + 1) / BIT_NUM;
-	stream->offsetBits = (stream->offsetBits + 1) % BIT_NUM;
-
+	bit = (stream->h264[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
+	bitstream_move_next_bit(stream); // update offset
 	assert(0 == bit || 1 == bit);
 	return bit;
 }

@@ -1,23 +1,24 @@
 #ifndef _bitstream_h_
 #define _bitstream_h_
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct _bitstream_t
 {
-	unsigned char* stream;
-	int bytes;
-	int offsetBytes;
-	int offsetBits;
+	const unsigned char* h264;
+	size_t bytes;
+	size_t offsetBytes;
+	size_t offsetBits;
 } bitstream_t;
 
-bitstream_t* bitstream_create(const unsigned char* stream, int bytes);
-void bitstream_destroy(bitstream_t* stream);
+void bitstream_init(bitstream_t* stream, const unsigned char* h264, size_t bytes);
 
-int bitstream_get_offset(bitstream_t* stream, int* bytes, int* bits);
-int bitstream_set_offset(bitstream_t* stream, int bytes, int bits);
+int bitstream_get_offset(bitstream_t* stream, size_t* bytes, size_t* bits);
+int bitstream_set_offset(bitstream_t* stream, size_t bytes, size_t bits);
 
 /// get 1-bit from bit stream(don't offset position)
 /// @param[in] stream bit stream
