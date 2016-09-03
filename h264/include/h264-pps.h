@@ -1,11 +1,7 @@
 #ifndef _h264_pps_h_
 #define _h264_pps_h_
 
-#include <inttypes.h>
 #include <stdint.h>
-#include <stddef.h>
-
-typedef unsigned char bool_t;
 
 #define H264_SLICE_GROUPS 8
 
@@ -24,8 +20,8 @@ struct h264_pps_t
 {
 	uint32_t pic_parameter_set_id; // [0, 255]
 	uint32_t seq_parameter_set_id; // [0, 31]
-	bool_t entropy_coding_mode_flag; // 0-Exp-Golomb coded/CAVLC, 1-CABAC
-	bool_t bottom_field_pic_order_in_frame_present_flag; 
+	uint8_t entropy_coding_mode_flag; // 0-Exp-Golomb coded/CAVLC, 1-CABAC
+	uint8_t bottom_field_pic_order_in_frame_present_flag; // bool
 	uint32_t num_slice_groups_minus1; // Baseline/Extended profile[0-7], otherwise-0 only
 	
 	//if(num_slice_groups_minus1 > 0) {
@@ -45,7 +41,7 @@ struct h264_pps_t
 			// slice_group_map_type 3/4/5
 			struct slice_group_map_direction
 			{
-				bool_t slice_group_change_direction_flag;
+				uint8_t slice_group_change_direction_flag; // bool
 				uint32_t slice_group_change_rate_minus1;  // [0, PicSizeInMapUnits - 1]
 			} direction;
 
@@ -60,22 +56,22 @@ struct h264_pps_t
 
 	uint32_t num_ref_idx_l0_default_active_minus1; // [0, 31]
 	uint32_t num_ref_idx_l1_default_active_minus1; // [0, 31]
-	bool_t weighted_pred_flag;
+	uint8_t weighted_pred_flag; // bool
 	uint32_t weighted_bipred_idc; // [0-2], 0-default weighted prediction, 1-explicit weighted prediction, 2-implicit weighted prediction
 	int32_t pic_init_qp_minus26; // [-(26 + QpBdOffsetY), +25]
 	int32_t pic_init_qs_minus26; // [-26, +25]
 	int32_t chroma_qp_index_offset; // [-12, 12]
-	bool_t deblocking_filter_control_present_flag;
-	bool_t constrained_intra_pred_flag;
-	bool_t redundant_pic_cnt_present_flag;
+	uint8_t deblocking_filter_control_present_flag; // bool
+	uint8_t constrained_intra_pred_flag; // bool
+	uint8_t redundant_pic_cnt_present_flag; // bool
 
 	//if( more_rbsp_data( ) ) {
-		bool_t transform_8x8_mode_flag;
-		bool_t pic_scaling_matrix_present_flag;
+		uint8_t transform_8x8_mode_flag; // bool
+		uint8_t pic_scaling_matrix_present_flag; // bool
 		//if( pic_scaling_matrix_present_flag ) {
-			bool_t pic_scaling_list_present_flag[12];
-			bool_t UseDefaultScalingMatrix4x4Flag[6];
-			bool_t UseDefaultScalingMatrix8x8Flag[6]; 
+			uint8_t pic_scaling_list_present_flag[12]; // bool
+			uint8_t UseDefaultScalingMatrix4x4Flag[6]; // bool
+			uint8_t UseDefaultScalingMatrix8x8Flag[6]; // bool
 			int32_t ScalingList4x4[6][16];
 			int32_t ScalingList8x8[6][64];
 		//}

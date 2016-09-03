@@ -3,7 +3,7 @@
 
 #include "h264-scaling.h"
 
-void h264_scaling_list_4x4(bitstream_t* stream, int32_t ScalingList4x4[16], bool_t *useDefaultScalingMatrixFlag)
+void h264_scaling_list_4x4(bitstream_t* stream, int32_t ScalingList4x4[16], uint8_t *useDefaultScalingMatrixFlag)
 {
 	int i;
 	int lastScale = 8;
@@ -21,7 +21,7 @@ void h264_scaling_list_4x4(bitstream_t* stream, int32_t ScalingList4x4[16], bool
 	}
 }
 
-void h264_scaling_list_8x8(bitstream_t* stream, int32_t ScalingList8x8[64], bool_t *useDefaultScalingMatrixFlag)
+void h264_scaling_list_8x8(bitstream_t* stream, int32_t ScalingList8x8[64], uint8_t *useDefaultScalingMatrixFlag)
 {
 	int i;
 	int lastScale = 8;

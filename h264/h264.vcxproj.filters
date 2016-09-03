@@ -21,9 +21,6 @@
     <ClCompile Include="source\h264-hrd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\h264-nalu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\h264-parser.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -37,6 +34,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\h264-scaling.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\h264-slice-header.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\h264-stream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\h264-nal.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,10 +68,16 @@
     <ClInclude Include="include\h264-scaling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\h264-nalu.h">
+    <ClInclude Include="include\h264-util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\h264-util.h">
+    <ClInclude Include="include\h264-slice-header.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\h264-nal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\h264-parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

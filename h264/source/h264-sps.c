@@ -2,16 +2,15 @@
 // 7.3.2.1.1 Sequence parameter set data syntax (p66)
 
 #include "h264-sps.h"
-#include "h264-nalu.h"
 #include "h264-vui.h"
-#include "h264-scaling.h"
 #include "h264-internal.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <memory.h>
 
-void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
+int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 {
 	int i;
 	sps->chroma_format_idc = 1;
@@ -27,14 +26,14 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 	{
 		sps->chroma_format_idc = (uint8_t)bitstream_read_ue(stream);
 		if(3 == sps->chroma_format_idc)
-			sps->chroma.separate_colour_plane_flag = (bool_t)bitstream_read_bit(stream);
+			sps->chroma.separate_colour_plane_flag = bitstream_read_bit(stream);
 		sps->chroma.bit_depth_luma_minus8 = (uint8_t)bitstream_read_ue(stream);
 		sps->chroma.bit_depth_chroma_minus8 = (uint8_t)bitstream_read_ue(stream);
-		sps->chroma.qpprime_y_zero_transform_bypass_flag = (bool_t)bitstream_read_bit(stream);
-		sps->chroma.seq_scaling_matrix_present_flag = (bool_t)bitstream_read_bit(stream);
+		sps->chroma.qpprime_y_zero_transform_bypass_flag = bitstream_read_bit(stream);
+		sps->chroma.seq_scaling_matrix_present_flag = bitstream_read_bit(stream);
 		if(sps->chroma.seq_scaling_matrix_present_flag)
 		{
-			for(i=0; i<((sps->chroma_format_idc!=3)?8:12); i++)
+			for (i = 0; i < ((sps->chroma_format_idc != 3) ? 8 : 12); i++)
 			{
 				sps->chroma.pic_scaling_list_present_flag[ i ] = bitstream_read_bit(stream);
 				if(sps->chroma.pic_scaling_list_present_flag[ i ])
@@ -60,7 +59,7 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 	}
 	else if(1 == sps->pic_order_cnt_type)
 	{
-		sps->delta_pic_order_always_zero_flag = (bool_t)bitstream_read_bit(stream);
+		sps->delta_pic_order_always_zero_flag = bitstream_read_bit(stream);
 		sps->offset_for_non_ref_pic = (int32_t)bitstream_read_se(stream);
 		sps->offset_for_top_to_bottom_field = (int32_t)bitstream_read_se(stream);
 		sps->num_ref_frames_in_pic_order_cnt_cycle = (uint8_t)bitstream_read_ue(stream);
@@ -70,14 +69,14 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 	}
 
 	sps->max_num_ref_frames = (uint32_t)bitstream_read_ue(stream);
-	sps->gaps_in_frame_num_value_allowed_flag = (bool_t)bitstream_read_bit(stream);
+	sps->gaps_in_frame_num_value_allowed_flag = bitstream_read_bit(stream);
 	sps->pic_width_in_mbs_minus1 = (uint32_t)bitstream_read_ue(stream);
 	sps->pic_height_in_map_units_minus1 = (uint32_t)bitstream_read_ue(stream);
-	sps->frame_mbs_only_flag = (bool_t)bitstream_read_bit(stream);
+	sps->frame_mbs_only_flag = bitstream_read_bit(stream);
 	if(!sps->frame_mbs_only_flag)
-		sps->mb_adaptive_frame_field_flag = (bool_t)bitstream_read_bit(stream);
-	sps->direct_8x8_inference_flag = (bool_t)bitstream_read_bit(stream);
-	sps->frame_cropping_flag = (bool_t)bitstream_read_bit(stream);
+		sps->mb_adaptive_frame_field_flag = bitstream_read_bit(stream);
+	sps->direct_8x8_inference_flag = bitstream_read_bit(stream);
+	sps->frame_cropping_flag = bitstream_read_bit(stream);
 	if(sps->frame_cropping_flag)
 	{
 		sps->frame_cropping.frame_crop_left_offset	= (int32_t)bitstream_read_ue(stream);
@@ -85,13 +84,15 @@ void h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->frame_cropping.frame_crop_top_offset	= (int32_t)bitstream_read_ue(stream);
 		sps->frame_cropping.frame_crop_bottom_offset= (int32_t)bitstream_read_ue(stream);
 	}
-	sps->vui_parameters_present_flag = (bool_t)bitstream_read_bit(stream);
+	sps->vui_parameters_present_flag = bitstream_read_bit(stream);
 	if(sps->vui_parameters_present_flag)
 	{
-		h264_vui_parameters(stream);
+		struct h264_vui_t vui;
+		memset(&vui, 0, sizeof(struct h264_vui_t));
+		h264_vui(stream, &vui);
 	}
 
-	h264_rbsp_trailing_bits(stream);
+	return h264_rbsp_trailing_bits(stream);
 }
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -147,25 +148,52 @@ void h264_sps_print(const struct h264_sps_t* sps)
 	}
 	printf(" vui_parameters_present_flag: %s\n", sps->vui_parameters_present_flag ? "true" : "false");
 }
+
+static void h264_sps_parse_test(const uint8_t* nalu, uint32_t bytes, const struct h264_sps_t* check)
+{
+	bitstream_t stream;
+	struct h264_nal_t nal;
+	struct h264_sps_t sps;
+	memset(&sps, 0, sizeof(sps));
+	bitstream_init(&stream, nalu, bytes);
+
+	assert(0 == h264_nal(&stream, &nal));
+	assert(H264_NAL_SPS == nal.nal_unit_type && nal.nal_ref_idc > 0);
+	assert(0 == h264_sps(&stream, &sps));
+	assert(0 == memcmp(check, &sps, sizeof(struct h264_sps_t)));
+}
+
+void h264_sps_test()
+{
+	const uint8_t rawh264[] = { 0x67, 0x42, 0xa0, 0x1e, 0x97, 0x40, 0x58, 0x09, 0x22 };
+	struct h264_sps_t sps;
+	memset(&sps, 0, sizeof(sps));
+	sps.chroma_format_idc = 1;
+	sps.profile_idc = 66;
+	sps.constraint_set_flag = 160;
+	sps.level_idc = 30;
+	sps.seq_parameter_set_id = 0;
+	sps.log2_max_frame_num_minus4 = 4;
+	sps.pic_order_cnt_type = 0;
+	sps.max_num_ref_frames = 1;
+	sps.gaps_in_frame_num_value_allowed_flag = 0;
+	sps.pic_width_in_mbs_minus1 = 43;
+	sps.pic_height_in_map_units_minus1 = 35;
+	sps.frame_mbs_only_flag = 1;
+	h264_sps_parse_test(rawh264, sizeof(rawh264), &sps);
+}
 #endif
 
-int h264_sps_parse(const void* data, uint32_t bytes, struct h264_sps_t* sps)
+int h264_sps_parse(const void* h264, uint32_t bytes, struct h264_sps_t* sps)
 {
-	bitstream_t* stream;
-	stream = bitstream_create((const unsigned char*)data, bytes);
-	if (!stream)
-		return ENOMEM;
+	bitstream_t stream;
+	struct h264_nal_t nal;
+	bitstream_init(&stream, (const unsigned char*)h264, bytes);
 
-	int forbidden_zero_bit = bitstream_read_bit(stream);
-	int nal_ref_idc = bitstream_read_bits(stream, 2);
-	int nal_unit_type = bitstream_read_bits(stream, 5);
-
-	if (0 != forbidden_zero_bit || nal_ref_idc < 1)
-		return -1; // invalid h.264 data
-
-	if (H264_NALU_SPS != nal_unit_type)
+	h264_nal(&stream, &nal);
+	if (H264_NAL_SPS != nal.nal_unit_type || nal.nal_ref_idc < 1)
 		return -1; // invalid NALU
 
-	h264_sps(stream, sps);
+	h264_sps(&stream, sps);
 	return 0;
 }
