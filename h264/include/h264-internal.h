@@ -30,6 +30,7 @@ int h264_slice_header(bitstream_t* stream, struct h264_context_t* h264, struct h
 int h264_rbsp_trailing_bits(bitstream_t* stream);
 int h264_more_rbsp_data(bitstream_t* stream);
 
-struct h264_sps_t* h264_sps_get(struct h264_context_t* h264, int idx);
+struct h264_sps_t* h264_sps_get(struct h264_context_t* h264, int id);
+struct h264_pps_t* h264_pps_get(struct h264_context_t* h264, int id);
 
 #endif /* !_h264_internal_h_ */

@@ -11,6 +11,7 @@
 
 int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t* pps)
 {
+	memset(pps, 0, sizeof(struct h264_pps_t));
 	pps->pic_parameter_set_id = bitstream_read_ue(stream);
 	pps->seq_parameter_set_id = bitstream_read_ue(stream);
 	pps->entropy_coding_mode_flag = bitstream_read_bit(stream);

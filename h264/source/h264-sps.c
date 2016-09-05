@@ -13,6 +13,7 @@
 int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 {
 	int i;
+	memset(sps, 0, sizeof(struct h264_sps_t));
 	sps->chroma_format_idc = 1;
 	sps->profile_idc = (uint8_t)bitstream_read_bits(stream, 8);
 	sps->constraint_set_flag = (uint8_t)bitstream_read_bits(stream, 8);

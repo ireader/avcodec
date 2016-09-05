@@ -2,12 +2,14 @@
 #include "h264-internal.h"
 #include <stdio.h>
 #include <assert.h>
+#include <memory.h>
 
 int h264_slice_header(bitstream_t* stream, struct h264_context_t* h264, struct h264_nal_t* nal, struct h264_slice_header_t* header)
 {
 	struct h264_pps_t* pps;
 	struct h264_sps_t* sps;
 
+	memset(header, 0, sizeof(struct h264_slice_header_t));
 	header->first_mb_in_slice = bitstream_read_ue(stream);
 	header->slice_type = bitstream_read_ue(stream);
 	header->pic_parameter_set_id = bitstream_read_ue(stream);
@@ -103,5 +105,10 @@ int h264_slice_header(bitstream_t* stream, struct h264_context_t* h264, struct h
 
 	//if (pps->num_slice_groups_minus1 > 0 && pps->slice_group_map_type >= 3 && pps->slice_group_map_type <= 5)
 	//	header->slice_group_change_cycle = bitstream_read_bits(stream, Ceil(Log2(PicSizeInMapUnits / SliceGroupChangeRate + 1)));
-	return h264_more_rbsp_data(stream);
+	
+	if (h264_more_rbsp_data(stream))
+	{
+	}
+
+	return 0;
 }

@@ -45,6 +45,9 @@
     <ClCompile Include="source\h264-nal.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\h264-rbsp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bitstream.h">
