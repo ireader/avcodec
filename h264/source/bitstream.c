@@ -58,7 +58,7 @@ int bitstream_next_bit(bitstream_t* stream)
 {
 	assert(stream && stream->h264 && stream->bytes>0);
 	if(stream->offsetBytes >= stream->bytes)
-		return 0; // throw exception
+		return -1; // throw exception
 
 	return (stream->h264[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
 }
@@ -77,7 +77,7 @@ int bitstream_read_bit(bitstream_t* stream)
 	int bit;
 	assert(stream && stream->h264 && stream->bytes>0);
 	if(stream->offsetBytes >= stream->bytes)
-		return 0; // throw exception
+		return -1; // throw exception
 
 	bit = (stream->h264[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
 	bitstream_move_next_bit(stream); // update offset
@@ -91,7 +91,7 @@ int bitstream_read_bits(bitstream_t* stream, int bits)
 
 	assert(stream && bits > 0 && bits <= 32);
 	value = 0;
-	for(i=0; i<bits; i++)
+	for(i=0, bit = 0; i< bits && -1 != bit; i++)
 	{
 		bit = bitstream_read_bit(stream);
 		assert(0 == bit || 1 == bit);
@@ -104,7 +104,7 @@ int bitstream_read_ue(bitstream_t* stream)
 {
 	int bit;
 	int leadingZeroBits = -1;
-	for(bit = 0; !bit; ++leadingZeroBits)
+	for(bit = 0; !bit && -1 != bit; ++leadingZeroBits)
 	{
 		bit = bitstream_read_bit(stream);
 		assert(0 == bit || 1 == bit);
