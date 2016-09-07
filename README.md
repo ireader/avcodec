@@ -5,8 +5,7 @@
 4. FFMPEG video encode/decode
 
 
-e.g.
-
+<pre><code>
 h264_parameter_t param;
 param.profile = H264_PROFILE_BASELINE;
 param.level = H264_LEVEL_2_0;
@@ -44,3 +43,4 @@ assert(x264enc_getpacket(h264, &pkt) > 0);
 
 // save data
 assert(pkt.bytes == fwrite(pkt.data, 1, pkt.bytes, wfp));
+</code></pre>
