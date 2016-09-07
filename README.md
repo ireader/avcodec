@@ -16,8 +16,8 @@ param.frame_rate = 25000;
 param.gop_size = 50;
 param.bitrate = 500000;
 
-void* h264 = x264enc_create(&param);
-//void* h264 = openh264enc_create(&param);
+void* h264 = x264enc_create(& param);
+//void* h264 = openh264enc_create(& param);
 
 picture_t pic;
 memset(&pic, 0, sizeof(pic));
