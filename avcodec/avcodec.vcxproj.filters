@@ -36,6 +36,12 @@
     <ClInclude Include="include\x264enc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\yuv-overlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\colorspace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ffdecoder.c">
@@ -48,6 +54,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\x264enc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\yuv-overlay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\colorspace.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

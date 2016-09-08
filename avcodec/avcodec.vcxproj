@@ -20,18 +20,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\avpacket.h" />
+    <ClInclude Include="include\colorspace.h" />
     <ClInclude Include="include\ffdecoder.h" />
     <ClInclude Include="include\ffencoder.h" />
     <ClInclude Include="include\h264-parameter.h" />
     <ClInclude Include="include\openh264enc.h" />
     <ClInclude Include="include\picture.h" />
     <ClInclude Include="include\x264enc.h" />
+    <ClInclude Include="include\yuv-overlay.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\ffdecoder.c" />
     <ClCompile Include="source\ffencoder.c" />
     <ClCompile Include="source\openh264enc.cpp" />
     <ClCompile Include="source\x264enc.c" />
+    <ClCompile Include="source\yuv-overlay.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{01E9D416-4A49-416E-8182-22241F07C295}</ProjectGuid>
