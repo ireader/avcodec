@@ -95,13 +95,13 @@ int ffdecoder_getpicture(void* p, picture_t* pic)
 	if (ret >= 0)
 	{
 		// got picture
-		assert(AV_PIX_FMT_YUV420P == ff->frame->format);
+		assert(PICTURE_YUV420 == ff->frame->format);
 		pic->pts = ff->frame->pkt_pts;
 		pic->dts = ff->frame->pkt_dts;
 		pic->width = ff->frame->width;
 		pic->height = ff->frame->height;
 		pic->flags = ff->frame->flags;
-		pic->format = PICTURE_YUV420; //AV_PIX_FMT_YUV420P; // ff->frame->format;
+		pic->format = ff->frame->format; //PICTURE_YUV420
 		for (i = 0; i < PICTURE_PLANAR_NUM; i++)
 		{
 			pic->linesize[i] = ff->frame->linesize[i];

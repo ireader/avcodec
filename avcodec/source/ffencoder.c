@@ -84,12 +84,12 @@ int ffencoder_input(void* p, const picture_t* pic)
 	struct ffencoder_t* ff;
 	ff = (struct ffencoder_t*)p;
 
-	assert(PICTURE_YUV420 == pic->format);
+	assert(AV_PIX_FMT_YUV420P == pic->format);
 	av_frame_unref(&frame);
 	frame.pts = pic->pts;
 	frame.width = pic->width;
 	frame.height = pic->height;
-	frame.format = AV_PIX_FMT_YUV420P; // pic->format;
+	frame.format = pic->format; // AV_PIX_FMT_YUV420P
 	for (i = 0; i < PICTURE_PLANAR_NUM; i++)
 	{
 		frame.data[i] = pic->data[i];
