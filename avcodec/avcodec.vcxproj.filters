@@ -9,7 +9,7 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Source Files\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
@@ -21,25 +21,28 @@
     <ClInclude Include="include\ffdecoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ffencoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\h264-parameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\openh264enc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\picture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\x264enc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\yuv-overlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\colorspace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ffavformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\avscale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\h264-encoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pcm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +63,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\colorspace.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\interpolation-bilinear.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ffscale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ffavformat.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

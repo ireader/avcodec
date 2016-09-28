@@ -1,5 +1,5 @@
-#include "openh264enc.h"
-#include <openh264/codec_api.h>
+#include "h264-encoder.h"
+#include "openh264/codec_api.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -13,7 +13,7 @@ struct openh264_encoder_t
 	int skipped;
 };
 
-void* openh264enc_create(h264_parameter_t* param)
+static void* openh264enc_create(h264_parameter_t* param)
 {
 	int ret;
 	struct openh264_encoder_t* p;
@@ -83,7 +83,7 @@ void* openh264enc_create(h264_parameter_t* param)
 	return p;
 }
 
-void openh264enc_destroy(void* h264)
+static void openh264enc_destroy(void* h264)
 {
 	struct openh264_encoder_t* p;
 	p = (struct openh264_encoder_t*)h264;
@@ -98,7 +98,7 @@ void openh264enc_destroy(void* h264)
 	free(p);
 }
 
-int openh264enc_input(void* h264, const picture_t* pic)
+static int openh264enc_input(void* h264, const picture_t* pic)
 {
 	int i, ret;
 	SSourcePicture src;
@@ -129,7 +129,7 @@ int openh264enc_input(void* h264, const picture_t* pic)
 	return 1;
 }
 
-int openh264enc_getpacket(void* h264, avpacket_t* pkt)
+static int openh264enc_getpacket(void* h264, avpacket_t* pkt)
 {
 	int i, layer;
 	int layer_size[MAX_LAYER_NUM_OF_FRAME];
@@ -191,4 +191,16 @@ int openh264enc_getpacket(void* h264, avpacket_t* pkt)
 
 	pkt->dts = pkt->pts = p->out.uiTimeStamp;
 	return 1;
+}
+
+struct h264_encoder_t* openh264_encoder(void)
+{
+	static struct h264_encoder_t s_encoder = {
+		openh264enc_create,
+		openh264enc_destroy,
+		openh264enc_input,
+		openh264enc_getpacket,
+	};
+
+	return &s_encoder;
 }

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-enum avpacket_type
+enum avpacket_flag
 {
 	AVPACKET_FLAG_KEY = 0x01,
 };
@@ -17,8 +17,8 @@ typedef struct _avpacket_t
 	int64_t pts;
 	int64_t dts;
 
-	int pic_type;		// picture type(PICTURE_TYPE_XXX)
-	int flags;			// AVPACKET_FLAG_XXX
+	int pic_type;	// picture type(PICTURE_TYPE_XXX)
+	int flags;		// AVPACKET_FLAG_XXX
 } avpacket_t;
 
 #endif /* !_avpacket_h_ */

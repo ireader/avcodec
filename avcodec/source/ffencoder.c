@@ -1,4 +1,4 @@
-#include "ffencoder.h"
+#include "h264-encoder.h"
 #include "libavcodec/avcodec.h"
 #include <stdio.h>
 #include <assert.h>
@@ -11,15 +11,6 @@ struct ffencoder_t
 	AVPacket pkt;
 };
 
-void ffencoder_init(void)
-{
-	avcodec_register_all();
-}
-
-void ffencoder_clean(void)
-{
-}
-
 static void ffencoder_setparameter(struct ffencoder_t* ff, h264_parameter_t* param)
 {
 	ff->avctx->time_base = av_make_q(1000, param->frame_rate); // fps
@@ -30,9 +21,23 @@ static void ffencoder_setparameter(struct ffencoder_t* ff, h264_parameter_t* par
 	ff->avctx->width = param->width;
 	ff->avctx->height = param->height;
 	ff->avctx->bit_rate = param->bitrate;
+	//ff->avctx->bit_rate_tolerance = CBR;
+	//ff->avctx->refs = 1;
+	//ff->avctx->slices = 1;
+	//ff->avctx->ticks_per_frame = 2; // Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
 }
 
-void* ffencoder_create(h264_parameter_t* param)
+static void ffencoder_destroy(void* p)
+{
+	struct ffencoder_t* ff;
+	ff = (struct ffencoder_t*)p;
+	//	av_frame_free(&ff->frame);
+	av_packet_unref(&ff->pkt);
+	avcodec_free_context(&ff->avctx);
+	free(ff);
+}
+
+static void* ffencoder_create(h264_parameter_t* param)
 {
 	int ret;
 	AVCodec* codec = NULL;
@@ -67,17 +72,7 @@ void* ffencoder_create(h264_parameter_t* param)
 	return ff;
 }
 
-void ffencoder_destroy(void* p)
-{
-	struct ffencoder_t* ff;
-	ff = (struct ffencoder_t*)p;
-//	av_frame_free(&ff->frame);
-	av_packet_unref(&ff->pkt);
-	avcodec_free_context(&ff->avctx);
-	free(ff);
-}
-
-int ffencoder_input(void* p, const picture_t* pic)
+static int ffencoder_input(void* p, const picture_t* pic)
 {
 	int i, ret;
 	AVFrame frame;
@@ -108,7 +103,7 @@ int ffencoder_input(void* p, const picture_t* pic)
 	return 0;
 }
 
-int ffencoder_getpacket(void* p, avpacket_t* pkt)
+static int ffencoder_getpacket(void* p, avpacket_t* pkt)
 {
 	int ret;
 	struct ffencoder_t* ff;
@@ -130,4 +125,23 @@ int ffencoder_getpacket(void* p, avpacket_t* pkt)
 	//	ret = 0;
 
 	return ret;
+}
+
+struct h264_encoder_t* ffmpeg_encoder(void)
+{
+	static struct h264_encoder_t s_encoder = {
+		ffencoder_create,
+		ffencoder_destroy,
+		ffencoder_input,
+		ffencoder_getpacket,
+	};
+
+	static int ffinit = 0;
+	if (0 == ffinit)
+	{
+		ffinit = 1;
+		avcodec_register_all();
+	}
+
+	return &s_encoder;
 }

@@ -1,4 +1,4 @@
-#include "x264enc.h"
+#include "h264-encoder.h"
 #include "x264/x264.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,7 +58,7 @@ static void x264enc_parameter_set(x264_param_t* x264, h264_parameter_t* param)
 {
 	x264_param_default_preset(x264, "fast", "zerolatency");
 	x264_param_apply_profile(x264, x264enc_profile(param));
-	x264->i_level_idc = x264enc_level(param);
+//	x264->i_level_idc = x264enc_level(param);
 	x264->i_csp = X264_CSP_I420;
 	x264->i_width = param->width;
 	x264->i_height = param->height;
@@ -91,7 +91,7 @@ static void x264enc_parameter_set(x264_param_t* x264, h264_parameter_t* param)
 	x264->analyse.i_me_method = X264_ME_DIA; // ÁâÐÎËÑË÷
 }
 
-void* x264enc_create(h264_parameter_t* param)
+static void* x264enc_create(h264_parameter_t* param)
 {
 	struct x264_encoder_t* p;
 	p = (struct x264_encoder_t*)malloc(sizeof(struct x264_encoder_t));
@@ -116,7 +116,7 @@ void* x264enc_create(h264_parameter_t* param)
 	return p;
 }
 
-void x264enc_destroy(void* h264)
+static void x264enc_destroy(void* h264)
 {
 	struct x264_encoder_t* p;
 	p = (struct x264_encoder_t*)h264;
@@ -124,7 +124,7 @@ void x264enc_destroy(void* h264)
 //	x264_picture_clean(&p->pic);
 }
 
-int x264enc_input(void* h264, const picture_t* pic)
+static int x264enc_input(void* h264, const picture_t* pic)
 {
 	int i, ret;
 	struct x264_encoder_t* p;
@@ -162,7 +162,7 @@ int x264enc_input(void* h264, const picture_t* pic)
 	return 1;
 }
 
-int x264enc_getpacket(void* h264, avpacket_t* pkt)
+static int x264enc_getpacket(void* h264, avpacket_t* pkt)
 {
 	struct x264_encoder_t* p;
 	p = (struct x264_encoder_t*)h264;
@@ -189,4 +189,15 @@ int x264enc_getpacket(void* h264, avpacket_t* pkt)
 	}
 
 	return p->nnal;
+}
+
+struct h264_encoder_t* x264_encoder(void)
+{
+	static struct h264_encoder_t s_encoder = {
+		x264enc_create,
+		x264enc_destroy,
+		x264enc_input,
+		x264enc_getpacket,
+	};
+	return &s_encoder;
 }

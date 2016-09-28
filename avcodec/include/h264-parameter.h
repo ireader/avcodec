@@ -54,8 +54,8 @@ typedef struct _h264_parameter_t
 	int format;			// PICTURE_YUV420/PICTURE_YUV422/PICTURE_YUV444
 
 	int frame_rate;		// 25000/1000.0 => 25.0fps
-	int gop_size;		// 50frame per gop
-	int bitrate;		// bit per seconds
+	int gop_size;		// frames per gop
+	int bitrate;		// bits per second
 	int bitrate_mode;	// CBR/VBR/ABR/CQP/CRF
 } h264_parameter_t;
 

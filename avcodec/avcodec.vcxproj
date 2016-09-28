@@ -20,19 +20,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\avpacket.h" />
+    <ClInclude Include="include\avscale.h" />
     <ClInclude Include="include\colorspace.h" />
+    <ClInclude Include="include\ffavformat.h" />
     <ClInclude Include="include\ffdecoder.h" />
-    <ClInclude Include="include\ffencoder.h" />
+    <ClInclude Include="include\h264-encoder.h" />
     <ClInclude Include="include\h264-parameter.h" />
-    <ClInclude Include="include\openh264enc.h" />
+    <ClInclude Include="include\pcm.h" />
     <ClInclude Include="include\picture.h" />
-    <ClInclude Include="include\x264enc.h" />
     <ClInclude Include="include\yuv-overlay.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\colorspace.c" />
+    <ClCompile Include="source\ffavformat.c" />
     <ClCompile Include="source\ffdecoder.c" />
     <ClCompile Include="source\ffencoder.c" />
+    <ClCompile Include="source\ffscale.c" />
+    <ClCompile Include="source\interpolation-bilinear.c" />
     <ClCompile Include="source\openh264enc.cpp" />
     <ClCompile Include="source\x264enc.c" />
     <ClCompile Include="source\yuv-overlay.c" />
@@ -103,8 +107,8 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>openh264;x264</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264.dll.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>openh264;x264;ffmpeg/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -139,6 +143,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>openh264;x264;ffmpeg/lib</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

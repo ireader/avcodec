@@ -2,7 +2,6 @@
 #define _picture_h_
 
 #include <stdint.h>
-#include <stddef.h>
 
 enum picture_format {
 	PICTURE_NONE	= -1,
@@ -43,7 +42,7 @@ typedef struct _picture_t
 
 #define PICTURE_PLANAR_NUM 4
 	uint8_t* data[PICTURE_PLANAR_NUM];
-	size_t linesize[PICTURE_PLANAR_NUM];
+	int linesize[PICTURE_PLANAR_NUM];
 
 	int64_t pts;
 	int64_t dts;

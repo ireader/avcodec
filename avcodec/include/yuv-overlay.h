@@ -3,6 +3,10 @@
 
 #include "picture.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _overlay_t
 {
 	int x;
@@ -12,10 +16,6 @@ typedef struct _overlay_t
 	int mask;
 	int op;
 } overlay_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 int yuv_overlay(picture_t* dst, const picture_t* src, overlay_t* overlay);
 
