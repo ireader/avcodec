@@ -74,6 +74,8 @@ int ffdecoder_input(void* p, const avpacket_t* pkt)
 	av_init_packet(&ff->pkt);
 	ff->pkt.data = pkt->data;
 	ff->pkt.size = pkt->bytes;
+	ff->pkt.pts = pkt->pts;
+	ff->pkt.dts = pkt->dts;
 	ret = avcodec_send_packet(ff->avctx, &ff->pkt);
 	if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
 	{
@@ -95,13 +97,13 @@ int ffdecoder_getpicture(void* p, picture_t* pic)
 	if (ret >= 0)
 	{
 		// got picture
-		assert(PICTURE_YUV420 == ff->frame->format);
+		assert(AV_PIX_FMT_YUV420P == ff->frame->format || AV_PIX_FMT_YUVJ420P == ff->frame->format);
 		pic->pts = ff->frame->pkt_pts;
 		pic->dts = ff->frame->pkt_dts;
 		pic->width = ff->frame->width;
 		pic->height = ff->frame->height;
 		pic->flags = ff->frame->flags;
-		pic->format = ff->frame->format; //PICTURE_YUV420
+		pic->format = PICTURE_YUV420;
 		for (i = 0; i < PICTURE_PLANAR_NUM; i++)
 		{
 			pic->linesize[i] = ff->frame->linesize[i];
