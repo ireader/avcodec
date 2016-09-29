@@ -108,7 +108,7 @@ static void* x264enc_create(h264_parameter_t* param)
 	p->x264 = x264_encoder_open(&p->params);
 	if (!p->x264)
 	{
-		x264_picture_clean(&p->pic);
+//		x264_picture_clean(&p->pic);
 		free(p);
 		return NULL;
 	}
