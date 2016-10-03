@@ -1,5 +1,6 @@
 #include "yuv-overlay.h"
 #include "colorspace.h"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>

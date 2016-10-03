@@ -108,7 +108,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>openh264;x264;ffmpeg/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
+      <AdditionalDependencies>openh264-win32.lib;libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -126,6 +126,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>openh264</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openh264-win64.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -144,7 +148,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
+      <AdditionalDependencies>openh264-win32.lib;libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>openh264;x264;ffmpeg/lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -164,6 +168,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>openh264-win64.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>openh264</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
