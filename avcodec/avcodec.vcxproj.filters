@@ -9,16 +9,13 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Source Files\Resource Files">
+    <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\avpacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ffdecoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\h264-parameter.h">
@@ -33,9 +30,6 @@
     <ClInclude Include="include\colorspace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ffavformat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\avscale.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,17 +39,14 @@
     <ClInclude Include="include\pcm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\text-render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\ffdecoder.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ffencoder.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\openh264enc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\x264enc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -68,10 +59,13 @@
     <ClCompile Include="source\interpolation-bilinear.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ffscale.c">
+    <ClCompile Include="source\bitmap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ffavformat.c">
+    <ClCompile Include="source\openh264enc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\text-render-freetype.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

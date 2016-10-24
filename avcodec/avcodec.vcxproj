@@ -21,23 +21,21 @@
   <ItemGroup>
     <ClInclude Include="include\avpacket.h" />
     <ClInclude Include="include\avscale.h" />
+    <ClInclude Include="include\bitmap.h" />
     <ClInclude Include="include\colorspace.h" />
-    <ClInclude Include="include\ffavformat.h" />
-    <ClInclude Include="include\ffdecoder.h" />
     <ClInclude Include="include\h264-encoder.h" />
     <ClInclude Include="include\h264-parameter.h" />
     <ClInclude Include="include\pcm.h" />
     <ClInclude Include="include\picture.h" />
+    <ClInclude Include="include\text-render.h" />
     <ClInclude Include="include\yuv-overlay.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\bitmap.c" />
     <ClCompile Include="source\colorspace.c" />
-    <ClCompile Include="source\ffavformat.c" />
-    <ClCompile Include="source\ffdecoder.c" />
-    <ClCompile Include="source\ffencoder.c" />
-    <ClCompile Include="source\ffscale.c" />
     <ClCompile Include="source\interpolation-bilinear.c" />
     <ClCompile Include="source\openh264enc.cpp" />
+    <ClCompile Include="source\text-render-freetype.c" />
     <ClCompile Include="source\x264enc.c" />
     <ClCompile Include="source\yuv-overlay.c" />
   </ItemGroup>
@@ -100,15 +98,15 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;ffmpeg/include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>openh264;x264;ffmpeg/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>openh264;x264;freetype</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264.dll.lib;freetype.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -121,7 +119,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;ffmpeg/include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +134,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;ffmpeg/include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,8 +142,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>libx264.dll.lib;avcodec.lib;avutil.lib;swscale.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>openh264;x264;ffmpeg/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264.dll.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>openh264;x264</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,7 +155,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;ffmpeg/include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
