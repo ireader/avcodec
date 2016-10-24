@@ -15,7 +15,7 @@ struct h264_encoder_t
 	void(*destroy)(void* h264);
 
 	/// pic->flags & AVPACKET_FLAG_KEY => force IDR
-	/// @return 0-ok, other-error
+	/// @return >0-ok, other-error
 	int(*input)(void* h264, const picture_t* pic);
 
 	/// @return >=0-got packet, <0-error
@@ -23,7 +23,6 @@ struct h264_encoder_t
 };
 
 struct h264_encoder_t* x264_encoder(void);
-struct h264_encoder_t* ffmpeg_encoder(void);
 struct h264_encoder_t* openh264_encoder(void);
 
 #ifdef __cplusplus
