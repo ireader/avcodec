@@ -1,0 +1,16 @@
+LIBRARY   ffutils
+EXPORTS
+   ffutils_init
+
+   ffinput_create
+   ffinput_destroy
+   ffinput_read
+   ffinput_getstream
+
+   ffdecoder_create
+   ffdecoder_destroy
+   ffdecoder_input
+   ffdecoder_getframe
+
+   fffilter_create_source
+   

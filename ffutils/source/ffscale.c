@@ -1,4 +1,4 @@
-#include "avscale.h"
+#include "ffscale.h"
 #include "libswscale/swscale.h"
 #include <stdio.h>
 #include <assert.h>
@@ -8,10 +8,9 @@
 /// @param src input picture
 /// @param dst output picture, dst->format/dst->width/dst->height/dst->linesize MUST set by user
 /// @return 0-ok, other-error
-int avscale(picture_t* dst, const picture_t* src)
+int avscale(AVFrame* dst, const AVFrame* src)
 {
 	struct SwsContext* sws;
-	
 	if (0 == sws_isSupportedInput(src->format) || 0 == sws_isSupportedOutput(dst->format))
 	{
 		printf("input(%d) %s, output(%d) %s\n", src->format, sws_isSupportedInput(src->format) ? "ok" : "don't support", dst->format, sws_isSupportedOutput(dst->format) ? "ok" : "don't support");
