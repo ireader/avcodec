@@ -35,7 +35,7 @@
     <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\interpolation-bilinear.c" />
     <ClCompile Include="source\openh264enc.cpp" />
-    <ClCompile Include="source\text-render-freetype.c" />
+    <ClCompile Include="source\text-render-gdi.c" />
     <ClCompile Include="source\x264enc.c" />
     <ClCompile Include="source\yuv-overlay.c" />
   </ItemGroup>
