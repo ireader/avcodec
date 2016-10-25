@@ -5,8 +5,14 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#if !defined(OS_WINDOWS)
-#define inline static
+// inline keyword
+#if !defined(__cplusplus) && !defined(inline)
+	#if _MSC_VER
+		#define inline __inline
+	#elif __GNUC__ && !__GNUC_STDC_INLINE__ && !__GNUC_GNU_INLINE__
+		#define inline static __inline__ //__attribute__((unused))
+		//#define inline static __inline__ __attribute__((always_inline))
+	#endif
 #endif
 
 inline const uint8_t* h264_startcode(const uint8_t *data, size_t bytes)
@@ -27,7 +33,7 @@ inline uint8_t h264_type(const uint8_t *data, size_t bytes)
 	return data ? (data[0] & 0x1f)  : 0x00;
 }
 
-static uint8_t h264_idr(const uint8_t *data, size_t bytes)
+inline uint8_t h264_idr(const uint8_t *data, size_t bytes)
 {
 	uint8_t naltype;
 	const uint8_t *p;
