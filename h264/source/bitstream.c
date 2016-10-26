@@ -15,7 +15,7 @@ void bitstream_init(bitstream_t* stream, const unsigned char* h264, size_t bytes
 	stream->offsetBytes = 0;
 }
 
-inline void bitstream_move_next_bit(bitstream_t* stream)
+static inline void bitstream_move_next_bit(bitstream_t* stream)
 {
 	++stream->offsetBits;
 	if (stream->offsetBits >= BIT_NUM)

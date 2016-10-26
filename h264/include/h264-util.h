@@ -5,17 +5,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// inline keyword
-#if !defined(__cplusplus) && !defined(inline)
-	#if _MSC_VER
-		#define inline __inline
-	#elif __GNUC__ && !__GNUC_STDC_INLINE__ && !__GNUC_GNU_INLINE__
-		#define inline static __inline__ //__attribute__((unused))
-		//#define inline static __inline__ __attribute__((always_inline))
-	#endif
-#endif
-
-inline const uint8_t* h264_startcode(const uint8_t *data, size_t bytes)
+static inline const uint8_t* h264_startcode(const uint8_t *data, size_t bytes)
 {
 	size_t i;
 	for(i = 2; i < bytes; i++)
@@ -27,13 +17,13 @@ inline const uint8_t* h264_startcode(const uint8_t *data, size_t bytes)
 	return NULL;
 }
 
-inline uint8_t h264_type(const uint8_t *data, size_t bytes)
+static inline uint8_t h264_type(const uint8_t *data, size_t bytes)
 {
 	data = h264_startcode(data, bytes);
 	return data ? (data[0] & 0x1f)  : 0x00;
 }
 
-inline uint8_t h264_idr(const uint8_t *data, size_t bytes)
+static inline uint8_t h264_idr(const uint8_t *data, size_t bytes)
 {
 	uint8_t naltype;
 	const uint8_t *p;
@@ -70,7 +60,7 @@ void h264_stream(const void* h264, size_t bytes, h264_nalu_handler handler, void
 ///@param[in] chroma_format_idc 0-monochrome, 1-4:2:0, 2-4:2:2, 3-4:4:4
 ///@param[out] width SubWidthC
 ///@param[out] height SubHeightC
-inline void h264_chroma_sample(unsigned int chroma_format_idc, unsigned int *width, unsigned int *height)
+static inline void h264_chroma_sample(unsigned int chroma_format_idc, unsigned int *width, unsigned int *height)
 {
 	static unsigned int s_chroma_width[4] = { 0, 2, 2, 1 };
 	static unsigned int s_chroma_height[4] = { 0, 2, 1, 1 };
@@ -79,14 +69,14 @@ inline void h264_chroma_sample(unsigned int chroma_format_idc, unsigned int *wid
 }
 
 // MbWidthC = 16 / SubWidthC (p48)
-inline unsigned int h264_chroma_mb_width(unsigned int chroma_format_idc)
+static inline unsigned int h264_chroma_mb_width(unsigned int chroma_format_idc)
 {
 	static unsigned int s_chroma_width[4] = { 0, 8, 8, 16 };
 	return s_chroma_width[chroma_format_idc % 4];
 }
 
 // MbHeightC = 16 / SubHeightC (p48)
-inline unsigned int h264_chroma_mb_height(unsigned int chroma_format_idc)
+static inline unsigned int h264_chroma_mb_height(unsigned int chroma_format_idc)
 {
 	static unsigned int s_chroma_height[4] = { 0, 8, 16, 16 };
 	return s_chroma_height[chroma_format_idc % 4];
@@ -96,7 +86,7 @@ inline unsigned int h264_chroma_mb_height(unsigned int chroma_format_idc)
 ///@param[in] luma luma bit depth
 ///@param[in] chroma chroma bit depth
 ///@param[in] chroma_format_idc 0-monochrome, 1-4:2:0, 2-4:2:2, 3-4:4:4
-inline unsigned int h264_mb_bits(unsigned int luma, unsigned int chroma, unsigned int chroma_format_idc)
+static inline unsigned int h264_mb_bits(unsigned int luma, unsigned int chroma, unsigned int chroma_format_idc)
 {
 	static unsigned int s_chroma_format_idc[4] = { 0, 8 * 8, 16 * 8, 16 * 16 };
 	return 16 * 16 * luma + 2 * chroma * s_chroma_format_idc[chroma_format_idc % 4];
