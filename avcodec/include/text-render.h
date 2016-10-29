@@ -10,20 +10,22 @@ extern "C" {
 	
 struct text_parameter_t
 {
-	char font[128];
+	const char* font;
 	int size; // font size
 };
 
-void* text_render_create(int width, int height);
+void* text_render_create(const struct text_parameter_t* param);
 
 void text_render_destroy(void* render);
 
 /// @param[in] txt unicode string
-int text_render_draw(void* render, const wchar_t* txt, int x, int y);
+/// @param[out] w bitmap width
+/// @param[out] h bitmap height
+/// @param[out] pitch bitmap line bytes(>=w)
+/// @return NULL-failed, other-bitmap data
+const void* text_render_draw(void* render, const wchar_t* txt, int *w, int *h, int* pitch);
 
-const void* text_render_getimage(void* render);
-
-int text_render_config(void* render, struct text_parameter_t* param);
+int text_render_config(void* render, const struct text_parameter_t* param);
 
 #ifdef __cplusplus
 }

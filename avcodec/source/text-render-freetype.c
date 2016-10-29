@@ -13,18 +13,24 @@
 // https://stuff.mit.edu/afs/athena/astaff/source/src-9.0/third/freetype/docs/tutorial/step1.html
 // http://freetype.sourceforge.net/freetype2/docs/tutorial/step1.html
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 struct text_render_t
 {
 	FT_Library  library;
 	FT_Face     face;
 
-	char font[256];
-	int fontsize;
-
-	void *bitmap;
-
 	int width;
 	int height;
+	void *bitmap;
+};
+
+struct text_glyph_t
+{
+	FT_Glyph glyph;
+	FT_BBox bbox;
+	int x;
 };
 
 static int free_type_init(struct text_render_t* s)
@@ -36,46 +42,24 @@ static int free_type_init(struct text_render_t* s)
 		printf("%s Could not load FreeType: %d\n", __FUNCTION__, r);
 		return r;
 	}
-
-	r = FT_New_Face(s->library, s->font, 0, &s->face);
-	if (0 != r)
-	{
-		// FT_Err_Unknown_File_Format
-		printf("%s Could not load font \"%s\": %d\n", __FUNCTION__, s->font, r);
-		return r;
-	}
-
-	assert(s->face->num_faces > 0);
-
-	r = FT_Set_Pixel_Sizes(s->face, 0, s->fontsize);
-	if (0 != r)
-	{
-		printf("%s Could not set font size to %d pixels: %d\n", __FUNCTION__, s->fontsize, r);
-		return r;
-	}
-
 	return r;
 }
 
-void* text_render_create(int width, int height)
+void* text_render_create(const struct text_parameter_t* param)
 {
 	struct text_render_t* render;
-	render = malloc(sizeof(struct text_render_t) + width * height * 4);
+	render = malloc(sizeof(struct text_render_t));
 	if (NULL == render)
 		return NULL;
 
 	memset(render, 0, sizeof(struct text_render_t));
-#if defined(OS_WINDOWS)
-	strcpy(render->font, "C:\\WINDOWS\\Fonts\\msyh.ttc");
-#else
-	strcpy(render->font, "/usr/share/fonts/truetype/arial.ttf");
-#endif
-	render->fontsize = 32;
-	render->width = width;
-	render->height = height;
-	render->bitmap = render + 1;
-
 	if (0 != free_type_init(render))
+	{
+		text_render_destroy(render);
+		return NULL;
+	}
+
+	if (0 != text_render_config(render, param))
 	{
 		text_render_destroy(render);
 		return NULL;
@@ -97,30 +81,44 @@ void text_render_destroy(void* p)
 		FT_Done_FreeType(render->library);
 		render->library = NULL;
 	}
+
+	if (render->bitmap)
+	{
+		free(render->bitmap);
+		render->bitmap = NULL;
+	}
+
+	free(render);
 }
 
-static int text_render_bitmap(struct text_render_t* render, const FT_BitmapGlyph bmpGlyph, const FT_BBox *bbox, int x, int y)
+static int text_render_bitmap(struct text_render_t* render, const FT_BitmapGlyph bmpGlyph, const struct text_glyph_t* txt, FT_BBox *bbox)
 {
 	int r, c;
-	//int advance = render->face->glyph->advance.x >> 6;
-	//int left = render->face->glyph->bitmap_left;
-	//int top = render->face->glyph->bitmap_top;
 	//FT_Bitmap bitmap = render->face->glyph->bitmap;
 	FT_Bitmap* bitmap = &bmpGlyph->bitmap;
 	unsigned char* s;
 	unsigned char* d;
 
-	x += bmpGlyph->left;
 	for (r = 0; r < bitmap->rows; r++)
 	{
 		s = (unsigned char*)bitmap->buffer + r * bitmap->pitch;
-		d = (unsigned char*)render->bitmap + ((bitmap->rows - r + y) * render->width + x) * 4;
+		d = (unsigned char*)render->bitmap + ((bbox->yMax - txt->bbox.yMax + r) * render->width + txt->x + txt->bbox.xMin) * 4;
 		for (c = 0; c < bitmap->width; c++)
 		{
-			*d++ = *s;	// b
-			*d++ = 0;	// g
-			*d++ = 0;	// r
-			*d++ = 0;	// a
+			if (*s)
+			{
+				*d++ = *s;	// b
+				*d++ = 0;	// g
+				*d++ = 0;	// r
+				*d++ = 0;	// a
+			}
+			else
+			{
+				*d++ = 0;	// b
+				*d++ = 0;	// g
+				*d++ = 0;	// r
+				*d++ = 0;	// a
+			}
 
 			++s;
 		}
@@ -129,41 +127,47 @@ static int text_render_bitmap(struct text_render_t* render, const FT_BitmapGlyph
 	return 0;
 }
 
-int text_render_draw(void* p, const wchar_t* txt, int x, int y)
+const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
 {
-	FT_BBox bbox;
 	FT_UInt glyph_index;
 	FT_Bool use_kerning;
 	FT_UInt previous;
-	FT_Glyph glyph;
-	FT_BitmapGlyph glyph_bitmap;
+	FT_BBox bbox;
+	struct text_glyph_t *vec;
+	//FT_BitmapGlyph glyph_bitmap;
+	size_t i, j, count;
 
-	int r, pen_x, pen_y;
-	const wchar_t *s;
+	int r;
 	struct text_render_t* render = (struct text_render_t*)p;
+
+	count = txt ? wcslen(txt) : 0;
+	if (0 == txt) return NULL;
+	vec = (struct text_glyph_t*)malloc(sizeof(struct text_glyph_t) * count);
+	if (NULL == vec) return NULL;
+	memset(vec, 0, sizeof(struct text_glyph_t) * count);
+	memset(&bbox, 0, sizeof(bbox));
 
 	use_kerning = FT_HAS_KERNING(render->face);
 	previous = 0;
-	pen_x = 0;
-	pen_y = 50;
-	for (s = txt; *s; s++)
+	render->width = 0;
+	for (i = 0, j = 0; i < count; i++)
 	{
-		/* convert character code to glyph index */ 
-		glyph_index = FT_Get_Char_Index(render->face, *s);
+		/* convert character code to glyph index */
+		glyph_index = FT_Get_Char_Index(render->face, txt[i]);
 
 		/* retrieve kerning distance and move pen position */
 		if (use_kerning && previous && glyph_index)
 		{
 			FT_Vector delta;
 			FT_Get_Kerning(render->face, previous, glyph_index, FT_KERNING_DEFAULT, &delta);
-			pen_x += delta.x >> 6; // 1/64
+			vec[j].x = delta.x >> 6; // 1/64
 		}
 
 		/* load glyph image into the slot (erase previous one) */
 		r = FT_Load_Glyph(render->face, glyph_index, FT_LOAD_DEFAULT);
 		if (r)
 		{
-			printf("%s load char(%x) => %d\n", __FUNCTION__, (unsigned int)*s, r);
+			printf("%s load char(%x) => %d\n", __FUNCTION__, (unsigned int)txt[i], r);
 			continue; /* ignore errors */
 		}
 
@@ -176,60 +180,91 @@ int text_render_draw(void* p, const wchar_t* txt, int x, int y)
 		//	return r;
 		//}
 
-		r = FT_Get_Glyph(render->face->glyph, &glyph);
+		r = FT_Get_Glyph(render->face->glyph, &vec[j].glyph);
 		if (r)
 		{
-			printf("%s FT_Get_Glyph(%x) => %d\n", __FUNCTION__, (unsigned int)*s, r);
+			printf("%s FT_Get_Glyph(%x) => %d\n", __FUNCTION__, (unsigned int)txt[i], r);
 			continue; /* ignore errors */
 		}
 
-		FT_Glyph_Get_CBox(glyph, ft_glyph_bbox_pixels, &bbox);
-
-		if (glyph->format != FT_GLYPH_FORMAT_BITMAP)
-		{
-			r = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, NULL, 0);
-			if (r)
-			{
-				printf("%s FT_Glyph_To_Bitmap(%x) => %d\n", __FUNCTION__, (unsigned int)*s, r);
-				continue; /* ignore errors */
-			}
-		}
-
-		glyph_bitmap = (FT_BitmapGlyph)glyph;
-		text_render_bitmap(render, (FT_BitmapGlyph)glyph, &bbox, pen_x, pen_y);
-
-		printf("x/y: %d/%d, box: %d/%d/%d/%d, left/top: %d/%d, bitmap row/width/pitch: %d/%d/%d\n",
-			pen_x, pen_y, 
-			bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax,
-			glyph_bitmap->left, glyph_bitmap->top,
-			glyph_bitmap->bitmap.rows, glyph_bitmap->bitmap.width, glyph_bitmap->bitmap.pitch);
-
-		FT_Done_Glyph(glyph);
+		FT_Glyph_Get_CBox(vec[j].glyph, ft_glyph_bbox_pixels, &vec[j].bbox);
+		bbox.yMin = MIN(bbox.yMin, vec[j].bbox.yMin);
+		bbox.yMax = MAX(bbox.yMax, vec[j].bbox.yMax);
 
 		/* increment pen position */
-		pen_x += render->face->glyph->advance.x >> 6; // 1/64
+		vec[j].x += render->width;
+		render->width = vec[j].x + (render->face->glyph->advance.x >> 6); // 1/64
+		++j;
 
 		/* record current glyph index */
 		previous = glyph_index;
 	}
 
-	return 0;
-}
+	render->height = bbox.yMax - bbox.yMin;
+	render->bitmap = malloc(render->width * render->height * 4);
+	memset(render->bitmap, 0, render->width * render->height * 4);
 
-const void* text_render_getimage(void* p)
-{
-	struct text_render_t* render = (struct text_render_t*)p;
+	for (i = 0; i < j; i++)
+	{
+		if (render->bitmap)
+		{
+			if (vec[i].glyph->format != FT_GLYPH_FORMAT_BITMAP)
+			{
+				r = FT_Glyph_To_Bitmap(&vec[i].glyph, FT_RENDER_MODE_NORMAL, NULL, 0);
+				if (r)
+				{
+					printf("%s FT_Glyph_To_Bitmap(%x) => %d\n", __FUNCTION__, (unsigned int)txt[i], r);
+					continue; /* ignore errors */
+				}
+			}
+
+			//glyph_bitmap = (FT_BitmapGlyph)vec[i].glyph;
+			text_render_bitmap(render, (FT_BitmapGlyph)vec[i].glyph, &vec[i], &bbox);
+
+			//printf("x/y: %d/%d, box: %d/%d/%d/%d, left/top: %d/%d, bitmap row/width/pitch: %d/%d/%d\n",
+			//	pen_x, pen_y, 
+			//	bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax,
+			//	glyph_bitmap->left, glyph_bitmap->top,
+			//	glyph_bitmap->bitmap.rows, glyph_bitmap->bitmap.width, glyph_bitmap->bitmap.pitch);
+		}
+
+		FT_Done_Glyph(vec[i].glyph);
+	}
+
+	free(vec);
+	*w = render->width;
+	*h = render->height;
+	*pitch = render->width;
 	return render->bitmap;
 }
 
-int text_render_config(void* p, struct text_parameter_t* param)
+int text_render_config(void* p, const struct text_parameter_t* param)
 {
 	int r;
 	struct text_render_t* render = (struct text_render_t*)p;
-	r = FT_Set_Pixel_Sizes(render->face, 0, render->fontsize);
+	if (param->font && *param->font)
+	{
+		FT_Face face = NULL;
+		r = FT_New_Face(render->library, param->font, 0, &face);
+		if (0 != r)
+		{
+			// FT_Err_Unknown_File_Format
+			printf("%s Could not load font \"%s\": %d\n", __FUNCTION__, param->font, r);
+			return r;
+		}
+
+		if(render->face)
+			FT_Done_Face(render->face);
+		render->face = face;
+	}
+
+	if (!render->face)
+		return -1;
+
+	r = FT_Set_Pixel_Sizes(render->face, 0, param->size);
 	if (0 != r)
 	{
-		printf("%s Could not set font size to %d pixels: %d\n", __FUNCTION__, render->fontsize, r);
+		printf("%s Could not set font size to %d pixels: %d\n", __FUNCTION__, param->size, r);
 		return r;
 	}
 
