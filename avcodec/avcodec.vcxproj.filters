@@ -45,6 +45,9 @@
     <ClInclude Include="include\bitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avstatistic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">
@@ -65,7 +68,7 @@
     <ClCompile Include="source\openh264enc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\text-render-gdi.c">
+    <ClCompile Include="source\text-render-freetype.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

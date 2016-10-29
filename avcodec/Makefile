@@ -12,7 +12,8 @@ OUTFILE = libcodec.a
 #--------------------------------------------------------------------
 INCLUDES = . \
 					./include \
-					./ffmpeg/include
+					./ffmpeg/include \
+					/usr/include/freetype2
 
 #-------------------------------Source-------------------------------
 #
@@ -21,11 +22,14 @@ SOURCE_PATHS = source
 SOURCE_FILES = $(foreach dir,$(SOURCE_PATHS),$(wildcard $(dir)/*.cpp))
 SOURCE_FILES += $(foreach dir,$(SOURCE_PATHS),$(wildcard $(dir)/*.c))
 
+_SOURCE_FILES = source/text-render-gdi.c
+SOURCE_FILES := $(filter-out $(_SOURCE_FILES),$(SOURCE_FILES))
+
 #-----------------------------Library--------------------------------
 #
 # LIBPATHS = $(addprefix -L,$(LIBPATHS)) # add -L prefix
 #--------------------------------------------------------------------
-LIBPATHS = x264 ffmpeg openh264
+LIBPATHS = x264 openh264
 ifdef RELEASE
 # relase library path
 LIBPATHS += 
@@ -33,7 +37,7 @@ else
 LIBPATHS +=
 endif
 
-LIBS = avcodec avutil swscale x264 openh264
+LIBS = freetype x264 openh264
 
 STATIC_LIBS =
 

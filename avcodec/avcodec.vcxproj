@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\avpacket.h" />
     <ClInclude Include="include\avscale.h" />
+    <ClInclude Include="include\avstatistic.h" />
     <ClInclude Include="include\bitmap.h" />
     <ClInclude Include="include\colorspace.h" />
     <ClInclude Include="include\h264-encoder.h" />
@@ -35,7 +36,7 @@
     <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\interpolation-bilinear.c" />
     <ClCompile Include="source\openh264enc.cpp" />
-    <ClCompile Include="source\text-render-gdi.c" />
+    <ClCompile Include="source\text-render-freetype.c" />
     <ClCompile Include="source\x264enc.c" />
     <ClCompile Include="source\yuv-overlay.c" />
   </ItemGroup>
