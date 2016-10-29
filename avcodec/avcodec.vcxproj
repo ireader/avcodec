@@ -39,6 +39,10 @@
     <ClCompile Include="source\text-render-freetype.c" />
     <ClCompile Include="source\x264enc.c" />
     <ClCompile Include="source\yuv-overlay.c" />
+    <ClCompile Include="test\interpolation-test.cpp" />
+    <ClCompile Include="test\text-render-test.cpp" />
+    <ClCompile Include="test\x264-encode-test.cpp" />
+    <ClCompile Include="test\yuv-overlay-test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{01E9D416-4A49-416E-8182-22241F07C295}</ProjectGuid>
