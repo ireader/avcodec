@@ -1,7 +1,9 @@
 #include "bitmap.h"
 #include <stdio.h>
 #include <errno.h>
+#include <memory.h>
 #include <assert.h>
+#include <math.h>
 
 size_t bitmap_load(const char* file, BITMAPINFOHEADER* bi, void* data, size_t bytes)
 {
@@ -57,7 +59,7 @@ int bitmap_save(const char* file, const BITMAPINFOHEADER* bi, const void* data)
 
 	memset(&h, 0, sizeof(h));
 	h.bfType = 0x4D42; // BM
-	h.bfSize = (bi->biWidth * bi->biHeight * bi->biBitCount + 7) / 8 + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+	h.bfSize = (bi->biWidth * abs(bi->biHeight) * bi->biBitCount + 7) / 8 + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	h.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 
 	fwrite(&h, 1, sizeof(h), fp);
