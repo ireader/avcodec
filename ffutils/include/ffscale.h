@@ -11,7 +11,7 @@ extern "C" {
 /// @param src input picture
 /// @param dst output picture, dst->format/dst->width/dst->height/dst->linesize MUST set by user
 /// @return 0-ok, other-error
-int avscale(AVFrame* dst, const AVFrame* src);
+int ffscale(AVFrame* dst, const AVFrame* src);
 
 #ifdef __cplusplus
 }
