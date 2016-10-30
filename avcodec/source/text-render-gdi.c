@@ -5,43 +5,38 @@
 #include <memory.h>
 #include <assert.h>
 
-struct text_render_t
+#define BYTES 4
+#define ALIGN(a, n) (((a) + (n) - 1) / (n) * (n))
+
+struct gdi_context_t
 {
 	HDC hDC;
 	HFONT hFont;
 	void *bitmap;
 
+	int pitch;
 	int width;
 	int height;
 };
 
-void* text_render_create(const struct text_parameter_t* param)
+static int text_render_config(void* p, const struct text_parameter_t* param)
 {
-	struct text_render_t* render;
-	render = malloc(sizeof(struct text_render_t));
-	if (NULL == render)
-		return NULL;
+	HFONT hFont;
+	struct gdi_context_t* render = (struct gdi_context_t*)p;
 
-	memset(render, 0, sizeof(struct text_render_t));
-	render->hDC = CreateCompatibleDC(GetDC(NULL)); // screen DC
-	if (NULL == render->hDC)
-	{
-		text_render_destroy(render);
-		return NULL;
-	}
+	hFont = CreateFontA(param->size, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, param->font);
+	if (NULL == hFont)
+		return -1;
 
-	if (0 != text_render_config(render, param))
-	{
-		text_render_destroy(render);
-		return NULL;
-	}
-
-	return render;
+	if (render->hFont)
+		DeleteObject(render->hFont);
+	render->hFont = hFont;
+	return 0;
 }
 
-void text_render_destroy(void* p)
+static void text_render_destroy(void* p)
 {
-	struct text_render_t* render = (struct text_render_t*)p;
+	struct gdi_context_t* render = (struct gdi_context_t*)p;
 
 	if (render->hFont)
 	{
@@ -64,37 +59,61 @@ void text_render_destroy(void* p)
 	free(render);
 }
 
+static void* text_render_create(const struct text_parameter_t* param)
+{
+	struct gdi_context_t* render;
+	render = malloc(sizeof(struct gdi_context_t));
+	if (NULL == render)
+		return NULL;
+
+	memset(render, 0, sizeof(struct gdi_context_t));
+	render->hDC = CreateCompatibleDC(NULL); // screen DC
+	if (NULL == render->hDC)
+	{
+		text_render_destroy(render);
+		return NULL;
+	}
+
+	if (0 != text_render_config(render, param))
+	{
+		text_render_destroy(render);
+		return NULL;
+	}
+
+	return render;
+}
+
 // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183402(v=vs.85).aspx
 // Capturing an Image
-static int text_render_bitmap(struct text_render_t* render, HBITMAP hBitmap)
+static int text_render_bitmap(struct gdi_context_t* render, HBITMAP hBitmap)
 {
 	void* p;
 	BITMAP bmp;
 	BITMAPINFOHEADER bi;
 
 	// Get the BITMAP from the HBITMAP
+	memset(&bmp, 0, sizeof(bmp));
 	GetObject(hBitmap, sizeof(BITMAP), &bmp);
-	assert(bmp.bmWidth == render->width && bmp.bmHeight == render->height);
-	assert(bmp.bmBitsPixel == 1);
+	assert(bmp.bmWidth == render->pitch && bmp.bmHeight == render->height);
 
 	memset(&bi, 0, sizeof(bi));
 	bi.biSize = sizeof(bi);
 	bi.biWidth = bmp.bmWidth;
-	bi.biHeight = bmp.bmHeight;
+	bi.biHeight = -bmp.bmHeight; // GetDIBits:  A bottom-up DIB is specified by setting the height to a positive number, while a top-down DIB is specified by setting the height to a negative number. 
 	bi.biPlanes = 1;
-	bi.biBitCount = 32;
+	bi.biBitCount = BYTES * 8;
 	bi.biCompression = BI_RGB;
 
-	p = realloc(render->bitmap, bmp.bmHeight * bmp.bmWidth * 4);
+	p = realloc(render->bitmap, bmp.bmHeight * bmp.bmWidth * BYTES);
 	if (!p)
 		return ENOMEM;
 
 	render->bitmap = p;
-	GetDIBits(render->hDC, hBitmap, 0, bmp.bmHeight, render->bitmap, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
+	GetDIBits(render->hDC, hBitmap, 0, bmp.bmHeight, p, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
 	return 0;
 }
 
-static int text_render_draw_text(struct text_render_t* render, const wchar_t* txt)
+static int text_render_draw_text(struct gdi_context_t* render, const wchar_t* txt)
 {
 //	SetBkColor(render->hDC, RGB(0x0, 0x0, 0xFF));
 //	SetTextColor(render->hDC, RGB(0xFF, 0xFF, 0));
@@ -109,7 +128,7 @@ static int text_render_draw_text(struct text_render_t* render, const wchar_t* tx
 	return 0;
 }
 
-static int text_render_getsize(struct text_render_t* render, const wchar_t* txt)
+static int text_render_getsize(struct gdi_context_t* render, const wchar_t* txt)
 {
 	RECT rc;
 	memset(&rc, 0, sizeof(rc));
@@ -122,13 +141,15 @@ static int text_render_getsize(struct text_render_t* render, const wchar_t* txt)
 
 	render->width = rc.right - rc.left;
 	render->height = rc.bottom - rc.top;
+	render->height = ALIGN(render->height, 2);
+	render->pitch = ALIGN(render->width, 4);
 	return 0;
 }
 
-const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
+static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
 {
 	HBITMAP hBitmap;
-	struct text_render_t* render = (struct text_render_t*)p;
+	struct gdi_context_t* render = (struct gdi_context_t*)p;
 
 	if (render->hFont)
 		SelectObject(render->hDC, render->hFont);
@@ -136,7 +157,7 @@ const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* p
 	if (0 != text_render_getsize(render, txt))
 		return NULL;
 
-	hBitmap = CreateCompatibleBitmap(render->hDC, render->width, render->height);
+	hBitmap = CreateCompatibleBitmap(render->hDC, render->pitch, render->height);
 	SelectObject(render->hDC, hBitmap);
 
 	text_render_draw_text(render, txt);
@@ -144,23 +165,19 @@ const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* p
 
 	DeleteObject(hBitmap);
 
-	*w = render->width;
+	*w = render->pitch;
 	*h = render->height;
-	*pitch = render->width;
+	*pitch = render->pitch * BYTES;
 	return render->bitmap;
 }
 
-int text_render_config(void* p, const struct text_parameter_t* param)
+struct text_render_t* text_render_gdi()
 {
-	HFONT hFont;
-	struct text_render_t* render = (struct text_render_t*)p;
-	
-	hFont = CreateFontA(param->size, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, param->font);
-	if (NULL == hFont)
-		return -1;
-
-	if (render->hFont)
-		DeleteObject(render->hFont);
-	render->hFont = hFont;
-	return 0;
+	static struct text_render_t render = {
+		text_render_create,
+		text_render_destroy,
+		text_render_draw,
+		text_render_config,
+	};
+	return &render;
 }

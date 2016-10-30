@@ -13,10 +13,11 @@ void text_render_test(const wchar_t* text)
 	param.font = "/usr/share/fonts/truetype/arial.ttf";
 #endif
 	param.size = 32;
-	void* render = text_render_create(&param);
+	struct text_render_t* api = text_render_freetype();
+	void* render = api->create(&param);
 
 	int w, h, pitch;
-	const void* rgba = text_render_draw(render, text, &w, &h, &pitch);
+	const void* rgba = api->draw(render, text, &w, &h, &pitch);
 
 	BITMAPINFOHEADER bi;
 	memset(&bi, 0, sizeof(bi));
@@ -27,5 +28,5 @@ void text_render_test(const wchar_t* text)
 	bi.biBitCount = 32;
 	bitmap_save("a.bmp", &bi, rgba);
 
-	text_render_destroy(render);
+	api->destroy(render);
 }

@@ -14,18 +14,24 @@ struct text_parameter_t
 	int size; // font size
 };
 
-void* text_render_create(const struct text_parameter_t* param);
+struct text_render_t
+{
+	void* (*create)(const struct text_parameter_t* param);
 
-void text_render_destroy(void* render);
+	void (*destroy)(void* render);
 
-/// @param[in] txt unicode string
-/// @param[out] w bitmap width
-/// @param[out] h bitmap height
-/// @param[out] pitch bitmap line bytes(>=w)
-/// @return NULL-failed, other-bitmap data
-const void* text_render_draw(void* render, const wchar_t* txt, int *w, int *h, int* pitch);
+	/// @param[in] txt unicode string
+	/// @param[out] w bitmap width
+	/// @param[out] h bitmap height
+	/// @param[out] pitch bitmap line bytes(>=w)
+	/// @return NULL-failed, other-bitmap data
+	const void* (*draw)(void* render, const wchar_t* txt, int *w, int *h, int* pitch);
 
-int text_render_config(void* render, const struct text_parameter_t* param);
+	int (*config)(void* render, const struct text_parameter_t* param);
+};
+
+struct text_render_t* text_render_gdi();
+struct text_render_t* text_render_freetype();
 
 #ifdef __cplusplus
 }

@@ -13,14 +13,17 @@
 // https://stuff.mit.edu/afs/athena/astaff/source/src-9.0/third/freetype/docs/tutorial/step1.html
 // http://freetype.sourceforge.net/freetype2/docs/tutorial/step1.html
 
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define BYTES 4
+#define MIN(a, b)	((a) < (b) ? (a) : (b))
+#define MAX(a, b)	((a) > (b) ? (a) : (b))
+#define ALIGN(a, n) (((a) + (n) - 1) / (n) * (n))
 
-struct text_render_t
+struct ft2_context_t
 {
 	FT_Library  library;
 	FT_Face     face;
 
+	int pitch;
 	int width;
 	int height;
 	void *bitmap;
@@ -33,7 +36,7 @@ struct text_glyph_t
 	int x;
 };
 
-static int free_type_init(struct text_render_t* s)
+static int free_type_init(struct ft2_context_t* s)
 {
 	int r;
 	r = FT_Init_FreeType(&s->library);
@@ -45,31 +48,42 @@ static int free_type_init(struct text_render_t* s)
 	return r;
 }
 
-void* text_render_create(const struct text_parameter_t* param)
+static int text_render_config(void* p, const struct text_parameter_t* param)
 {
-	struct text_render_t* render;
-	render = malloc(sizeof(struct text_render_t));
-	if (NULL == render)
-		return NULL;
-
-	memset(render, 0, sizeof(struct text_render_t));
-	if (0 != free_type_init(render))
+	int r;
+	struct ft2_context_t* render = (struct ft2_context_t*)p;
+	if (param->font && *param->font)
 	{
-		text_render_destroy(render);
-		return NULL;
+		FT_Face face = NULL;
+		r = FT_New_Face(render->library, param->font, 0, &face);
+		if (0 != r)
+		{
+			// FT_Err_Unknown_File_Format
+			printf("%s Could not load font \"%s\": %d\n", __FUNCTION__, param->font, r);
+			return r;
+		}
+
+		if (render->face)
+			FT_Done_Face(render->face);
+		render->face = face;
 	}
 
-	if (0 != text_render_config(render, param))
+	if (!render->face)
+		return -1;
+
+	r = FT_Set_Pixel_Sizes(render->face, 0, param->size);
+	if (0 != r)
 	{
-		text_render_destroy(render);
-		return NULL;
+		printf("%s Could not set font size to %d pixels: %d\n", __FUNCTION__, param->size, r);
+		return r;
 	}
-	return render;
+
+	return 0;
 }
 
-void text_render_destroy(void* p)
+static void text_render_destroy(void* p)
 {
-	struct text_render_t* render = (struct text_render_t*)p;
+	struct ft2_context_t* render = (struct ft2_context_t*)p;
 	if (render->face)
 	{
 		FT_Done_Face(render->face);
@@ -91,7 +105,29 @@ void text_render_destroy(void* p)
 	free(render);
 }
 
-static int text_render_bitmap(struct text_render_t* render, const FT_BitmapGlyph bmpGlyph, const struct text_glyph_t* txt, FT_BBox *bbox)
+static void* text_render_create(const struct text_parameter_t* param)
+{
+	struct ft2_context_t* render;
+	render = malloc(sizeof(struct ft2_context_t));
+	if (NULL == render)
+		return NULL;
+
+	memset(render, 0, sizeof(struct ft2_context_t));
+	if (0 != free_type_init(render))
+	{
+		text_render_destroy(render);
+		return NULL;
+	}
+
+	if (0 != text_render_config(render, param))
+	{
+		text_render_destroy(render);
+		return NULL;
+	}
+	return render;
+}
+
+static int text_render_bitmap(struct ft2_context_t* render, const FT_BitmapGlyph bmpGlyph, const struct text_glyph_t* txt, FT_BBox *bbox)
 {
 	int r, c;
 	//FT_Bitmap bitmap = render->face->glyph->bitmap;
@@ -102,32 +138,21 @@ static int text_render_bitmap(struct text_render_t* render, const FT_BitmapGlyph
 	for (r = 0; r < bitmap->rows; r++)
 	{
 		s = (unsigned char*)bitmap->buffer + r * bitmap->pitch;
-		d = (unsigned char*)render->bitmap + ((bbox->yMax - txt->bbox.yMax + r) * render->width + txt->x + txt->bbox.xMin) * 4;
-		for (c = 0; c < bitmap->width; c++)
+		d = (unsigned char*)render->bitmap + ((bbox->yMax - txt->bbox.yMax + r) * render->pitch + txt->x + txt->bbox.xMin) * BYTES;
+		for (c = 0; c < bitmap->width; c++, s++)
 		{
-			if (*s)
-			{
-				*d++ = *s;	// b
-				*d++ = 0;	// g
-				*d++ = 0;	// r
-				*d++ = 0;	// a
-			}
-			else
-			{
-				*d++ = 0;	// b
-				*d++ = 0;	// g
-				*d++ = 0;	// r
-				*d++ = 0;	// a
-			}
-
-			++s;
+			assert(4 == BYTES);
+			*d++ = *s;	// r
+			*d++ = *s;	// g
+			*d++ = *s;	// b
+			*d++ = *s;	// a
 		}
 	}
 
 	return 0;
 }
 
-const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
+static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
 {
 	FT_UInt glyph_index;
 	FT_Bool use_kerning;
@@ -138,7 +163,7 @@ const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* p
 	size_t i, j, count;
 
 	int r;
-	struct text_render_t* render = (struct text_render_t*)p;
+	struct ft2_context_t* render = (struct ft2_context_t*)p;
 
 	count = txt ? wcslen(txt) : 0;
 	if (0 == txt) return NULL;
@@ -201,8 +226,10 @@ const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* p
 	}
 
 	render->height = bbox.yMax - bbox.yMin;
-	render->bitmap = malloc(render->width * render->height * 4);
-	memset(render->bitmap, 0, render->width * render->height * 4);
+	render->height = ALIGN(render->height, 2);
+	render->pitch = ALIGN(render->width, 4);
+	render->bitmap = malloc(render->pitch * render->height * BYTES);
+	memset(render->bitmap, 0, render->pitch * render->height * BYTES);
 
 	for (i = 0; i < j; i++)
 	{
@@ -232,41 +259,19 @@ const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* p
 	}
 
 	free(vec);
-	*w = render->width;
+	*w = render->pitch;
 	*h = render->height;
-	*pitch = render->width;
+	*pitch = render->pitch * BYTES;
 	return render->bitmap;
 }
 
-int text_render_config(void* p, const struct text_parameter_t* param)
+struct text_render_t* text_render_freetype()
 {
-	int r;
-	struct text_render_t* render = (struct text_render_t*)p;
-	if (param->font && *param->font)
-	{
-		FT_Face face = NULL;
-		r = FT_New_Face(render->library, param->font, 0, &face);
-		if (0 != r)
-		{
-			// FT_Err_Unknown_File_Format
-			printf("%s Could not load font \"%s\": %d\n", __FUNCTION__, param->font, r);
-			return r;
-		}
-
-		if(render->face)
-			FT_Done_Face(render->face);
-		render->face = face;
-	}
-
-	if (!render->face)
-		return -1;
-
-	r = FT_Set_Pixel_Sizes(render->face, 0, param->size);
-	if (0 != r)
-	{
-		printf("%s Could not set font size to %d pixels: %d\n", __FUNCTION__, param->size, r);
-		return r;
-	}
-
-	return 0;
+	static struct text_render_t render = {
+		text_render_create,
+		text_render_destroy,
+		text_render_draw,
+		text_render_config,
+	};
+	return &render;
 }
