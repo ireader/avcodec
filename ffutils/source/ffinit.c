@@ -1,6 +1,6 @@
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
-#include "libavfilter/avfilter.h"
+//#include "libavfilter/avfilter.h"
 
 static void ffavcodec_init(void)
 {
@@ -15,7 +15,7 @@ static void ffavformat_init(void)
 
 static void ffavfilter_init(void)
 {
-	avfilter_register_all();
+	//avfilter_register_all();
 }
 
 void ffutils_init(void)
