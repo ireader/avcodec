@@ -8,7 +8,7 @@
 static inline const uint8_t* h264_startcode(const uint8_t *data, size_t bytes)
 {
 	size_t i;
-	for(i = 2; i < bytes; i++)
+	for(i = 2; i + 1 < bytes; i++)
 	{
 		if(0x01 == data[i] && 0x00 == data[i-1] && 0x00 == data[i-2])
 			return data + i + 1;
