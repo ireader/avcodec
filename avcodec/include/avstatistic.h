@@ -5,6 +5,8 @@
 
 struct avstatistic_t
 {
+	int64_t clock;			// start time(UTC+0 ms)
+
 	int64_t audio_clock;	// last audio recv/send time(UTC+0 ms)
 	int64_t audio_pts;		// audio pts
 	uint64_t audio_bytes;
