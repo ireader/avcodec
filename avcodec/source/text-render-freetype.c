@@ -23,6 +23,13 @@ struct ft2_context_t
 	FT_Library  library;
 	FT_Face     face;
 
+	struct
+	{
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+	} color;
+
 	int pitch;
 	int width;
 	int height;
@@ -78,6 +85,9 @@ static int text_render_config(void* p, const struct text_parameter_t* param)
 		return r;
 	}
 
+	render->color.r = 0xFF & (param->color >> 24);
+	render->color.g = 0xFF & (param->color >> 16);
+	render->color.b = 0xFF & (param->color >> 8);
 	return 0;
 }
 
@@ -142,9 +152,9 @@ static int text_render_bitmap(struct ft2_context_t* render, const FT_BitmapGlyph
 		for (c = 0; c < bitmap->width; c++, s++)
 		{
 			assert(4 == BYTES);
-			*d++ = *s;	// r
-			*d++ = *s;	// g
-			*d++ = *s;	// b
+			*d++ = (*s * render->color.r) / 255;	// r
+			*d++ = (*s * render->color.g) / 255;	// g
+			*d++ = (*s * render->color.b) / 255;	// b
 			*d++ = *s;	// a
 		}
 	}

@@ -12,6 +12,7 @@ struct text_parameter_t
 {
 	const char* font;
 	int size; // font size
+	int color;
 };
 
 struct text_render_t
