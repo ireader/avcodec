@@ -102,7 +102,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OS_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -111,7 +111,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>openh264;x264;freetype</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264.dll.lib;freetype.lib</AdditionalDependencies>
+      <AdditionalDependencies>libx264-148.lib;freetype.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
