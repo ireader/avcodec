@@ -4,58 +4,53 @@
 #include <memory.h>
 #include <assert.h>
 
-void x264_encode_test(const char* input, const char* output)
+void x264_encode_test(const char* output, const char* input, int width, int height, int stride, int bitrate)
 {
-	static unsigned char s_yuv[256 * 1024];
-	char filename[128] = { 0 };
-	FILE* wfp = fopen(output, "wb");
-
+	static unsigned char s_yuv[1920*1080*3/2];
+	
 	h264_parameter_t param;
+//	memset(&param, 0, sizeof(param));
 	param.profile = H264_PROFILE_BASELINE;
-	param.level = H264_LEVEL_2_0;
-	param.width = 352;
-	param.height = 288;
+	param.level = H264_LEVEL_3_0;
+	param.width = width;
+	param.height = height;
 	param.format = PICTURE_YUV420;
 	param.frame_rate = 25000;
 	param.gop_size = 50;
-	param.bitrate = 500000;
+	param.bitrate = bitrate;
 
 	h264_encoder_t* api = x264_encoder();
 //	h264_encoder_t* api = openh264_encoder();
 	void* h264 = api->create(&param);
 
-	for (int i = 0; i < 300; i++)
+	FILE* wfp = fopen(output, "wb");
+	FILE* rfp = fopen(input, "rb");
+	for (int i = 0; fread(s_yuv, 1, stride*height * 3 / 2, rfp) == stride*height * 3 / 2; i++)
 	{
-		snprintf(filename, sizeof(filename), "%s%03d.yuv", input, i);
-		FILE* fp = fopen(filename, "rb");
-		int r = fread(s_yuv, 1, sizeof(s_yuv), fp);
-		if (r > 0)
-		{
-			picture_t pic;
-			memset(&pic, 0, sizeof(pic));
-			pic.format = PICTURE_YUV420;
-			pic.width = 352;
-			pic.height = 288;
-			pic.pts = i * 40;
-			pic.dts = i * 40;
-			pic.flags = 0;
-			pic.data[0] = s_yuv;
-			pic.linesize[0] = pic.width;
-			pic.data[1] = pic.data[0] + pic.linesize[0] * pic.height;
-			pic.linesize[1] = pic.width / 2;
-			pic.data[2] = pic.data[1] + pic.linesize[1] * pic.height / 2;
-			pic.linesize[2] = pic.width / 2;
+		picture_t pic;
+		memset(&pic, 0, sizeof(pic));
+		pic.format = PICTURE_YUV420;
+		pic.width = param.width;
+		pic.height = param.height;
+		pic.pts = i * 400;
+		pic.dts = i * 400;
+		pic.flags = 0;
+		pic.data[0] = s_yuv;
+		pic.linesize[0] = stride;
+		pic.data[1] = pic.data[0] + pic.linesize[0] * pic.height;
+		pic.linesize[1] = stride / 2;
+		pic.data[2] = pic.data[1] + pic.linesize[1] * pic.height / 2;
+		pic.linesize[2] = stride / 2;
 
-			assert(api->input(h264, &pic) > 0);
+		assert(api->input(h264, &pic) > 0);
 
-			avpacket_t pkt;
-			memset(&pkt, 0, sizeof(pkt));
-			assert(api->getpacket(h264, &pkt) > 0);
-			assert(pkt.bytes == fwrite(pkt.data, 1, pkt.bytes, wfp));
-		}
-		fclose(fp);
+		avpacket_t pkt;
+		memset(&pkt, 0, sizeof(pkt));
+		assert(api->getpacket(h264, &pkt) > 0);
+		assert(pkt.bytes == fwrite(pkt.data, 1, pkt.bytes, wfp));
 	}
-
-	api->destroy(h264);
+	fclose(rfp);
 	fclose(wfp);
+
+	api->destroy(h264);	
 }

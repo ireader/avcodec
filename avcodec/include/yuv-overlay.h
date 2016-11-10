@@ -11,6 +11,8 @@ typedef struct _overlay_t
 {
 	int x;
 	int y;
+	int w;
+	int h;
 
 	uint8_t alpha; // opaque: [0, 255] default to 0(src overwrite dst)
 	int mask;

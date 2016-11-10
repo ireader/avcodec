@@ -1,6 +1,7 @@
 #include "bitmap.h"
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <memory.h>
 #include <assert.h>
 #include <math.h>

@@ -97,14 +97,14 @@ static int yv12_overlay_rgb(picture_t* yv12, const picture_t* pic, const overlay
 	return 0;
 }
 
-static void rgba_alpha(const uint8_t* bgr32, int width, int height, int stride, uint8_t* alpha, int linesize)
+static void rgba_alpha(const uint8_t* rgba, int width, int height, int stride, uint8_t* alpha, int linesize)
 {
 	int i, j;
 	uint8_t* d;
 	const uint8_t* s;
 	for (i = 0; i < height; i++)
 	{
-		s = bgr32 + i * stride;
+		s = rgba + i * stride;
 		d = alpha + i * linesize;
 
 		for (j = 0; j < width; j++)
@@ -124,9 +124,8 @@ static int yv12_overlay_rgba(picture_t* yv12, const picture_t* pic, const overla
 	src.data[1] = src.data[0] + pic->width * pic->height;
 	src.data[2] = src.data[1] + pic->width * pic->height / 4;
 	src.data[3] = src.data[2] + pic->width * pic->height / 4;
-	src.linesize[0] = pic->width;
+	src.linesize[0] = src.linesize[3] = pic->width;
 	src.linesize[1] = src.linesize[2] = pic->width / 2;
-	src.linesize[3] = src.linesize[0];
 	src.format = PICTURE_YUV420;
 
 	rgb32_yv12(pic->data[0], pic->width, pic->height, pic->linesize[0], src.data[0], src.data[1], src.data[2]);
