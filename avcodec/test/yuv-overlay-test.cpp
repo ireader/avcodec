@@ -15,8 +15,8 @@ void yuv_overlay_test(const char* output, const char* input, const char* overlay
 	param.y = 150;
 	param.alpha = 100;
 
-	picture_t src;
-	memset(&src, 0, sizeof(picture_t));
+	struct avframe_t src;
+	memset(&src, 0, sizeof(struct avframe_t));
 	src.format = PICTURE_YUV420;
 	src.width = 352;
 	src.height = 288;
@@ -26,8 +26,8 @@ void yuv_overlay_test(const char* output, const char* input, const char* overlay
 	src.linesize[0] = src.width;
 	src.linesize[1] = src.linesize[2] = src.width / 2;
 
-	picture_t dst;
-	memset(&dst, 0, sizeof(picture_t));
+	struct avframe_t dst;
+	memset(&dst, 0, sizeof(struct avframe_t));
 	dst.format = PICTURE_YUV420;
 	dst.width = 1920;
 	dst.height = 1080;

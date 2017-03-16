@@ -19,14 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\avframe.h" />
     <ClInclude Include="include\avpacket.h" />
     <ClInclude Include="include\avstatistic.h" />
     <ClInclude Include="include\bitmap.h" />
     <ClInclude Include="include\colorspace.h" />
     <ClInclude Include="include\h264-encoder.h" />
     <ClInclude Include="include\h264-parameter.h" />
-    <ClInclude Include="include\pcm.h" />
-    <ClInclude Include="include\picture.h" />
     <ClInclude Include="include\text-render.h" />
     <ClInclude Include="include\yuv-overlay.h" />
   </ItemGroup>

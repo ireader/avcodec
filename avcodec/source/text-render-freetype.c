@@ -85,9 +85,9 @@ static int text_render_config(void* p, const struct text_parameter_t* param)
 		return r;
 	}
 
-	render->color.r = 0xFF & (param->color >> 24);
-	render->color.g = 0xFF & (param->color >> 16);
-	render->color.b = 0xFF & (param->color >> 8);
+	render->color.r = 0xFF & (param->color >> 16);
+	render->color.g = 0xFF & (param->color >> 8);
+	render->color.b = 0xFF & (param->color >> 0);
 	return 0;
 }
 

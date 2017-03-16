@@ -27,14 +27,14 @@ void x264_encode_test(const char* output, const char* input, int width, int heig
 	FILE* rfp = fopen(input, "rb");
 	for (int i = 0; fread(s_yuv, 1, stride*height * 3 / 2, rfp) == stride*height * 3 / 2; i++)
 	{
-		picture_t pic;
+		struct avframe_t pic;
 		memset(&pic, 0, sizeof(pic));
 		pic.format = PICTURE_YUV420;
 		pic.width = param.width;
 		pic.height = param.height;
+		pic.flags = 0;
 		pic.pts = i * 400;
 		pic.dts = i * 400;
-		pic.flags = 0;
 		pic.data[0] = s_yuv;
 		pic.linesize[0] = stride;
 		pic.data[1] = pic.data[0] + pic.linesize[0] * pic.height;

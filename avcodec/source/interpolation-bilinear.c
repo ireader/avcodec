@@ -1,13 +1,13 @@
 // https://en.wikipedia.org/wiki/Bilinear_interpolation
 // http://www.cnblogs.com/acloud/archive/2011/10/29/sws_scale.html
 
-#include "picture.h"
+#include "avframe.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <assert.h>
 
-static void yuv_interpolation_bilinear(picture_t* dst, const picture_t* src)
+static void yuv_interpolation_bilinear(struct avframe_t* dst, const struct avframe_t* src)
 {
 	uint8_t v[2][2], *dp;
 	int row, col, planar, samples[3];
@@ -60,7 +60,7 @@ static void yuv_interpolation_bilinear(picture_t* dst, const picture_t* src)
 	}
 }
 
-void interpolation_bilinear(picture_t* dst, const picture_t* src)
+void interpolation_bilinear(struct avframe_t* dst, const struct avframe_t* src)
 {
 	switch (src->format)
 	{

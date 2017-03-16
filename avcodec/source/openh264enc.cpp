@@ -98,7 +98,7 @@ static void openh264enc_destroy(void* h264)
 	free(p);
 }
 
-static int openh264enc_input(void* h264, const picture_t* pic)
+static int openh264enc_input(void* h264, const struct avframe_t* pic)
 {
 	int i, ret;
 	SSourcePicture src;

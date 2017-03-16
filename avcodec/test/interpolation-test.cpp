@@ -1,18 +1,18 @@
-#include "picture.h"
+#include "avframe.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <assert.h>
 
-extern "C" void interpolation_bilinear(picture_t* dst, const picture_t* src);
+extern "C" void interpolation_bilinear(struct avframe_t* dst, const struct avframe_t* src);
 
 static inline void interpolation_test1()
 {
 	static uint8_t s_yuv1080p[1920 * 1080 * 3];
 	static uint8_t s_yuv720p[1280 * 720 * 3];
 
-	picture_t src;
-	memset(&src, 0, sizeof(picture_t));
+	struct avframe_t src;
+	memset(&src, 0, sizeof(struct avframe_t));
 	src.format = PICTURE_YUV420;
 	src.width = 1920;
 	src.height = 1080;
@@ -22,8 +22,8 @@ static inline void interpolation_test1()
 	src.linesize[0] = src.width;
 	src.linesize[1] = src.linesize[2] = src.width / 2;
 
-	picture_t dst;
-	memset(&dst, 0, sizeof(picture_t));
+	struct avframe_t dst;
+	memset(&dst, 0, sizeof(struct avframe_t));
 	dst.format = PICTURE_YUV420;
 	dst.width = 960;
 	dst.height = 540;
@@ -52,8 +52,8 @@ static inline void interpolation_test2()
 	static uint8_t s_yuv1080p[1920 * 1080 * 3];
 	static uint8_t s_yuv720p[1280 * 720 * 3];
 
-	picture_t src;
-	memset(&src, 0, sizeof(picture_t));
+	struct avframe_t src;
+	memset(&src, 0, sizeof(struct avframe_t));
 	src.format = PICTURE_YUV420;
 	src.width = 352;
 	src.height = 288;
@@ -63,8 +63,8 @@ static inline void interpolation_test2()
 	src.linesize[0] = src.width;
 	src.linesize[1] = src.linesize[2] = src.width / 2;
 
-	picture_t dst;
-	memset(&dst, 0, sizeof(picture_t));
+	struct avframe_t dst;
+	memset(&dst, 0, sizeof(struct avframe_t));
 	dst.format = PICTURE_YUV420;
 	dst.width = 704;
 	dst.height = 576;

@@ -14,7 +14,7 @@ void yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r
 //void rgb24_yuv444(const unsigned char* rgb, int w, int h, int stride, unsigned char* y, unsigned char* u, unsigned char* v);
 //void yuv444_rgb24(const unsigned char* y, const unsigned char* u, const unsigned char* v, int stride_y, int stride_uv, int w, int h, unsigned char* rgb);
 
-// Convert Between YV12(Planar, top-down) and RGB(byte order 'B'/'G'/'R'/'A')
+// Convert Between YV12(Planar, top-down) and RGB(byte order 'R'/'G'/'B'/'A')
 void rgb24_yv12(const unsigned char* rgb, int w, int h, int stride, unsigned char* y, unsigned char* u, unsigned char* v);
 void rgb32_yv12(const unsigned char* rgb, int w, int h, int stride, unsigned char* y, unsigned char* u, unsigned char* v);
 void yv12_rgb24(const unsigned char* y, const unsigned char* u, const unsigned char* v, int stride_y, int stride_uv, int w, int h, unsigned char* rgb);

@@ -24,9 +24,6 @@
     <ClInclude Include="include\h264-parameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\picture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\yuv-overlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,9 +33,6 @@
     <ClInclude Include="include\h264-encoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\pcm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\text-render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -46,6 +40,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\avstatistic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\avframe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #ifndef _yuv_overlay_h_
 #define _yuv_overlay_h_
 
-#include "picture.h"
+#include "avframe.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,7 +21,7 @@ typedef struct _overlay_t
 	int src_alpha; // 1-src has alpha channel
 } overlay_t;
 
-int yuv_overlay(picture_t* dst, const picture_t* src, const overlay_t* overlay);
+int yuv_overlay(struct avframe_t* dst, const struct avframe_t* src, const overlay_t* overlay);
 
 #ifdef __cplusplus
 }

@@ -124,7 +124,7 @@ static void x264enc_destroy(void* h264)
 //	x264_picture_clean(&p->pic);
 }
 
-static int x264enc_input(void* h264, const picture_t* pic)
+static int x264enc_input(void* h264, const struct avframe_t* pic)
 {
 	int i, ret;
 	struct x264_encoder_t* p;

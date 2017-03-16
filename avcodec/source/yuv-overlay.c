@@ -21,7 +21,7 @@
 
 
 // /ffmpeg/libavfilter/vf_overlay.c:blend_image
-static void yuv_blend(picture_t* yv12, const picture_t* pic, const overlay_t* overlay)
+static void yuv_blend(struct avframe_t* yv12, const struct avframe_t* pic, const overlay_t* overlay)
 {
 	int hsample, vsample;
 	int planar, row, col, rowmax, colmax;
@@ -76,10 +76,10 @@ static void yuv_blend(picture_t* yv12, const picture_t* pic, const overlay_t* ov
 	}
 }
 
-static int yv12_overlay_rgb(picture_t* yv12, const picture_t* pic, const overlay_t* overlay)
+static int yv12_overlay_rgb(struct avframe_t* yv12, const struct avframe_t* pic, const overlay_t* overlay)
 {
-	picture_t src;
-	memcpy(&src, pic, sizeof(picture_t));
+	struct avframe_t src;
+	memcpy(&src, pic, sizeof(struct avframe_t));
 	src.data[0] = (uint8_t*)malloc(pic->width * pic->height * 3 / 2);
 	if (NULL == src.data[0])
 		return ENOMEM;
@@ -112,11 +112,11 @@ static void rgba_alpha(const uint8_t* rgba, int width, int height, int stride, u
 	}
 }
 
-static int yv12_overlay_rgba(picture_t* yv12, const picture_t* pic, const overlay_t* overlay)
+static int yv12_overlay_rgba(struct avframe_t* yv12, const struct avframe_t* pic, const overlay_t* overlay)
 {
-	picture_t src;
+	struct avframe_t src;
 	overlay_t param;
-	memcpy(&src, pic, sizeof(picture_t));
+	memcpy(&src, pic, sizeof(struct avframe_t));
 	src.data[0] = (uint8_t*)malloc(pic->width * pic->height * 5 / 2);
 	if (NULL == src.data[0])
 		return ENOMEM;
@@ -139,7 +139,7 @@ static int yv12_overlay_rgba(picture_t* yv12, const picture_t* pic, const overla
 	return 0;
 }
 
-static int yuv_overlay2(picture_t* yv12, const picture_t* pic, const overlay_t* overlay)
+static int yuv_overlay2(struct avframe_t* yv12, const struct avframe_t* pic, const overlay_t* overlay)
 {
 	switch (pic->format)
 	{
@@ -158,7 +158,7 @@ static int yuv_overlay2(picture_t* yv12, const picture_t* pic, const overlay_t* 
 	}
 }
 
-int yuv_overlay(picture_t* dst, const picture_t* src, const overlay_t* overlay)
+int yuv_overlay(struct avframe_t* dst, const struct avframe_t* src, const overlay_t* overlay)
 {
 	assert(overlay->alpha >= 0 && overlay->alpha <= 255);
 	switch (dst->format)
