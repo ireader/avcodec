@@ -31,7 +31,8 @@ static int ffdecoder_open(struct ffdecoder_t* ff, const AVCodecParameters* codec
 		return -1;
 	}
 
-	ff->avctx->codec_id = codec->id;
+	//ff->avctx->codec_id = codec->id;
+	assert(ff->avctx->codec_id == codec->id);
 	av_dict_set(&opts, "threads", "1"/*"auto"*/, 0); // disable multi-thread decode
 	r = avcodec_open2(ff->avctx, codec, &opts);
 	av_dict_free(&opts);

@@ -12,6 +12,11 @@ EXPORTS
    ffdecoder_input
    ffdecoder_getframe
 
+   avdecoder_create
+   avdecoder_destroy
+   avdecoder_input
+   avdecoder_getframe
+
    fffilter_create_source
    
    ffscale
