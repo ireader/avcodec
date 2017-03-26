@@ -30,9 +30,6 @@
     <ClInclude Include="include\ffscale.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\avdecoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ffdecoder.c">
@@ -54,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\fffilter.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\avdecoder.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
