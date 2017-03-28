@@ -19,7 +19,7 @@ struct h264_encoder_t
 	int(*input)(void* h264, const struct avframe_t* pic);
 
 	/// @return >=0-got packet, <0-error
-	int(*getpacket)(void* h264, avpacket_t* pkt);
+	int(*getpacket)(void* h264, struct avpacket_t* pkt);
 };
 
 struct h264_encoder_t* x264_encoder(void);

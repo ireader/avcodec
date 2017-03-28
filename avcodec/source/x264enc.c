@@ -162,7 +162,7 @@ static int x264enc_input(void* h264, const struct avframe_t* pic)
 	return 1;
 }
 
-static int x264enc_getpacket(void* h264, avpacket_t* pkt)
+static int x264enc_getpacket(void* h264, struct avpacket_t* pkt)
 {
 	struct x264_encoder_t* p;
 	p = (struct x264_encoder_t*)h264;
