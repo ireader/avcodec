@@ -9,7 +9,7 @@ enum avpacket_flag
 	AVPACKET_FLAG_KEY = 0x01,
 };
 
-typedef struct _avpacket_t
+struct avpacket_t
 {
 	uint8_t* data;
 	size_t bytes;
@@ -19,6 +19,6 @@ typedef struct _avpacket_t
 
 	int pic_type;	// picture type(PICTURE_TYPE_XXX)
 	int flags;		// AVPACKET_FLAG_XXX
-} avpacket_t;
+};
 
 #endif /* !_avpacket_h_ */
