@@ -73,15 +73,15 @@ struct avframe_t
 	
 	/// audio only
 	int channel;	 ///< number of audio channels
+	int samples;	 ///< number of audio samples (per channel)
 	int sample_bits; ///< bits per sample
 	int sample_rate; ///< samples per second
 
-#define AVFRAME_PLANAR_NUM 8 // AAC 8-channels
-	uint8_t* data[AVFRAME_PLANAR_NUM];
+	uint8_t* data[8]; // AAC 8-channels
 
 	/// For video, size in bytes of each picture line
-	/// For audio, size in bytes of each plane(samples = linesize[0] / (channel * sample_bits / 8))
-	int linesize[AVFRAME_PLANAR_NUM];
+	/// For audio, size in bytes of each plane
+	int linesize[8];
 };
 
 #endif /* !_avframe_h_ */
