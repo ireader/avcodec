@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="audio-input">
+      <UniqueIdentifier>{fcf7bd62-24ac-4c1c-90d5-af0df46b841e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio-output">
+      <UniqueIdentifier>{4a55ec98-f9fc-4b1d-b643-92fd5367e28f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{8441fb4c-dffd-4671-aac2-3cc9a1769edd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{5e3d890e-6b2e-45d3-b7ed-e416c1c64d44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\direct3d9">
+      <UniqueIdentifier>{95af4d77-6d59-4fa7-8518-6bb7af603837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\direct3d11">
+      <UniqueIdentifier>{eb599241-306e-467f-9576-f905e17cbfe4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\render\GDIText2Bitmap.c">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\video_output.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\video_read.c">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\video_write.c">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\direct3d9\d3d9_render.cpp">
+      <Filter>render\direct3d9</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\direct3d11\d3d11_render.cpp">
+      <Filter>render\direct3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_input\audio_input.cpp">
+      <Filter>audio-input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_input\dxsound8in.cpp">
+      <Filter>audio-input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_output\audio_output.cpp">
+      <Filter>audio-output</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_output\direct_sound_8.cpp">
+      <Filter>audio-output</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\video_output.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\video_write.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\video_read.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d9\d3d9_render.h">
+      <Filter>render\direct3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d9\d3d9_surface.h">
+      <Filter>render\direct3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d11\d3d11_render.h">
+      <Filter>render\direct3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d11\d3d11_shader.h">
+      <Filter>render\direct3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d11\d3d11_buffer.h">
+      <Filter>render\direct3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d11\d3d11_compile.h">
+      <Filter>render\direct3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d11\d3d11_texture.h">
+      <Filter>render\direct3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio_input\dxsound8in.h">
+      <Filter>audio-input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio_input.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio_output.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d9\d3d9_device.h">
+      <Filter>render\direct3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d9\d3d9_overlay.h">
+      <Filter>render\direct3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\direct3d9\d3d9_read.h">
+      <Filter>render\direct3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio_output\direct_sound_8.h">
+      <Filter>audio-output</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
