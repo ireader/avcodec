@@ -64,7 +64,7 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->offset_for_non_ref_pic = (int32_t)bitstream_read_se(stream);
 		sps->offset_for_top_to_bottom_field = (int32_t)bitstream_read_se(stream);
 		sps->num_ref_frames_in_pic_order_cnt_cycle = (uint8_t)bitstream_read_ue(stream);
-		sps->offset_for_ref_frame = (int*)malloc(sps->num_ref_frames_in_pic_order_cnt_cycle * sizeof(int));
+		sps->offset_for_ref_frame = (int32_t*)malloc(sps->num_ref_frames_in_pic_order_cnt_cycle * sizeof(int32_t));
 		for(i=0; i<sps->num_ref_frames_in_pic_order_cnt_cycle; i++)
 			sps->offset_for_ref_frame[i] = (int32_t)bitstream_read_se(stream);
 	}

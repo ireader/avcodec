@@ -25,7 +25,7 @@ static inline uint8_t h264_type(const uint8_t *data, size_t bytes)
 
 static inline uint8_t h264_idr(const uint8_t *data, size_t bytes)
 {
-	uint8_t naltype;
+	uint8_t nalutype;
 	const uint8_t *p;
 
 	do
@@ -33,15 +33,15 @@ static inline uint8_t h264_idr(const uint8_t *data, size_t bytes)
 		p = h264_startcode(data, bytes);
 		if(p)
 		{
-			naltype = p[0] & 0x1f;
+			nalutype = p[0] & 0x1f;
 			// 1: no-IDR slice
 			// 2: A-slice
 			// 3: B-slice
 			// 4: C-slice
 			// 5: IDR frame
-			if(naltype > 0 && naltype < 6)
+			if(nalutype > 0 && nalutype < 6)
 			{
-				return 5 == naltype ? 1 : 0;
+				return 5 == nalutype ? 1 : 0;
 			}
 
 			bytes -= p - data;

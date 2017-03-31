@@ -139,9 +139,9 @@ void h264_pps_print(const struct h264_pps_t* pps)
 	printf(" num_ref_idx_l1_default_active_minus1: %u\n", pps->num_ref_idx_l1_default_active_minus1);
 	printf(" weighted_pred_flag: %u\n", pps->weighted_pred_flag);
 	printf(" weighted_bipred_idc: %u\n", pps->weighted_bipred_idc);
-	printf(" pic_init_qp_minus26: %u\n", pps->pic_init_qp_minus26);
-	printf(" pic_init_qs_minus26: %u\n", pps->pic_init_qs_minus26);
-	printf(" chroma_qp_index_offset: %u\n", pps->chroma_qp_index_offset);
+	printf(" pic_init_qp_minus26: %d\n", pps->pic_init_qp_minus26);
+	printf(" pic_init_qs_minus26: %d\n", pps->pic_init_qs_minus26);
+	printf(" chroma_qp_index_offset: %d\n", pps->chroma_qp_index_offset);
 	printf(" deblocking_filter_control_present_flag: %u\n", pps->deblocking_filter_control_present_flag);
 	printf(" constrained_intra_pred_flag: %u\n", pps->constrained_intra_pred_flag);
 	printf(" redundant_pic_cnt_present_flag: %u\n", pps->redundant_pic_cnt_present_flag);

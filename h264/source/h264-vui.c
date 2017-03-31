@@ -1,7 +1,7 @@
 #include "h264-vui.h"
 #include "h264-hrd.h"
 #include "h264-internal.h"
-#include <memory.h>
+#include <string.h>
 
 #define H264_VUI_Extended_SAR 255
 

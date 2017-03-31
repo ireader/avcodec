@@ -2,7 +2,7 @@
 #include "h264-internal.h"
 #include <stdio.h>
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 int h264_slice_header(bitstream_t* stream, struct h264_context_t* h264, struct h264_nal_t* nal, struct h264_slice_header_t* header)
 {

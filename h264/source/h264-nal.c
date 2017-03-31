@@ -1,7 +1,7 @@
 #include "h264-nal.h"
 #include "h264-internal.h"
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 int h264_nal(bitstream_t* stream, struct h264_nal_t* nal)
 {
