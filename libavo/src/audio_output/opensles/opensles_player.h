@@ -20,7 +20,7 @@ static int opensles_player_create(struct opensles_player_t* player, int channels
 	if(32 == bits_per_samples || 64 == bits_per_samples)
 		opensles_format_float(&format_pcm, channels, bits_per_samples, samples_per_seconds);
 	else
-		opensles_format(&format_pcm, channels, bits_per_samples, samples_per_seconds);
+		opensles_format((SLDataFormat_PCM*)&format_pcm, channels, bits_per_samples, samples_per_seconds);
 
 	ret = (*player->engine)->CreateAudioPlayer(player->engine, &player->playerObject, &audio_source, &audio_sink, sizeof(ids2) / sizeof(*ids2), ids2, req2);
 	CHECK_OPENSL_ERROR(ret, "%s: SLEngine->CreateAudioPlayer() failed", __FUNCTION__);

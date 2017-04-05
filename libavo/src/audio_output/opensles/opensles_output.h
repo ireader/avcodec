@@ -4,13 +4,15 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include <android/log.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #define OPENSLES_TIME 10
 #define OPENSLES_BUFFERS 200
 
 struct opensles_player_t
 {
-	SLObjectItf engineObject
+	SLObjectItf engineObject;
 	SLObjectItf outputObject; // output mix object
 	SLObjectItf playerObject; // player object
 
@@ -26,15 +28,15 @@ struct opensles_player_t
 	int samples_per_buffer;
 
 	sl_uint8_t* ptr;
-	ptrdiff_t offset;
+	size_t offset;
 };
 
 #define CHECK_OPENSL_ERROR(ret__, ...) \
     do { \
     	if ((ret__) != SL_RESULT_SUCCESS) \
     	{ \
-    		__android_log_print(level, TAG, __VA_ARGS__); \
-    		goto fail; \
+    		__android_log_print(ANDROID_LOG_ERROR, "SLES", __VA_ARGS__); \
+    		return ret; \
     	} \
     } while (0)
 

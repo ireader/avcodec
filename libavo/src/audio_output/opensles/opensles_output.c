@@ -4,7 +4,7 @@
 #include "opensles_outputmix.h"
 #include "audio_output.h"
 #include <string.h>
-#include <stdlib.h>
+#include <math.h>
 
 static int opensles_close(void* p)
 {
@@ -26,7 +26,7 @@ static void* opensles_open(int channels, int bits_per_samples, int samples_per_s
 {
 	int r;
 	struct opensles_player_t* player;
-	player = malloc(sizeof(struct opensles_player_t));
+	player = (struct opensles_player_t*)malloc(sizeof(*player));
 	if (NULL == player)
 		return NULL;
 	memset(player, 0, sizeof(struct opensles_player_t));
@@ -73,7 +73,7 @@ static int opensles_write(void* p, const void* samples, int count)
 		if (count - i >= free)
 		{
 			memcpy(player->ptr + player->offset * player->bytes_per_sample, src + i * player->bytes_per_sample, free * player->bytes_per_sample);
-			ret = (*player->bufferQ)->Enqueue(player->bufferQ, player->ptr + (player->offset % player->samples_per_buffer) * player->bytes_per_sample, player->bytes_per_sample * player->samples_per_buffer);
+			ret = (*player->bufferQ)->Enqueue(player->bufferQ, player->ptr + (player->offset-(player->offset % player->samples_per_buffer)) * player->bytes_per_sample, player->bytes_per_sample * player->samples_per_buffer);
 			if (SL_RESULT_SUCCESS != ret)
 				return ret > 0 ? -ret : ret;
 
@@ -143,7 +143,7 @@ static int opensles_get_buffer_size(void* p)
 {
 	struct opensles_player_t* player;
 	player = (struct opensles_player_t*)p;
-	return OPENSLES_BUFFERS * player->samples_per_buffer * player->bytes_per_sample;
+	return OPENSLES_BUFFERS * player->samples_per_buffer;
 }
 
 static int opensles_get_samples(void* p)
@@ -154,7 +154,7 @@ static int opensles_get_samples(void* p)
 	player = (struct opensles_player_t*)p;
 	if (SL_RESULT_SUCCESS == (*player->bufferQ)->GetState(player->bufferQ, &state))
 	{
-		return state.count * OPENSLES_TIME;
+		return state.count * player->samples_per_buffer;
 	}
 
 	return 0;
