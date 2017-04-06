@@ -10,7 +10,7 @@ extern "C"
 
 typedef struct
 {
-	void* (*open)(int window, int format, int width, int height);
+	void* (*open)(void* window, int format, int width, int height);
 	int (*close)(void* vo);
 	int (*write)(void* vo, const struct avframe_t* pic, int src_x, int src_y, int src_w, int src_h, int tgt_x, int tgt_y, int tgt_w, int tgt_h);
 	int (*read)(void* vo, struct avframe_t* pic);
@@ -18,7 +18,6 @@ typedef struct
 	int (*rotation)(void* vo, float angle);
 } video_output_t;
 
-int video_output_register(const char* name, const video_output_t* t);
 void video_output_list(char* list, int len);
 int video_output_setname(const char* name);
 const char* video_output_getname();
@@ -29,7 +28,7 @@ const char* video_output_getname();
 /// @param[in] width video width
 /// @param[in] height video height
 /// @return NULL-error, other-video output handle
-void* video_output_open(int window, int format, int width, int height);
+void* video_output_open(void* window, int format, int width, int height);
 
 /// Close video output handle
 /// @param[in] vo video output handle
@@ -74,7 +73,7 @@ public:
 	~video_output(){ close(); }
 
 public:
-	bool open(int window, int format, int width, int height)
+	bool open(void* window, int format, int width, int height)
 	{
 		if(m_window!=window || m_format!=format || m_width!=width || m_height!=height)
 			close();
@@ -135,7 +134,7 @@ private:
 
 private:
 	void*	m_vo;
-	int		m_window;
+	void*	m_window;
 	int		m_format;
 	int		m_width;
 	int		m_height;
