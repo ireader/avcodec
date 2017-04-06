@@ -72,10 +72,10 @@ struct avframe_t
 	int height;		///< video height
 	
 	/// audio only
-	int channel;	 ///< number of audio channels
-	int samples;	 ///< number of audio samples (per channel)
+	int channels;	 ///< number of audio channels
 	int sample_bits; ///< bits per sample
-	int sample_rate; ///< samples per second
+	int sample_rate; ///< samples per second(frequency)
+	int samples;	 ///< number of audio samples (per channel)
 
 	uint8_t* data[8]; // AAC 8-channels
 
