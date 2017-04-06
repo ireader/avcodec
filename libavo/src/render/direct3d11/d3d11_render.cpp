@@ -151,7 +151,7 @@ static int Close(void* object)
 	return 0;
 }
 
-static void* Open(int window, int format, int width, int height)
+static void* Open(void* window, int format, int width, int height)
 {
 	d3d11_render_t* vo = (d3d11_render_t*)malloc(sizeof(d3d11_render_t));
 	if(!vo)
@@ -344,7 +344,9 @@ static int Rotation(void* object, float angle)
 	return 0;
 }
 
-int D3D11Register()
+extern "C" int video_output_register(const char* name, const video_output_t* vo);
+
+extern "C" int d3d11_render_register()
 {
 	HMODULE hD3d11 = LoadLibraryEx("d3d11.dll", NULL, 0);
 	fpD3D11CreateDeviceAndSwapChain = (PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN)GetProcAddress(hD3d11, "D3D11CreateDeviceAndSwapChain");

@@ -43,7 +43,8 @@ static void* alsa_open(int channels, int bits_per_samples, int samples_per_secon
 {
 	int r;
 	snd_pcm_format_t format;
-	struct alsa_player_t* ao = (struct alsa_player_t*)malloc(sizeof(struct alsa_player_t));
+	struct alsa_player_t* ao;
+	ao = (struct alsa_player_t*)malloc(sizeof(*ao));
 	if(NULL == ao)
 		return NULL;
 	memset(ao, 0, sizeof(struct alsa_player_t));

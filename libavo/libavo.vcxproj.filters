@@ -31,6 +31,21 @@
     <Filter Include="render\direct3d11">
       <UniqueIdentifier>{eb599241-306e-467f-9576-f905e17cbfe4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="audio-output\directsound8">
+      <UniqueIdentifier>{72d10412-035a-46b9-abed-4edae43f43b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio-output\opensles">
+      <UniqueIdentifier>{769bc07d-2e8d-41ef-a10f-9ffab810a9df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio-output\alsa">
+      <UniqueIdentifier>{7be36973-025b-4951-bcc6-66a19e9b87cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\opengl2">
+      <UniqueIdentifier>{1b4efc46-3319-4a08-b8dc-aaea4812f0d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\opengles2">
+      <UniqueIdentifier>{8a62c8ed-a4cd-4bda-8031-5f5dfe371f33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\GDIText2Bitmap.c">
@@ -60,8 +75,8 @@
     <ClCompile Include="src\audio_output\audio_output.cpp">
       <Filter>audio-output</Filter>
     </ClCompile>
-    <ClCompile Include="src\audio_output\direct_sound_8.cpp">
-      <Filter>audio-output</Filter>
+    <ClCompile Include="src\audio_output\directsound8\direct_sound_8.cpp">
+      <Filter>audio-output\directsound8</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,8 +128,8 @@
     <ClInclude Include="src\render\direct3d9\d3d9_read.h">
       <Filter>render\direct3d9</Filter>
     </ClInclude>
-    <ClInclude Include="src\audio_output\direct_sound_8.h">
-      <Filter>audio-output</Filter>
+    <ClInclude Include="src\audio_output\directsound8\direct_sound_8.h">
+      <Filter>audio-output\directsound8</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

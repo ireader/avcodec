@@ -100,7 +100,7 @@ int DxSound8Out::Open(int channels, int bitsPerSamples, int samplesPerSec)
 	lpBuffer->Release();
 
 	//m_dsb->SetCurrentPosition(0);
-	m_dsb->Play(0, 0, DSBPLAY_LOOPING);
+	//m_dsb->Play(0, 0, DSBPLAY_LOOPING);
 
 	assert(0 == m_segment.pos);
 	assert(0 == m_segment.len);
@@ -390,7 +390,7 @@ static int AudioGetInfo(void *ao, int *channels, int *bits_per_sample, int *samp
 	return 0;
 }
 
-int DSound8Register()
+int directsound8_player_register()
 {
 	HMODULE hDSound = LoadLibraryEx("dsound.dll", NULL, 0);
 	fpDirectSoundCreate8 = (pDirectSoundCreate8)GetProcAddress(hDSound, "DirectSoundCreate8");
@@ -410,5 +410,5 @@ int DSound8Register()
 	ao.get_available_sample = GetAvailSample;
 	ao.get_volume = GetVolume;
 	ao.set_volume = SetVolume;
-	return audio_output_register("dxsound8out", &ao);
+	return audio_output_register("directsound8", &ao);
 }

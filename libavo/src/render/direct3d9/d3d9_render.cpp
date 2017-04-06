@@ -80,7 +80,7 @@ static int Close(void* object)
 	return 0;
 }
 
-static void* Open(int window, int format, int width, int height)
+static void* Open(void* window, int format, int width, int height)
 {
 	D3DFORMAT d3dformat = D3D9Format(format);
 	if(D3DFMT_UNKNOWN == d3dformat)
@@ -236,7 +236,9 @@ static IDirect3D9* D3D9Load()
 	return fpDirect3DCreate9(D3D_SDK_VERSION);
 }
 
-int D3D9Register()
+extern "C" int video_output_register(const char* name, const video_output_t* vo);
+
+extern "C" int d3d9_render_register()
 {
 	// check device capability
 	g_d3d9 = D3D9Load();

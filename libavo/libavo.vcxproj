@@ -22,7 +22,7 @@
     <ClCompile Include="src\audio_input\audio_input.cpp" />
     <ClCompile Include="src\audio_input\dxsound8in.cpp" />
     <ClCompile Include="src\audio_output\audio_output.cpp" />
-    <ClCompile Include="src\audio_output\direct_sound_8.cpp" />
+    <ClCompile Include="src\audio_output\directsound8\direct_sound_8.cpp" />
     <ClCompile Include="src\render\direct3d11\d3d11_render.cpp" />
     <ClCompile Include="src\render\direct3d9\d3d9_render.cpp" />
     <ClCompile Include="src\render\GDIText2Bitmap.c" />
@@ -36,7 +36,7 @@
     <ClInclude Include="include\video_output.h" />
     <ClInclude Include="include\video_write.h" />
     <ClInclude Include="src\audio_input\dxsound8in.h" />
-    <ClInclude Include="src\audio_output\direct_sound_8.h" />
+    <ClInclude Include="src\audio_output\directsound8\direct_sound_8.h" />
     <ClInclude Include="src\render\direct3d11\d3d11_buffer.h" />
     <ClInclude Include="src\render\direct3d11\d3d11_compile.h" />
     <ClInclude Include="src\render\direct3d11\d3d11_render.h" />

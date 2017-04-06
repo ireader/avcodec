@@ -37,10 +37,8 @@ public:
 
 	const audio_output_t* get_audio_output()
 	{
-		aos_t::const_iterator it = m_aos.find(m_name);
-		if(it != m_aos.end())
-			return it->second;
-		return m_aos.size() > 0 ? m_aos.begin()->second : NULL;
+		aos_t::const_iterator it = m_name[0] ? m_aos.find(m_name) : m_aos.begin();
+		return it == m_aos.end() ? NULL : it->second;
 	}
 
 	bool registe(const char* name, const audio_output_t* vo)
