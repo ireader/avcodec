@@ -1,6 +1,6 @@
 #include "ffoutput.h"
 #include <errno.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 #include "libavformat/avformat.h"
 

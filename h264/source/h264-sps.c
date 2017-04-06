@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 {

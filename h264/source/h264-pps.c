@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t* pps)
 {

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 struct ffdecoder_t
 {
@@ -87,7 +87,7 @@ int ffdecoder_input(void* p, const AVPacket* pkt)
 	{
 		char errmsg[128] = { 0 };
 		av_strerror(ret, errmsg, sizeof(errmsg));
-		printf("[%s] avcodec_send_packet(%d) => %d, %s\n", __FUNCTION__, pkt->size, ret, errmsg);
+		printf("[%s] avcodec_send_packet(%d) => %d, %s\n", __FUNCTION__, pkt?pkt->size:0, ret, errmsg);
 		return ret;
 	}
 	//if (ret >= 0)

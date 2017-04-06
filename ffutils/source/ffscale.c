@@ -2,7 +2,7 @@
 #include "libswscale/swscale.h"
 #include <stdio.h>
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 /// scale picture
 /// @param src input picture

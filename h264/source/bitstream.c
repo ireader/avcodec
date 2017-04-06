@@ -1,6 +1,6 @@
 #include "bitstream.h"
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 #define BIT_NUM 8

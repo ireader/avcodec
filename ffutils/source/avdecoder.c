@@ -117,7 +117,8 @@ void avdecoder_freeframe(void* ff, void* frame)
 	//avframe_to(frame, &pic);
 	//av_frame_unref(&pic);
 
-	av_frame_free(&(AVFrame*)frame);
+	AVFrame *p = (AVFrame*)frame;
+	av_frame_free(&p);
 }
 
 void avdecoder_frame_to(const void* frame, struct avframe_t* to)

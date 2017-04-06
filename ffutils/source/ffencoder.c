@@ -1,7 +1,7 @@
 #include "libavcodec/avcodec.h"
 #include <stdio.h>
 #include <assert.h>
-#include <memory.h>
+#include <string.h>
 
 struct ffencoder_t
 {
