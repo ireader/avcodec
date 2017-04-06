@@ -1,7 +1,7 @@
 #include "h264-encoder.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 void x264_encode_test(const char* output, const char* input, int width, int height, int stride, int bitrate)

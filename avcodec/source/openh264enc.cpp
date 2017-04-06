@@ -2,7 +2,7 @@
 #include "openh264/codec_api.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 struct openh264_encoder_t

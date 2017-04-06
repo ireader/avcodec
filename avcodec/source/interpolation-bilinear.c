@@ -4,7 +4,7 @@
 #include "avframe.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 static void yuv_interpolation_bilinear(struct avframe_t* dst, const struct avframe_t* src)

@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include <stdlib.h>
 #include <string.h>
-#include <memory.h>
 #include <assert.h>
 
 #define BYTES 4

@@ -1,7 +1,7 @@
 #include "yuv-overlay.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 void yuv_overlay_test(const char* output, const char* input, const char* overlay)

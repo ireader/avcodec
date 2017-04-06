@@ -1,6 +1,6 @@
 #include "text-render.h"
 #include "bitmap.h"
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 void text_render_test(const wchar_t* text)

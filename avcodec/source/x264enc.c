@@ -2,7 +2,7 @@
 #include "x264/x264.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 
 struct x264_encoder_t
