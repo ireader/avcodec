@@ -1,14 +1,20 @@
 #ifndef _gles2_render_h_
 #define _gles2_render_h_
 
+#include <android/log.h>
 #include <GLES2/gl2.h>
 #include "gles2_egl.h"
 #include "gles2_shader.h"
+#include <pthread.h>
 
 struct gles2_render_t
 {
 	struct gles2_egl_t egl;
 	struct opengl_shader_t shader;
+
+	int window_width;
+	int window_height;
+	pthread_t thread; // thread id
 
 	GLuint glTextures[3];// yuv
 	GLuint glBuffers[2];// buffer
@@ -23,5 +29,7 @@ struct gles2_render_t
 };
 
 #define N_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
+
+static void gles2_check_error(const char* api);
 
 #endif /* !_gles2_render_h_ */

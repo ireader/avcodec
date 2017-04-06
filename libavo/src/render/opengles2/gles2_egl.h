@@ -23,7 +23,9 @@ static EGLContext gles2_egl_context(struct gles2_egl_t* egl)
 		EGL_RED_SIZE,		8,
 		EGL_GREEN_SIZE,		8,
 		EGL_BLUE_SIZE,		8,
-		//EGL_ALPHA_SIZE,	8,
+		//EGL_ALPHA_SIZE,	0,
+		//EGL_DEPTH_SIZE,	16,
+		//EGL_STENCIL_SIZE,	0,
 		EGL_NONE
 	};
 
@@ -52,6 +54,7 @@ static int gles2_egl_create(struct gles2_egl_t* egl)
 	{
 		return eglGetError();
 	}
+	return EGL_SUCCESS;
 }
 
 static int gles2_egl_destroy(struct gles2_egl_t* egl)
@@ -75,6 +78,7 @@ static int gles2_egl_destroy(struct gles2_egl_t* egl)
 	}
 
 	//eglReleaseThread();
+	return EGL_SUCCESS;
 }
 
 static int gles2_egl_bind(struct gles2_egl_t* egl, EGLNativeWindowType window)
@@ -89,8 +93,7 @@ static int gles2_egl_bind(struct gles2_egl_t* egl, EGLNativeWindowType window)
 
 static int gles2_egl_unbind(struct gles2_egl_t* egl)
 {
-	if (EGL_TRUE == eglMakeCurrent(egl->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT))
-		return 0;
+	eglMakeCurrent(egl->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
 	if (EGL_NO_SURFACE != egl->surface && EGL_NO_DISPLAY != egl->display)
 	{
@@ -101,10 +104,14 @@ static int gles2_egl_unbind(struct gles2_egl_t* egl)
 	return eglGetError();
 }
 
+/// @return EGL_SUCCESS-ok, EGL_CONTEXT_LOST-context lost
 static int gles2_egl_present(struct gles2_egl_t* egl)
 {
-	eglSwapBuffers(egl->display, egl->surface);
-	return eglGetError();
+	if (EGL_TRUE != eglSwapBuffers(egl->display, egl->surface))
+	{
+		return eglGetError(); // EGL_CONTEXT_LOST
+	}
+	return EGL_SUCCESS;
 }
 
 #endif /* !_gles2_egl_h_ */

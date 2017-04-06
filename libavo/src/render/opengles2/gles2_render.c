@@ -7,15 +7,24 @@
 #include <string.h>
 
 const static GLfloat s_vertex[] = {
-	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-	1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-	-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+	-1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+	1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+	1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
 };
 
 const static GLushort s_indices[] = {
 	0, 1, 2, 3,
 };
+
+static void gles2_check_error(const char* api)
+{
+	GLenum err;
+	for(err = glGetError(); GL_NO_ERROR != err; err = glGetError())
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "gles2", "%s error: %d\n", api, (int)err);
+	}
+}
 
 static int gles2_get_location(struct gles2_render_t* render)
 {
@@ -41,6 +50,7 @@ static int gles2_close(void* vo)
 	opengl_shader_destroy(&render->shader);
 	gles2_egl_destroy(&render->egl);
 	free(render);
+	return 0;
 }
 
 static void* gles2_open(void* window, int format, int width, int height)
@@ -50,18 +60,23 @@ static void* gles2_open(void* window, int format, int width, int height)
 	if (NULL == render)
 		return NULL;
 	memset(render, 0, sizeof(struct gles2_render_t));
+	render->window_width = width;
+	render->window_height = height;
+	render->thread = pthread_self();
 
-	if (0 != gles2_egl_create(&render->egl)
-		|| 0 != gles2_egl_bind(&render->egl, window)
+	if (EGL_SUCCESS != gles2_egl_create(&render->egl)
+		|| EGL_SUCCESS != gles2_egl_bind(&render->egl, window)
 		|| 0 != opengl_shader_create(&render->shader, s_vertex_shader, s_pixel_shader)
 		|| 0 != gles2_get_location(render)
 		|| 0 != gles2_texture_create(render)
 		|| 0 != gles2_buffer_create(render, s_vertex, N_ARRAY(s_vertex), s_indices, N_ARRAY(s_indices)))
 	{
+		gles2_check_error("gles2_open");
 		gles2_close(render);
 		return NULL;
 	}
 
+	glViewport(0, 0, width, height);
 	return render;
 }
 
@@ -69,12 +84,17 @@ static int gles2_write(void* vo, const struct avframe_t* pic, int src_x, int src
 {
 	struct gles2_render_t* render = (struct gles2_render_t*)vo;
 
+	if (0 == pthread_equal(render->thread, pthread_self()))
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "gles2", "video open/write in different thread.\n");
+		return -1;
+	}
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(render->shader.program);
 	//glEnable(GL_CULL_FACE);
 
-	//glViewport(0, 0, width, height);
 	gles2_matrix_mvp(render, tgt_x, tgt_y, tgt_w, tgt_h);
 	gles2_matrix_tex(render, src_x, src_y, src_w, src_h);
 	glUniformMatrix3fv(render->loc_color, 1, GL_FALSE, s_bt709);
@@ -84,8 +104,13 @@ static int gles2_write(void* vo, const struct avframe_t* pic, int src_x, int src
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render->glBuffers[1]);
 	glDrawElements(GL_TRIANGLE_STRIP, N_ARRAY(s_indices), GL_UNSIGNED_SHORT, (const void*)0);
 
+	gles2_egl_present(&render->egl);
+
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	//gles2_buffer_unbind(render);
+
+	gles2_check_error("gles2_write");
+	return 0;
 }
 
 int video_output_register(const char* name, const video_output_t* t);

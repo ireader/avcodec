@@ -14,8 +14,6 @@ static int gles2_texture_create(struct gles2_render_t* render)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glUniform1i(render->loc_sampler[i], i);
 	}
 
 	return 0;
@@ -38,13 +36,14 @@ static int gles2_texture_yv12(struct gles2_render_t* render, const struct avfram
 		glTexImage2D(GL_TEXTURE_2D, 
 			0,
 			GL_LUMINANCE,
-			frame->linesize[i],
+			frame->linesize[planes[i]],
 			height,
 			0,
 			GL_LUMINANCE,
 			GL_UNSIGNED_BYTE,
 			frame->data[planes[i]]);
-
+		
+		glUniform1i(render->loc_sampler[i], i);
 		height = frame->height / 2;
 	}
 }
