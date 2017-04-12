@@ -390,7 +390,7 @@ static int AudioGetInfo(void *ao, int *channels, int *bits_per_sample, int *samp
 	return 0;
 }
 
-int directsound8_player_register()
+extern "C" int directsound8_player_register()
 {
 	HMODULE hDSound = LoadLibraryEx("dsound.dll", NULL, 0);
 	fpDirectSoundCreate8 = (pDirectSoundCreate8)GetProcAddress(hDSound, "DirectSoundCreate8");
