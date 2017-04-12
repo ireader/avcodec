@@ -193,7 +193,7 @@ static int d3d11_yv12_texture_write(d3d11_render_t* vo, const struct avframe_t* 
 
 	for (int i = 0; i < 3; i++)
 	{
-		HRESULT hr = d3d11_texture_write(vo->d3dContext, vo->yuv[i], pic->data[i], w[i], h[i]);
+		HRESULT hr = d3d11_texture_write(vo->d3dContext, vo->yuv[i], pic->data[i], w[i], h[i], pic->linesize[i]);
 		if (FAILED(hr))
 			return hr;
 	}

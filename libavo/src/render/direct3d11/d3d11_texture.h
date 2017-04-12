@@ -35,7 +35,7 @@ static int d3d11_texture_create(ID3D11Device* device, DXGI_FORMAT format, int wi
 	return S_OK;
 }
 
-static int d3d11_texture_write(ID3D11DeviceContext* d3dContext, ID3D11Texture2D* texture, const BYTE* data, int width, int height)
+static int d3d11_texture_write(ID3D11DeviceContext* d3dContext, ID3D11Texture2D* texture, const BYTE* data, int width, int height, int linesize)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -44,15 +44,15 @@ static int d3d11_texture_write(ID3D11DeviceContext* d3dContext, ID3D11Texture2D*
 	if (SUCCEEDED(hr))
 	{
 		assert(mappedResource.RowPitch >= (UINT)width);
-		if (mappedResource.RowPitch == (UINT)width)
+		if (mappedResource.RowPitch == (UINT)linesize)
 		{
-			memcpy(mappedResource.pData, data, width * height);
+			memcpy(mappedResource.pData, data, linesize * height);
 		}
-		else if(mappedResource.RowPitch > (UINT)width)
+		else if(mappedResource.RowPitch >= (UINT)width)
 		{
 			BYTE* pd = (BYTE*)mappedResource.pData;
 			for (int j = 0; j < height; j++)
-				memcpy(&pd[j * mappedResource.RowPitch], &data[j * width], width);
+				memcpy(&pd[j * mappedResource.RowPitch], &data[j * linesize], width);
 		}
 
 		d3dContext->Unmap(texture, 0);
