@@ -17,7 +17,7 @@ struct x264_encoder_t
 };
 
 //"baseline", "main", "high", "high10", "high422", "high444"
-static const char* x264enc_profile(h264_parameter_t* param)
+static const char* x264enc_profile(struct h264_parameter_t* param)
 {
 	switch (param->profile)
 	{
@@ -32,7 +32,7 @@ static const char* x264enc_profile(h264_parameter_t* param)
 	}
 }
 
-static int x264enc_level(h264_parameter_t* param)
+static int x264enc_level(struct h264_parameter_t* param)
 {
 	switch (param->level)
 	{
@@ -54,7 +54,7 @@ static int x264enc_level(h264_parameter_t* param)
 	default: return 30;
 	}
 }
-static void x264enc_parameter_set(x264_param_t* x264, h264_parameter_t* param)
+static void x264enc_parameter_set(x264_param_t* x264, struct h264_parameter_t* param)
 {
 	x264_param_default_preset(x264, "fast", "zerolatency");
 	x264_param_apply_profile(x264, x264enc_profile(param));
@@ -91,7 +91,7 @@ static void x264enc_parameter_set(x264_param_t* x264, h264_parameter_t* param)
 	x264->analyse.i_me_method = X264_ME_DIA; // ÁâĞÎËÑË÷
 }
 
-static void* x264enc_create(h264_parameter_t* param)
+static void* x264enc_create(struct h264_parameter_t* param)
 {
 	struct x264_encoder_t* p;
 	p = (struct x264_encoder_t*)malloc(sizeof(struct x264_encoder_t));

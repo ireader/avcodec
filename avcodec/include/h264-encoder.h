@@ -11,7 +11,7 @@ extern "C" {
 
 struct h264_encoder_t
 {
-	void* (*create)(h264_parameter_t* param);
+	void* (*create)(struct h264_parameter_t* param);
 	void(*destroy)(void* h264);
 
 	/// pic->flags & AVPACKET_FLAG_KEY => force IDR

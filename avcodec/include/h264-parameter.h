@@ -44,7 +44,7 @@ enum h264_level
 	H264_LEVEL_5_2, // 1920¡Á1080@172.0 (16) / 2560¡Á1920@108.0 (9) / 3840¡Á2160@66.8 (5) / 4096¡Á2048@63.3 (5) / 4096¡Á2160@60.0 (5) / 4096¡Á2304@56.3 (5)
 };
 
-typedef struct _h264_parameter_t
+struct h264_parameter_t
 {
 	int profile;		// H264_PROFILE_XXX
 	int level;			// H264_LEVEL_XXX
@@ -57,6 +57,6 @@ typedef struct _h264_parameter_t
 	int gop_size;		// frames per gop
 	int bitrate;		// bits per second
 	int bitrate_mode;	// CBR/VBR/ABR/CQP/CRF
-} h264_parameter_t;
+};
 
 #endif /* !_h264_parameter_h_ */
