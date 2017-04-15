@@ -27,6 +27,9 @@
 extern "C" {
 #endif
 
+/// read one frame(audio or video)
+/// @param[out] type 0-audio, 1-video
+/// @return >0-ok, 0-eof, <0-error
 typedef int (*avplayer_file_read)(void* param, struct avpacket_t* pkt, int* type);
 
 AVPLAYER_FILE_API void* avplayer_file_create(void* window, avplayer_file_read reader, void* param);

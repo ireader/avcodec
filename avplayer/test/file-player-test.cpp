@@ -18,19 +18,36 @@ static int file_player_test_read(void* p, struct avpacket_t* pkt, int* type)
 	uint32_t timestamp = 0;
 	static uint8_t s_buffer[512 * 1024];
 
-	int r = flv_reader_read(s_reader, &tagtype, &timestamp, s_buffer, sizeof(s_buffer));
-	if (r < 0)
-		return r;
-
 	s_param.pkt = pkt;
 	s_param.type = type;
 	*s_param.type = -1;
-	flv_demuxer_input(s_demuxer, tagtype, s_buffer, r, timestamp);
-	return *s_param.type;
+	do
+	{
+		int r = flv_reader_read(s_reader, &tagtype, &timestamp, s_buffer, sizeof(s_buffer));
+		if (r < 0)
+			return r;
+
+		flv_demuxer_input(s_demuxer, tagtype, s_buffer, r, timestamp);
+	} while (-1 == *s_param.type);
+
+	return 1;
 }
 
 void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t bytes, uint32_t pts, uint32_t dts)
 {
+	if (FLV_AVC == type)
+	{
+		*s_param.type = 1;
+	}
+	else if (FLV_AAC == type || FLV_MP3 == type)
+	{
+		*s_param.type = 0;
+	}
+	else
+	{
+		return;
+	}
+
 	struct avpacket_t* pkt = s_param.pkt;
 	memset(pkt, 0, sizeof(struct avpacket_t));
 	pkt->data = (uint8_t*)malloc(bytes);
@@ -38,15 +55,6 @@ void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t 
 	pkt->pts = pts;
 	pkt->dts = dts;
 	memcpy(pkt->data, data, bytes);
-
-	if (FLV_AVC == type)
-	{
-		*s_param.type = 1;
-	}
-	else if (FLV_AAC == type || FLV_MP3 == type)
-	{
-		*s_param.type = 2;
-	}
 }
 
 int file_player_test(void* window, const char* flv)

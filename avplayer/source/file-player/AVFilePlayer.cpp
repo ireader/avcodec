@@ -86,9 +86,9 @@ int AVFilePlayer::OnThread()
 		int type = 0;
 		struct avpacket_t pkt;
 		while (m_videoQ.size() + m_audioQ.size() < 20
-			&& m_reader && 1==m_reader(m_param, &pkt, &type))
+			&& m_reader && m_reader(m_param, &pkt, &type) > 0)
 		{
-			1 == type ? m_videoQ.push_back(pkt) : m_audioQ.push_back(pkt);
+			0 == type ? m_audioQ.push_back(pkt) : m_videoQ.push_back(pkt);
 		}
 
 		if (m_videos < 2 && !m_videoQ.empty())
@@ -160,7 +160,7 @@ uint64_t AVFilePlayer::OnAVRender(void* param, int type, const void* frame, int 
 	switch (type)
 	{
 	case avplayer_render_buffering:
-		player->OnBuffering(true);
+		//player->OnBuffering(true);
 		break;
 
 	case avplayer_render_audio:
