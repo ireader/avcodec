@@ -1,12 +1,12 @@
 #include "AVPlayerCore.h"
 #include "sys/system.h"
+#include "ctypedef.h"
+#include "app-log.h"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <errno.h>
-#include "ctypedef.h"
-#include "avlog.h"
 
 inline int v_min(int x, int y)
 {
@@ -137,7 +137,7 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 
 	if (m_video.pts < m_vclock.pts && m_vclock.pts - m_video.pts < 0xFFFFFFFF)
 	{
-		avlog("video discard delay frame: v-pts: %" PRIu64 ", current a-pts: %" PRIu64 "\n", m_video.pts, m_vclock.pts);
+		app_log(LOG_WARNING, "video discard delay frame: v-pts: %" PRIu64 ", current a-pts: %" PRIu64 "\n", m_video.pts, m_vclock.pts);
 		m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
 		m_video.frame = NULL;
 		return 0; // next frame
@@ -154,7 +154,7 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	m_vclock.frame_time += diff;
 	if (clock - m_vclock.frame_time > 100)
 	{
-		avlog("video clock reset: v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.frame_time, clock);
+		app_log(LOG_WARNING, "video clock reset: v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.frame_time, clock);
 		m_vclock.frame_time = clock;
 	}
 
@@ -166,7 +166,7 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	// draw frame
 	m_avrender(m_param, avplayer_render_video, frame, 0);
 
-	avlog("Video: v-pts: %" PRIu64 ", v-clock: %" PRIu64 ", v-diff: %" PRId64 "\n", m_vclock.pts, m_vclock.clock, m_vclock.clock-m_vclock.frame_time);
+	//app_log(LOG_DEBUG, "Video: v-pts: %" PRIu64 ", v-clock: %" PRIu64 ", v-diff: %" PRId64 "\n", m_vclock.pts, m_vclock.clock, m_vclock.clock-m_vclock.frame_time);
 	return 0; // draw next frame
 }
 
@@ -204,7 +204,7 @@ int AVPlayerCore::AVSync(uint64_t clock)
 	// current audio playing pts
 	if (m_audio.pts /*+ m_audio.duration*/ < m_aclock.frame_time)
 	{
-		avlog("AVSync: audio pts: %" PRIu64 ", duration: %" PRIu64 ", frame_time: %" PRIu64 "\n", m_audio.pts, m_audio.duration, m_aclock.frame_time);
+		app_log(LOG_WARNING, "AVSync: audio pts: %" PRIu64 ", duration: %" PRIu64 ", frame_time: %" PRIu64 "\n", m_audio.pts, m_audio.duration, m_aclock.frame_time);
 		//assert(0);
 		return 0;
 	}
@@ -214,7 +214,7 @@ int AVPlayerCore::AVSync(uint64_t clock)
 
 	if (m_system.clock - m_vclock.frame_time > 100)
 	{
-		avlog("AVSync: v-pts: %" PRIu64 " -> %" PRIu64 ", v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.pts, m_system.pts, m_vclock.frame_time, m_system.clock);
+		app_log(LOG_WARNING, "AVSync: v-pts: %" PRIu64 " -> %" PRIu64 ", v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.pts, m_system.pts, m_vclock.frame_time, m_system.clock);
 		m_vclock.pts = m_system.pts;
 		m_vclock.frame_time = m_system.clock;
 	}
