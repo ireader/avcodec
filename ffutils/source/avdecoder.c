@@ -56,7 +56,7 @@ static void avframe_to(const struct avframe_t* avframe, AVFrame* frame)
 	frame->flags = avframe->flags;
 	frame->width = avframe->width;
 	frame->height = avframe->height;
-	frame->channels = avframe->channel;
+	frame->channels = avframe->channels;
 	frame->nb_samples = avframe->samples;
 	frame->sample_rate = avframe->sample_rate;
 	for (i = 0; i < sizeof(avframe->data) / sizeof(avframe->data[0]); i++)
@@ -76,7 +76,7 @@ static void avframe_from(const AVFrame* frame, struct avframe_t* avframe)
 	avframe->flags = frame->flags;
 	avframe->width = frame->width;
 	avframe->height = frame->height;
-	avframe->channel = frame->channels;
+	avframe->channels = frame->channels;
 	avframe->samples = frame->nb_samples;
 	avframe->sample_bits = 8 * av_get_bytes_per_sample(frame->format);
 	avframe->sample_rate = frame->sample_rate;
