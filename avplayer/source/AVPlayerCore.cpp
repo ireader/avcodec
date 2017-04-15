@@ -16,10 +16,9 @@ inline int v_min(int x, int y)
 #define TIMEOUT_DEFAULT 20
 #define AUDIO_SAMPLE_THRESHOLD 100 // ms
 
-AVPlayerCore::AVPlayerCore(const avplayer_notify_t* notify, void* param)
-	: m_notify(*notify), m_notify_param(param)
+AVPlayerCore::AVPlayerCore(avplayer_onrender avrender, void* param)
+	: m_avrender(avrender), m_param(param)
 	, m_status(avplayer_status_close)
-	, m_buffering(true)
 {
 	memset(&m_video, 0, sizeof(m_video));
 	memset(&m_audio, 0, sizeof(m_audio));
@@ -38,10 +37,10 @@ AVPlayerCore::~AVPlayerCore()
 	thread_destroy(m_thread);
 
 	// clear audio/video frames
-	if (m_video.frame) m_notify.on_video(m_notify_param, m_video.frame, 1);
-	if (m_audio.frame) m_notify.on_audio(m_notify_param, m_audio.frame, 1);
-	while(m_videoQ.Read(m_video)) m_notify.on_video(m_notify_param, m_video.frame, 1);
-	while(m_audioQ.Read(m_audio)) m_notify.on_audio(m_notify_param, m_audio.frame, 1);
+	if (m_video.frame) m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
+	if (m_audio.frame) m_avrender(m_param, avplayer_render_audio, m_audio.frame, 1);
+	while(m_videoQ.Read(m_video)) m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
+	while(m_audioQ.Read(m_audio)) m_avrender(m_param, avplayer_render_audio, m_audio.frame, 1);
 }
 
 void AVPlayerCore::Play()
@@ -108,25 +107,14 @@ int AVPlayerCore::OnThread()
 
 int AVPlayerCore::OnPlay(uint64_t clock)
 {
-	if (m_buffering)
-	{
-		if (m_videoQ.Size() < 3 && m_audioQ.GetDuration() < 100)
-			return TIMEOUT_DEFAULT;
-	}
-
 	if (NULL == m_video.frame) m_videoQ.Read(m_video);
 	if (NULL == m_audio.frame) m_audioQ.Read(m_audio);
 	if (NULL == m_video.frame && NULL == m_audio.frame)
 	{
-		m_buffering = true;
-		m_notify.on_buffering(m_notify_param, 1);
+		// TODO: pause audio playing
+		if(clock - m_vclock.clock > 2 * TIMEOUT_DEFAULT && GetAudioDuration(clock) <= 0)
+			m_avrender(m_param, avplayer_render_buffering, NULL, 0);
 		return TIMEOUT_DEFAULT;
-	}
-
-	if (m_buffering)
-	{
-		m_buffering = false;
-		m_notify.on_buffering(m_notify_param, 0);
 	}
 
 	int timeout = TIMEOUT_DEFAULT;
@@ -142,7 +130,15 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	assert(m_video.frame);
 	if (m_video.serial != m_videoQ.GetSerial())
 	{
-		m_notify.on_video(m_notify_param, m_video.frame, 1);
+		m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
+		m_video.frame = NULL;
+		return 0; // next frame
+	}
+
+	if (m_video.pts < m_vclock.pts && m_vclock.pts - m_video.pts < 0xFFFFFFFF)
+	{
+		avlog("video discard delay frame: v-pts: %" PRIu64 ", current a-pts: %" PRIu64 "\n", m_video.pts, m_vclock.pts);
+		m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
 		m_video.frame = NULL;
 		return 0; // next frame
 	}
@@ -168,7 +164,7 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	m_video.frame = NULL;
 
 	// draw frame
-	m_notify.on_video(m_notify_param, frame, 0);
+	m_avrender(m_param, avplayer_render_video, frame, 0);
 
 	avlog("Video: v-pts: %" PRIu64 ", v-clock: %" PRIu64 ", v-diff: %" PRId64 "\n", m_vclock.pts, m_vclock.clock, m_vclock.clock-m_vclock.frame_time);
 	return 0; // draw next frame
@@ -179,7 +175,7 @@ int AVPlayerCore::OnAudio(uint64_t clock)
 	assert(m_audio.frame);
 	if (m_audio.serial != m_audioQ.GetSerial())
 	{
-		m_notify.on_audio(m_notify_param, m_audio.frame, 1);
+		m_avrender(m_param, avplayer_render_audio, m_audio.frame, 1);
 		m_audio.frame = NULL;
 		return 0; // next frame
 	}
@@ -198,7 +194,7 @@ int AVPlayerCore::OnAudio(uint64_t clock)
 	m_audio.frame = NULL;
 	
 	// play audio(write to audio buffer)
-	m_aclock.frame_time = m_notify.on_audio(m_notify_param, pcm, 0);
+	m_aclock.frame_time = m_avrender(m_param, avplayer_render_audio, pcm, 0);
 	AVSync(clock); // audio sync video
 	return 0; // next frame
 }
@@ -206,14 +202,14 @@ int AVPlayerCore::OnAudio(uint64_t clock)
 int AVPlayerCore::AVSync(uint64_t clock)
 {
 	// current audio playing pts
-	if (m_audio.pts + m_audio.duration < m_aclock.frame_time)
+	if (m_audio.pts /*+ m_audio.duration*/ < m_aclock.frame_time)
 	{
 		avlog("AVSync: audio pts: %" PRIu64 ", duration: %" PRIu64 ", frame_time: %" PRIu64 "\n", m_audio.pts, m_audio.duration, m_aclock.frame_time);
 		//assert(0);
 		return 0;
 	}
 
-	m_system.pts = m_audio.pts + m_audio.duration - m_aclock.frame_time;
+	m_system.pts = m_audio.pts /*+ m_audio.duration*/ - m_aclock.frame_time;
 	m_system.clock = clock;
 
 	if (m_system.clock - m_vclock.frame_time > 100)
@@ -224,4 +220,14 @@ int AVPlayerCore::AVSync(uint64_t clock)
 	}
 
 	return 0;
+}
+
+uint64_t AVPlayerCore::GetAudioDuration(uint64_t clock) const
+{
+	//assert(clock >= m_aclock.clock);
+	if (clock < m_aclock.clock) 
+		clock = m_aclock.clock;
+
+	int64_t duration = (int64_t)(m_aclock.frame_time - (clock - m_aclock.clock));
+	return m_audioQ.GetDuration() + (duration < 0 ? 0 : duration);
 }

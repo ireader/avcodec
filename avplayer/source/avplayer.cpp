@@ -1,9 +1,9 @@
 #include "avplayer.h"
 #include "AVPlayerCore.h"
 
-void* avplayer_create(const struct avplayer_notify_t* notify, void* param)
+void* avplayer_create(avplayer_onrender avrender, void* param)
 {
-	AVPlayerCore *player = new AVPlayerCore(notify, param);
+	AVPlayerCore *player = new AVPlayerCore(avrender, param);
 	return player;
 }
 
@@ -43,4 +43,10 @@ int avplayer_input_video(void* p, const void* frame, uint64_t pts, int serial)
 	AVPlayerCore *player = (AVPlayerCore *)p;
 	player->Input(frame, pts, serial);
 	return 0;
+}
+
+int64_t avplayer_get_audio_duration(void* p)
+{
+	AVPlayerCore *player = (AVPlayerCore *)p;
+	return player->GetAudioDuration(0);
 }

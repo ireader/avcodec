@@ -34,17 +34,19 @@ enum
 	avplayer_status_stop,
 };
 
-struct avplayer_notify_t
+enum
 {
-	void (*on_status_changed)(void* param, int status);
-	void (*on_buffering)(void* param, int buffering); // 0-buffering, 1-ok
-
-	///@return audio output buffer durationMS(include pcm data)
-	uint64_t (*on_audio)(void* param, const void* pcm, int discard); // audio output
-	void (*on_video)(void* param, const void* frame, int discard); // draw video
+	avplayer_render_buffering = 0, // buffering(all audio/video play finished)
+	avplayer_render_video, // play video
+	avplayer_render_audio, // play audio
 };
 
-AVPLAYER_API void* avplayer_create(const struct avplayer_notify_t* notify, void* param);
+/// audio/video output
+/// @param[in] type avplayer_render_xxx
+/// @return audio output buffer durationMS(include pcm data), 0-if video
+typedef uint64_t (*avplayer_onrender)(void* param, int type, const void* frame, int discard);
+
+AVPLAYER_API void* avplayer_create(avplayer_onrender avrender, void* param);
 AVPLAYER_API void avplayer_destroy(void* player);
 AVPLAYER_API void avplayer_play(void* player);
 AVPLAYER_API void avplayer_stop(void* player);
@@ -52,6 +54,8 @@ AVPLAYER_API void avplayer_pause(void* player);
 
 AVPLAYER_API int avplayer_input_audio(void* player, const void* pcm, uint64_t pts, uint64_t durationMS, int serial);
 AVPLAYER_API int avplayer_input_video(void* player, const void* frame, uint64_t pts, int serial);
+
+AVPLAYER_API int64_t avplayer_get_audio_duration(void* player);
 
 #if defined(__cplusplus)
 }

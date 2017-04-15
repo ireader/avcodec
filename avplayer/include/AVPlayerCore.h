@@ -8,13 +8,15 @@
 class AVPlayerCore
 {
 public:
-	AVPlayerCore(const avplayer_notify_t* notify, void* param);
+	AVPlayerCore(avplayer_onrender avrender, void* param);
 	~AVPlayerCore();
 
 public:
 	void Play();
 	void Stop();
 	void Pause();
+
+	uint64_t GetAudioDuration(uint64_t clock) const;
 
 public:
 	void Input(const void* pcm, uint64_t pts, uint64_t duration, int serial);
@@ -39,11 +41,10 @@ private:
 	pthread_t m_thread;
 	ThreadEvent m_event;
 
-	avplayer_notify_t m_notify;
-	void* m_notify_param;
+	avplayer_onrender m_avrender;
+	void* m_param;
 
 	int m_status; // avplayer_status_xxx
-	bool m_buffering; // true-buffering, false-all done
 
 	struct avclock_t
 	{
