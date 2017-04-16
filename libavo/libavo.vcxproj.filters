@@ -46,12 +46,15 @@
     <Filter Include="render\opengles2">
       <UniqueIdentifier>{8a62c8ed-a4cd-4bda-8031-5f5dfe371f33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="audio-input\directsound8">
+      <UniqueIdentifier>{29d93044-088d-49dc-a2ee-ccd48a07f596}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio-input\alsa">
+      <UniqueIdentifier>{a04d3de2-b910-4d5e-aca6-c1acba63c8e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\GDIText2Bitmap.c">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\video_output.cpp">
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="src\render\video_read.c">
@@ -66,17 +69,26 @@
     <ClCompile Include="src\render\direct3d11\d3d11_render.cpp">
       <Filter>render\direct3d11</Filter>
     </ClCompile>
-    <ClCompile Include="src\audio_input\audio_input.cpp">
-      <Filter>audio-input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\audio_input\dxsound8in.cpp">
-      <Filter>audio-input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\audio_output\audio_output.cpp">
-      <Filter>audio-output</Filter>
-    </ClCompile>
     <ClCompile Include="src\audio_output\directsound8\direct_sound_8.cpp">
       <Filter>audio-output\directsound8</Filter>
+    </ClCompile>
+    <ClCompile Include="src\av_register.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_input\audio_input.c">
+      <Filter>audio-input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\video_output.c">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_output\audio_output.c">
+      <Filter>audio-output</Filter>
+    </ClCompile>
+    <ClCompile Include="src\av_register_all.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio_input\directsound8\direct_capture_8.cpp">
+      <Filter>audio-input\directsound8</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,9 +122,6 @@
     <ClInclude Include="src\render\direct3d11\d3d11_texture.h">
       <Filter>render\direct3d11</Filter>
     </ClInclude>
-    <ClInclude Include="src\audio_input\dxsound8in.h">
-      <Filter>audio-input</Filter>
-    </ClInclude>
     <ClInclude Include="include\audio_input.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -131,5 +140,14 @@
     <ClInclude Include="src\audio_output\directsound8\direct_sound_8.h">
       <Filter>audio-output\directsound8</Filter>
     </ClInclude>
+    <ClInclude Include="include\av_register.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio_input\directsound8\direct_capture_8.h">
+      <Filter>audio-input\directsound8</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libavo.def" />
   </ItemGroup>
 </Project>

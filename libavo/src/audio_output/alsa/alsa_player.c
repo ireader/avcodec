@@ -9,6 +9,7 @@
 #include "alsa_format.h"
 #include "alsa_recovery.h"
 #include "audio_output.h"
+#include "av_register.h"
 
 #define DEVICE_NAME "default"
 
@@ -207,5 +208,5 @@ int alsa_player_register()
 	ao.get_available_sample = alsa_get_samples;
 	ao.get_volume = alsa_get_volume;
 	ao.set_volume = alsa_set_volume;
-	return audio_output_register("alsa", &ao);
+	return av_set_class(AV_AUDIO_OUTPUT, "alsa", &ao);
 }

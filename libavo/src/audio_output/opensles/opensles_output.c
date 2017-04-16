@@ -3,6 +3,7 @@
 #include "opensles_engine.h"
 #include "opensles_outputmix.h"
 #include "audio_output.h"
+#include "av_register.h"
 #include <string.h>
 #include <math.h>
 
@@ -210,5 +211,5 @@ int opensles_player_register()
 	ao.get_available_sample = opensles_get_samples;
 	ao.get_volume = opensles_get_volume;
 	ao.set_volume = opensles_set_volume;
-	return audio_output_register("opensles", &ao);
+	return av_set_class(AV_AUDIO_OUTPUT, "opensles", &ao);
 }

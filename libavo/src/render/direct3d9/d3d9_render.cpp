@@ -1,4 +1,5 @@
 #include "video_output.h"
+#include "av_register.h"
 #include "video_write.h"
 
 #if defined(_DEBUG)
@@ -236,8 +237,6 @@ static IDirect3D9* D3D9Load()
 	return fpDirect3DCreate9(D3D_SDK_VERSION);
 }
 
-extern "C" int video_output_register(const char* name, const video_output_t* vo);
-
 extern "C" int d3d9_render_register()
 {
 	// check device capability
@@ -250,5 +249,5 @@ extern "C" int d3d9_render_register()
 	vo.write = Write;
 	vo.read = NULL;
 	vo.control = NULL;
-	return video_output_register("d3d9", &vo);
+	return av_set_class(AV_VIDEO_RENDER, "d3d9", &vo);
 }

@@ -1,7 +1,6 @@
 #ifndef _gles2_render_h_
 #define _gles2_render_h_
 
-#include <android/log.h>
 #include <GLES2/gl2.h>
 #include "gles2_egl.h"
 #include "gles2_shader.h"
@@ -12,6 +11,7 @@ struct gles2_render_t
 	struct gles2_egl_t egl;
 	struct opengl_shader_t shader;
 
+	void* window;
 	int window_width;
 	int window_height;
 	pthread_t thread; // thread id

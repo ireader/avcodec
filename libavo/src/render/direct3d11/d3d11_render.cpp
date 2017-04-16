@@ -5,6 +5,7 @@
 #include "d3d11_texture.h"
 #include "d3d11_compile.h"
 #include "video_output.h"
+#include "av_register.h"
 #include <d3d11.h>
 #include <assert.h>
 
@@ -344,8 +345,6 @@ static int Rotation(void* object, float angle)
 	return 0;
 }
 
-extern "C" int video_output_register(const char* name, const video_output_t* vo);
-
 extern "C" int d3d11_render_register()
 {
 	HMODULE hD3d11 = LoadLibraryEx("d3d11.dll", NULL, 0);
@@ -360,5 +359,5 @@ extern "C" int d3d11_render_register()
 	vo.read = NULL;
 	vo.control = NULL;
 	vo.rotation = Rotation;
-	return video_output_register("d3d11", &vo);
+	return av_set_class(AV_VIDEO_RENDER, "d3d11", &vo);
 }

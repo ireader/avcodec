@@ -1,13 +1,12 @@
 #include "direct_sound_8.h"
 #include "audio_output.h"
+#include "av_register.h"
 #include <math.h>
 #include <mmreg.h>
 //#include <audiodefs.h>
 //#include <Ks.h>
 //#include <KsProxy.h>
 #include <assert.h>
-
-//#pragma comment(lib, "dsound.lib")
 
 #define MIN(a, b) ((a)<(b) ? (a) : (b))
 #define BUFFER_TIME	(1000)
@@ -410,5 +409,5 @@ extern "C" int directsound8_player_register()
 	ao.get_available_sample = GetAvailSample;
 	ao.get_volume = GetVolume;
 	ao.set_volume = SetVolume;
-	return audio_output_register("directsound8", &ao);
+	return av_set_class(AV_AUDIO_OUTPUT, "directsound8", &ao);
 }

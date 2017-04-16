@@ -1,9 +1,11 @@
+#include "av_register.h"
 #include "video_output.h"
 #include "gles2_render.h"
 #include "gles2_buffer.h"
 #include "gles2_matrix.h"
 #include "gles2_texture.h"
 #include "../yuv_color.h"
+#include <android/log.h>
 #include <string.h>
 
 const static GLfloat s_vertex[] = {
@@ -60,12 +62,12 @@ static void* gles2_open(void* window, int format, int width, int height)
 	if (NULL == render)
 		return NULL;
 	memset(render, 0, sizeof(struct gles2_render_t));
+	render->window = window;
 	render->window_width = width;
 	render->window_height = height;
 	render->thread = pthread_self();
 
-	if (EGL_SUCCESS != gles2_egl_create(&render->egl)
-		|| EGL_SUCCESS != gles2_egl_bind(&render->egl, window)
+	if ((NULL != window && (EGL_SUCCESS != gles2_egl_create(&render->egl) || EGL_SUCCESS != gles2_egl_bind(&render->egl, window)))
 		|| 0 != opengl_shader_create(&render->shader, s_vertex_shader, s_pixel_shader)
 		|| 0 != gles2_get_location(render)
 		|| 0 != gles2_texture_create(render)
@@ -90,8 +92,12 @@ static int gles2_write(void* vo, const struct avframe_t* pic, int src_x, int src
 		return -1;
 	}
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (NULL != render->window)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
 	glUseProgram(render->shader.program);
 	//glEnable(GL_CULL_FACE);
 
@@ -104,7 +110,8 @@ static int gles2_write(void* vo, const struct avframe_t* pic, int src_x, int src
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render->glBuffers[1]);
 	glDrawElements(GL_TRIANGLE_STRIP, N_ARRAY(s_indices), GL_UNSIGNED_SHORT, (const void*)0);
 
-	gles2_egl_present(&render->egl);
+	if(NULL != render->window)
+		gles2_egl_present(&render->egl);
 
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	//gles2_buffer_unbind(render);
@@ -113,7 +120,6 @@ static int gles2_write(void* vo, const struct avframe_t* pic, int src_x, int src
 	return 0;
 }
 
-int video_output_register(const char* name, const video_output_t* t);
 int gles2_render_register()
 {
 	static video_output_t vo;
@@ -123,5 +129,5 @@ int gles2_render_register()
 	vo.read = NULL;
 	vo.control = NULL;
 	vo.rotation = NULL;
-	return video_output_register("gles2", &vo);
+	return av_set_class(AV_VIDEO_RENDER, "gles2", &vo);
 }

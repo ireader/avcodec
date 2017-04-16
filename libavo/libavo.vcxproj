@@ -19,23 +19,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\audio_input\audio_input.cpp" />
-    <ClCompile Include="src\audio_input\dxsound8in.cpp" />
-    <ClCompile Include="src\audio_output\audio_output.cpp" />
+    <ClCompile Include="src\audio_input\audio_input.c" />
+    <ClCompile Include="src\audio_input\directsound8\direct_capture_8.cpp" />
+    <ClCompile Include="src\audio_output\audio_output.c" />
     <ClCompile Include="src\audio_output\directsound8\direct_sound_8.cpp" />
+    <ClCompile Include="src\av_register.c" />
+    <ClCompile Include="src\av_register_all.cpp" />
     <ClCompile Include="src\render\direct3d11\d3d11_render.cpp" />
     <ClCompile Include="src\render\direct3d9\d3d9_render.cpp" />
     <ClCompile Include="src\render\GDIText2Bitmap.c" />
-    <ClCompile Include="src\render\video_output.cpp" />
+    <ClCompile Include="src\render\video_output.c" />
     <ClCompile Include="src\render\video_read.c" />
     <ClCompile Include="src\render\video_write.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\audio_input.h" />
     <ClInclude Include="include\audio_output.h" />
+    <ClInclude Include="include\av_register.h" />
     <ClInclude Include="include\video_output.h" />
     <ClInclude Include="include\video_write.h" />
-    <ClInclude Include="src\audio_input\dxsound8in.h" />
+    <ClInclude Include="src\audio_input\directsound8\direct_capture_8.h" />
     <ClInclude Include="src\audio_output\directsound8\direct_sound_8.h" />
     <ClInclude Include="src\render\direct3d11\d3d11_buffer.h" />
     <ClInclude Include="src\render\direct3d11\d3d11_compile.h" />
@@ -49,6 +52,9 @@
     <ClInclude Include="src\render\direct3d9\d3d9_surface.h" />
     <ClInclude Include="src\render\video_read.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="libavo.def" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B066A668-E78F-415D-A6EE-5C36C8CCCC64}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -57,7 +63,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -107,11 +113,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;include;../avcodec/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>libavo.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,7 +127,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -135,7 +142,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -152,7 +159,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>

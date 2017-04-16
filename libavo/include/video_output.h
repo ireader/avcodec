@@ -4,8 +4,7 @@
 #include "avframe.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 typedef struct
@@ -17,10 +16,6 @@ typedef struct
 	int (*control)(void* vo, int command, void* param1, void* param2);
 	int (*rotation)(void* vo, float angle);
 } video_output_t;
-
-void video_output_list(char* list, int len);
-int video_output_setname(const char* name);
-const char* video_output_getname();
 
 /// Create video output handle
 /// @param[in] window windows-window handle, X11-drawable object

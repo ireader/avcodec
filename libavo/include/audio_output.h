@@ -2,10 +2,8 @@
 #define _audio_output_h_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C"{
 #endif
-
 
 typedef struct
 {
@@ -30,11 +28,6 @@ typedef struct
 
 	int (*get_info)(void* ao, int *channels, int *bits_per_sample, int *samples_per_second);
 } audio_output_t;
-
-int audio_output_register(const char* name, const audio_output_t* t);
-int audio_output_setname(const char* name);
-void audio_output_list(char* list, int len);
-const char* audio_output_getname();
 
 void* audio_output_open(int channels, int bits_per_samples, int samples_per_seconds);
 int audio_output_close(void* ao);
