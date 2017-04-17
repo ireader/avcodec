@@ -18,7 +18,8 @@ public:
 public:
 	void Play();
 	void Pause();
-	
+	void Reset();
+
 private:
 	static uint64_t OnAVRender(void* param, int video, const void* frame, int discard);
 	uint64_t OnPlayVideo(const void* video, int discard);

@@ -1,10 +1,10 @@
+#include "ctypedef.h"
 #include "AVLivePlayer.h"
 #include "video_output.h"
 #include "audio_output.h"
 #include "h264-util.h"
 #include "avdecoder.h"
 #include "avplayer.h"
-#include "ctypedef.h"
 #include "app-log.h"
 #include <stdlib.h>
 #include <string.h>
@@ -16,11 +16,11 @@
 
 AVLivePlayer::AVLivePlayer(void* window)
 	: m_window(window)
-	, m_arender(NULL), m_vrender(NULL)
+	, m_vrender(NULL), m_arender(NULL)
 	, m_last_video(NULL)
 	, m_running(false)
-	, m_videos(0), m_audios(0)
 	, m_buffering(true), m_delay(100)
+	, m_videos(0), m_audios(0)
 {
 	m_player = avplayer_create(OnAVRender, this);
 	m_vdecoder = avdecoder_create_h264();

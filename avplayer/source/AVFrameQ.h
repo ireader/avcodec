@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sys/sync.hpp"
+#include <stdint.h>
 #include <queue>
 
 struct AVFrame

@@ -16,11 +16,11 @@
     <Filter Include="3rd">
       <UniqueIdentifier>{117cc637-403b-4cfa-80fd-707b6d51c429}</UniqueIdentifier>
     </Filter>
-    <Filter Include="file-player">
-      <UniqueIdentifier>{8c801d51-07a6-4b37-9ac6-d74362e4d535}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="live-player">
+    <Filter Include="Source Files\live-player">
       <UniqueIdentifier>{36bd00c9-7748-4ee9-ab3e-e4bdbd0f2c73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\file-player">
+      <UniqueIdentifier>{8c801d51-07a6-4b37-9ac6-d74362e4d535}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -28,10 +28,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\live-player\AVLivePlayer.h">
-      <Filter>live-player</Filter>
+      <Filter>Source Files\live-player</Filter>
     </ClInclude>
     <ClInclude Include="source\file-player\AVFilePlayer.h">
-      <Filter>file-player</Filter>
+      <Filter>Source Files\file-player</Filter>
     </ClInclude>
     <ClInclude Include="source\AVFrameQ.h">
       <Filter>Source Files</Filter>
@@ -45,6 +45,9 @@
     <ClInclude Include="include\avplayer-live.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\AVInterval.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\avplayer.cpp">
@@ -53,20 +56,17 @@
     <ClCompile Include="source\AVPlayerCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sdk\source\app-log.c">
-      <Filter>3rd</Filter>
-    </ClCompile>
     <ClCompile Include="source\live-player\AVLivePlayer.cpp">
-      <Filter>live-player</Filter>
+      <Filter>Source Files\live-player</Filter>
     </ClCompile>
     <ClCompile Include="source\file-player\AVFilePlayer.cpp">
-      <Filter>file-player</Filter>
+      <Filter>Source Files\file-player</Filter>
     </ClCompile>
     <ClCompile Include="source\live-player\avplayer-live.cpp">
-      <Filter>live-player</Filter>
+      <Filter>Source Files\live-player</Filter>
     </ClCompile>
     <ClCompile Include="source\file-player\avplayer-file.cpp">
-      <Filter>file-player</Filter>
+      <Filter>Source Files\file-player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

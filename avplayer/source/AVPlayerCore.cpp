@@ -19,6 +19,7 @@ inline int v_min(int x, int y)
 AVPlayerCore::AVPlayerCore(avplayer_onrender avrender, void* param)
 	: m_avrender(avrender), m_param(param)
 	, m_status(avplayer_status_close)
+	, m_fps("AVPlayer")
 {
 	memset(&m_video, 0, sizeof(m_video));
 	memset(&m_audio, 0, sizeof(m_audio));
@@ -167,6 +168,7 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	m_avrender(m_param, avplayer_render_video, frame, 0);
 
 	//app_log(LOG_DEBUG, "Video: v-pts: %" PRIu64 ", v-clock: %" PRIu64 ", v-diff: %" PRId64 "\n", m_vclock.pts, m_vclock.clock, m_vclock.clock-m_vclock.frame_time);
+	m_fps.Tick(clock);
 	return 0; // draw next frame
 }
 

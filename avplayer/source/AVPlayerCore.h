@@ -2,6 +2,7 @@
 
 #include "AVFrameQ.h"
 #include "avplayer.h"
+#include "AVInterval.h"
 #include "sys/thread.h"
 #include "sys/sync.hpp"
 
@@ -45,6 +46,7 @@ private:
 	void* m_param;
 
 	int m_status; // avplayer_status_xxx
+	AVInterval m_fps;
 
 	struct avclock_t
 	{

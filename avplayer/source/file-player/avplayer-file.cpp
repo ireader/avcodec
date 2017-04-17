@@ -20,3 +20,8 @@ void avplayer_file_pause(void* player)
 {
 	((AVFilePlayer*)player)->Pause();
 }
+
+void avplayer_file_reset(void* player)
+{
+	((AVFilePlayer*)player)->Reset();
+}

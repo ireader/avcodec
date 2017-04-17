@@ -10,7 +10,7 @@
 
 AVFilePlayer::AVFilePlayer(void* window, avplayer_file_read reader, void* param)
 	:m_window(window)
-	,m_arender(NULL), m_vrender(NULL)
+	,m_vrender(NULL), m_arender(NULL)
 	,m_running(false)
 	,m_videos(0), m_audios(0)
 	,m_reader(reader), m_param(param)
@@ -70,6 +70,14 @@ void AVFilePlayer::Play()
 void AVFilePlayer::Pause()
 {
 	avplayer_pause(m_player);
+}
+
+void AVFilePlayer::Reset()
+{
+	// TODO: reset flags
+	// 1. clear audio buffer
+	// 2. discard audio frames(pkt sn)
+	// 3. discard video frames(pkt sn)
 }
 
 int STDCALL AVFilePlayer::OnThread(void* param)
