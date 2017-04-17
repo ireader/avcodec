@@ -78,7 +78,7 @@ static void* gles2_open(void* window, int format, int width, int height)
 		return NULL;
 	}
 
-	glViewport(0, 0, width, height);
+	//glViewport(0, 0, width, height);
 	return render;
 }
 

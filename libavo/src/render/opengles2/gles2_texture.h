@@ -29,19 +29,19 @@ static int gles2_texture_yv12(struct gles2_render_t* render, const struct avfram
 {
 	int i;
 	int height = frame->height;
-	int planes[3] = { 0, 2, 1 };
 	assert(N_ARRAY(frame->data) >= N_ARRAY(render->glTextures));
 	for (i = 0; i < N_ARRAY(render->glTextures); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, render->glTextures[i]);
 		glTexImage2D(GL_TEXTURE_2D, 
 			0,
 			GL_LUMINANCE,
-			frame->linesize[planes[i]],
+			frame->linesize[i],
 			height,
 			0,
 			GL_LUMINANCE,
 			GL_UNSIGNED_BYTE,
-			frame->data[planes[i]]);
+			frame->data[i]);
 		
 		glUniform1i(render->loc_sampler[i], i);
 		height = frame->height / 2;
