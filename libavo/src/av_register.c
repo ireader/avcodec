@@ -2,9 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define N_CLASSES 8
+
+struct av_class_t
+{
+	const char* name;
+	const void* avclass;
+};
+
 static const char* s_name[4];
-static const char* s_names[4][8];
-static const void* s_classes[4][8];
+static struct av_class_t s_classes[4][N_CLASSES];
 
 void av_list(int avtype, void(*item)(void* param, const char*), void* param)
 {
@@ -12,34 +19,34 @@ void av_list(int avtype, void(*item)(void* param, const char*), void* param)
 	if (avtype < AV_AUDIO_CAPTURE || avtype > AV_VIDEO_RENDER)
 		return;
 
-	for (i = 0; i < 8 && s_names[avtype][i]; i++)
+	for (i = 0; i < N_CLASSES && s_classes[avtype][i].name; i++)
 	{
-		item(param, s_names[avtype][i]);
+		item(param, s_classes[avtype][i].name);
 	}
 }
 
-static int av_find(int avtype, const char* name)
+static struct av_class_t* av_find(int avtype, const char* name)
 {
 	int i;
 	
 	if (avtype < AV_AUDIO_CAPTURE || avtype > AV_VIDEO_RENDER)
-		return -1;
+		return NULL;
 	
-	for (i = 0; i < 8 && s_names[avtype][i]; i++)
+	for (i = 0; i < N_CLASSES && s_classes[avtype][i].name; i++)
 	{
-		if (0 == strcmp(s_names[avtype][i], name))
-			return i;
+		if (0 == strcmp(s_classes[avtype][i].name, name))
+			return &s_classes[avtype][i];
 	}
-	return -1;
+	return NULL;
 }
 
 int av_set_name(int avtype, const char* name)
 {
-	int i;
-	i = av_find(avtype, name);
-	if (-1 == i) return -1;
+	struct av_class_t* avclass;
+	avclass = av_find(avtype, name);
+	if (NULL == avclass) return -1;
 
-	s_name[avtype] = s_names[avtype][i];
+	s_name[avtype] = avclass->name;
 	return 0;
 }
 
@@ -53,13 +60,15 @@ const char* av_get_name(int avtype)
 
 const void* av_get_class(int avtype)
 {
-	int i = -1;
+	struct av_class_t* avclass;
 	if (avtype < AV_AUDIO_CAPTURE || avtype > AV_VIDEO_RENDER)
 		return NULL;
 
 	if (NULL != s_name[avtype])
-		i = av_find(avtype, s_name[avtype]);
-	return s_classes[avtype][-1 == i ? 0 : i];
+		avclass = av_find(avtype, s_name[avtype]);
+	else
+		avclass = &s_classes[avtype][0];
+	return avclass->avclass;
 }
 
 int av_set_class(int avtype, const char* name, const void* cls)
@@ -68,13 +77,16 @@ int av_set_class(int avtype, const char* name, const void* cls)
 	if (avtype < AV_AUDIO_CAPTURE || avtype > AV_VIDEO_RENDER)
 		return -1;
 
-	for (i = 0; i < 8 && s_names[avtype][i]; i++)
+	for (i = 0; i < N_CLASSES && s_classes[avtype][i].name; i++)
 	{
-		if (0 == strcmp(s_names[avtype][i], name))
+		if (0 == strcmp(s_classes[avtype][i].name, name))
 			return -1; // exist
 	}
 
-	s_classes[avtype][i] = name;
-	s_classes[avtype][i] = cls;
+	if (i >= N_CLASSES)
+		return -1;
+
+	s_classes[avtype][i].name = name;
+	s_classes[avtype][i].avclass = cls;
 	return i;
 }
