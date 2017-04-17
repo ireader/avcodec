@@ -35,7 +35,7 @@ static int d3d9_device_create(IDirect3D9* d3d9, d3d9_render_t* vo)
 
 	D3D9FillPresentParams(vo, d3dpp);
 	hr = d3d9->CreateDevice(vo->adapter, D3DDEVTYPE_HAL, vo->window, flags, &d3dpp, &vo->device);
-	DxLog("D3D9 CreateDevice(window:0x%x(%d/%d), flags:%d): %d\n", (unsigned int)vo->window, vo->window_width, vo->window_height, flags, int(hr));
+	DxLog("D3D9 CreateDevice(window:%p(%d/%d), flags:%d): %d\n", vo->window, vo->window_width, vo->window_height, flags, int(hr));
 	return SUCCEEDED(hr) ? 0 : -1;
 }
 
@@ -48,7 +48,7 @@ static int d3d9_device_reset(d3d9_render_t* vo)
 	D3DPRESENT_PARAMETERS d3dpp;
 	D3D9FillPresentParams(vo, d3dpp);
 	HRESULT hr = vo->device->Reset(&d3dpp);
-	DxLog("D3D9 Reset(window:0x%x(%d/%d)): %d\n", (unsigned int)vo->window, vo->window_width, vo->window_height, int(hr));
+	DxLog("D3D9 Reset(window:%p(%d/%d)): %d\n", vo->window, vo->window_width, vo->window_height, int(hr));
 	return SUCCEEDED(hr) ? 0 : -1;
 }
 
