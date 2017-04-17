@@ -17,7 +17,7 @@
 AVLivePlayer::AVLivePlayer(void* window)
 	: m_window(window)
 	, m_vrender(NULL), m_arender(NULL)
-	, m_last_video(NULL)
+	, m_play_video(NULL), m_present_video(NULL)
 	, m_running(false)
 	, m_buffering(true), m_delay(100)
 	, m_videos(0), m_audios(0)
@@ -56,6 +56,16 @@ AVLivePlayer::~AVLivePlayer()
 		m_vrender = NULL;
 	}
 
+	if (m_present_video && m_present_video != m_play_video)
+		avdecoder_freeframe(m_vdecoder, m_present_video);
+	m_present_video = NULL;
+
+	if (m_play_video)
+	{
+		avdecoder_freeframe(m_vdecoder, m_play_video);
+		m_play_video = NULL;
+	}
+
 	if (m_adecoder)
 	{
 		avdecoder_destroy(m_adecoder);
@@ -83,16 +93,16 @@ int AVLivePlayer::Input(struct avpacket_t* pkt, bool video)
 
 void AVLivePlayer::Present()
 {
-	void* video = NULL;
 	{
 		AutoThreadLocker locker(m_locker);
-		video = m_last_video;
-		m_last_video = NULL;
+		if(m_present_video && m_present_video != m_play_video)
+			avdecoder_freeframe(m_vdecoder, m_present_video);
+		m_present_video = m_play_video;
 	}
 
-	if (video)
+	if (m_present_video)
 	{
-		Present(video);
+		Present(m_present_video);
 	}
 }
 
@@ -109,9 +119,9 @@ void AVLivePlayer::Present(void* video)
 		if (NULL == m_vrender) return;
 	}
 
-	uint8_t* u = frame.data[1];
-	frame.data[1] = frame.data[2];
-	frame.data[2] = u;
+	//uint8_t* u = frame.data[1];
+	//frame.data[1] = frame.data[2];
+	//frame.data[2] = u;
 
 	int r = video_output_write(m_vrender, &frame, 0, 0, 0, 0, 0, 0, 0, 0);
 	if (0 != r)
@@ -120,7 +130,7 @@ void AVLivePlayer::Present(void* video)
 		app_log(LOG_ERROR, "[%s] video_output_write(%ld, %ld) => %d\n", __FUNCTION__, frame.pts, frame.dts, r);
 	}
 
-	avdecoder_freeframe(m_vdecoder, (void*)video);
+	//avdecoder_freeframe(m_vdecoder, (void*)video);
 }
 
 int STDCALL AVLivePlayer::OnThread(void*  param)
@@ -307,16 +317,21 @@ uint64_t AVLivePlayer::OnPlayVideo(const void* video, int discard)
 		return 0;
 	}
 
-#if 1
-	Present((void*)video);
-#else
-	AutoThreadLocker locker(m_locker);
-	if (m_last_video)
+
+	if (m_window)
 	{
-		avdecoder_freeframe(m_vdecoder, m_last_video);
+		Present((void*)video);
+		avdecoder_freeframe(m_vdecoder, (void*)video);
 	}
-	m_last_video = (void*)video;
-#endif
+	else
+	{
+		AutoThreadLocker locker(m_locker);
+		if (m_play_video && m_present_video != m_play_video)
+		{
+			avdecoder_freeframe(m_vdecoder, m_play_video);
+		}
+		m_play_video = (void*)video;
+	}
 	return 0;
 }
 

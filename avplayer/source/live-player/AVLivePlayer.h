@@ -43,8 +43,9 @@ private:
 	void* m_arender;
 	void* m_vdecoder;
 	void* m_adecoder;
-	void* m_last_video;
-	
+	void* m_play_video;
+	void* m_present_video;
+
 	bool m_running;
 	pthread_t m_thread;
 	ThreadEvent m_event;
