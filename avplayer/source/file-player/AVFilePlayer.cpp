@@ -8,6 +8,8 @@
 #include <string.h>
 #include <assert.h>
 
+#define avpacket_free(pkt) free(pkt)
+
 AVFilePlayer::AVFilePlayer(void* window, avplayer_file_read reader, void* param)
 	:m_window(window)
 	,m_vrender(NULL), m_arender(NULL)
@@ -60,6 +62,18 @@ AVFilePlayer::~AVFilePlayer()
 		avdecoder_destroy(m_vdecoder);
 		m_vdecoder = NULL;
 	}
+
+	while (!m_audioQ.empty())
+	{
+		avpacket_free(m_audioQ.front());
+		m_audioQ.pop_front();
+	}
+
+	while (!m_videoQ.empty())
+	{
+		avpacket_free(m_videoQ.front());
+		m_videoQ.pop_front();
+	}
 }
 
 void AVFilePlayer::Play()
@@ -92,7 +106,7 @@ int AVFilePlayer::OnThread()
 	while (m_running)
 	{
 		int type = 0;
-		struct avpacket_t pkt;
+		struct avpacket_t* pkt;
 		while (m_videoQ.size() + m_audioQ.size() < 20
 			&& m_reader && m_reader(m_param, &pkt, &type) > 0)
 		{
@@ -120,10 +134,11 @@ int AVFilePlayer::OnThread()
 
 void AVFilePlayer::DecodeAudio()
 {
-	struct avpacket_t pkt = m_audioQ.front();
+	struct avpacket_t* pkt = m_audioQ.front();
 	m_audioQ.pop_front();
 
-	int r = avdecoder_input(m_adecoder, &pkt);
+	int r = avdecoder_input(m_adecoder, pkt);
+	avpacket_free(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_adecoder);
@@ -136,16 +151,15 @@ void AVFilePlayer::DecodeAudio()
 			atomic_increment32(&m_audios);
 		}
 	}
-
-	free(pkt.data);
 }
 
 void AVFilePlayer::DecodeVideo()
 {
-	struct avpacket_t pkt = m_videoQ.front();
+	struct avpacket_t* pkt = m_videoQ.front();
 	m_videoQ.pop_front();
 
-	int r = avdecoder_input(m_vdecoder, &pkt);
+	int r = avdecoder_input(m_vdecoder, pkt);
+	avpacket_free(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_vdecoder);
@@ -157,8 +171,6 @@ void AVFilePlayer::DecodeVideo()
 			atomic_increment32(&m_videos);
 		}
 	}
-
-	free(pkt.data);
 }
 
 uint64_t AVFilePlayer::OnAVRender(void* param, int type, const void* frame, int discard)

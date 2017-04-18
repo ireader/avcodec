@@ -47,7 +47,7 @@ private:
 
 	bool m_buffering;
 	int32_t m_videos, m_audios; // frames in avplayer buffer queue
-	typedef std::list<struct avpacket_t> AVPacketQ;
+	typedef std::list<struct avpacket_t*> AVPacketQ;
 	AVPacketQ m_audioQ, m_videoQ;
 
 	avplayer_file_read m_reader;

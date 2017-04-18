@@ -8,11 +8,11 @@ static void* s_reader;
 static void* s_demuxer;
 static struct
 {
-	struct avpacket_t* pkt;
+	struct avpacket_t** pkt;
 	int* type;
 } s_param;
 
-static int file_player_test_read(void* p, struct avpacket_t* pkt, int* type)
+static int file_player_test_read(void* p, struct avpacket_t** pkt, int* type)
 {
 	int tagtype = 0;
 	uint32_t timestamp = 0;
@@ -48,13 +48,15 @@ void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t 
 		return;
 	}
 
-	struct avpacket_t* pkt = s_param.pkt;
+	struct avpacket_t* pkt;
+	pkt = (struct avpacket_t*)malloc(sizeof(*pkt) + bytes);
 	memset(pkt, 0, sizeof(struct avpacket_t));
-	pkt->data = (uint8_t*)malloc(bytes);
+	pkt->data = (uint8_t*)(pkt + 1);
 	pkt->bytes = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
 	memcpy(pkt->data, data, bytes);
+	*s_param.pkt = pkt;
 }
 
 int file_player_test(void* window, const char* flv)
