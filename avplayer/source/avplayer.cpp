@@ -31,14 +31,14 @@ void avplayer_pause(void* p)
 	player->Pause();
 }
 
-int avplayer_input_audio(void* p, const void* pcm, uint64_t pts, uint64_t durationMS, int serial)
+int avplayer_input_audio(void* p, const void* pcm, int64_t pts, uint64_t durationMS, int serial)
 {
 	AVPlayerCore *player = (AVPlayerCore *)p;
 	player->Input(pcm, pts, durationMS, serial);
 	return 0;
 }
 
-int avplayer_input_video(void* p, const void* frame, uint64_t pts, int serial)
+int avplayer_input_video(void* p, const void* frame, int64_t pts, int serial)
 {
 	AVPlayerCore *player = (AVPlayerCore *)p;
 	player->Input(frame, pts, serial);

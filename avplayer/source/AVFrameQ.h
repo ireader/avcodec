@@ -6,7 +6,7 @@
 
 struct AVFrame
 {
-	uint64_t pts;
+	int64_t pts;
 	uint64_t duration; // MS
 	const void* frame;
 	int serial;

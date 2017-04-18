@@ -64,7 +64,7 @@ void AVPlayerCore::Stop()
 	m_event.Signal();
 }
 
-void AVPlayerCore::Input(const void* pcm, uint64_t pts, uint64_t duration, int serial)
+void AVPlayerCore::Input(const void* pcm, int64_t pts, uint64_t duration, int serial)
 {
 	AVFrame audio;
 	audio.pts = pts;
@@ -74,7 +74,7 @@ void AVPlayerCore::Input(const void* pcm, uint64_t pts, uint64_t duration, int s
 	m_audioQ.Write(audio);
 }
 
-void AVPlayerCore::Input(const void* yuv, uint64_t pts, int serial)
+void AVPlayerCore::Input(const void* yuv, int64_t pts, int serial)
 {
 	AVFrame video;
 	video.pts = pts;
@@ -204,7 +204,7 @@ int AVPlayerCore::OnAudio(uint64_t clock)
 int AVPlayerCore::AVSync(uint64_t clock)
 {
 	// current audio playing pts
-	if (m_audio.pts /*+ m_audio.duration*/ < m_aclock.frame_time)
+	if ((uint64_t)m_audio.pts /*+ m_audio.duration*/ < m_aclock.frame_time)
 	{
 		app_log(LOG_WARNING, "AVSync: audio pts: %" PRIu64 ", duration: %" PRIu64 ", frame_time: %" PRIu64 "\n", m_audio.pts, m_audio.duration, m_aclock.frame_time);
 		//assert(0);

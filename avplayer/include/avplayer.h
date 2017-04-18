@@ -33,8 +33,8 @@ void avplayer_play(void* player);
 void avplayer_stop(void* player);
 void avplayer_pause(void* player);
 
-int avplayer_input_audio(void* player, const void* pcm, uint64_t pts, uint64_t durationMS, int serial);
-int avplayer_input_video(void* player, const void* frame, uint64_t pts, int serial);
+int avplayer_input_audio(void* player, const void* pcm, int64_t pts, uint64_t durationMS, int serial);
+int avplayer_input_video(void* player, const void* frame, int64_t pts, int serial);
 
 int64_t avplayer_get_audio_duration(void* player);
 

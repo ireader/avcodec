@@ -20,8 +20,8 @@ public:
 	uint64_t GetAudioDuration(uint64_t clock) const;
 
 public:
-	void Input(const void* pcm, uint64_t pts, uint64_t duration, int serial);
-	void Input(const void* yuv, uint64_t pts, int serial);
+	void Input(const void* pcm, int64_t pts, uint64_t duration, int serial);
+	void Input(const void* yuv, int64_t pts, int serial);
 
 private:
 	static int STDCALL OnThread(void* param);
@@ -50,7 +50,7 @@ private:
 
 	struct avclock_t
 	{
-		uint64_t pts; // (MS), last played audio/video frame PTS
+		int64_t pts; // (MS), last played audio/video frame PTS
 		uint64_t clock; // time(MS), last played audio/video frame time
 		uint64_t frame_time; // frame play time(predict)
 		uint64_t duration; // audio only
