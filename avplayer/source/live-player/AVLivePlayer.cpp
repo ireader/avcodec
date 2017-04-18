@@ -2,6 +2,7 @@
 #include "AVLivePlayer.h"
 #include "video_output.h"
 #include "audio_output.h"
+#include "sys/system.h"
 #include "h264-util.h"
 #include "avdecoder.h"
 #include "avplayer.h"
@@ -14,6 +15,8 @@
 #define VIDEO_DECODED_FRAMES 2
 #define AUDIO_DECODED_FRAMES 2
 
+#define avpacket_free(pkt) free(pkt)
+
 AVLivePlayer::AVLivePlayer(void* window)
 	: m_window(window)
 	, m_vrender(NULL), m_arender(NULL)
@@ -21,6 +24,9 @@ AVLivePlayer::AVLivePlayer(void* window)
 	, m_running(false)
 	, m_buffering(true), m_delay(100)
 	, m_videos(0), m_audios(0)
+	, m_h264_idr(NULL)
+	, m_audio_delay("A-delay")
+	, m_video_delay("V-delay")
 {
 	m_player = avplayer_create(OnAVRender, this);
 	m_vdecoder = avdecoder_create_h264();
@@ -77,13 +83,38 @@ AVLivePlayer::~AVLivePlayer()
 		avdecoder_destroy(m_vdecoder);
 		m_vdecoder = NULL;
 	}
+
+	while (!m_audioQ.empty())
+	{
+		avpacket_free(m_audioQ.front());
+		m_audioQ.pop_front();
+	}
+
+	while (!m_videoQ.empty())
+	{
+		avpacket_free(m_videoQ.front());
+		m_videoQ.pop_front();
+	}
 }
 
 int AVLivePlayer::Input(struct avpacket_t* pkt, bool video)
 {
 	{
 		AutoThreadLocker locker(m_locker);
-		video ? m_videoQ.push_back(*pkt) : m_audioQ.push_back(*pkt);
+		if (video)
+		{
+			// TODO: check frame number
+			if (h264_idr(pkt->data, pkt->bytes))
+			{
+				m_h264_idr = pkt->data;
+			}
+			m_videoQ.push_back(pkt);
+		}
+		else
+		{
+			m_audioQ.push_back(pkt);
+		}
+
 		//app_log(LOG_DEBUG, "[%s] input%s(pts: %" PRId64 ", dts: %" PRId64 ") => v: %d(%d), a: %d(%d)\n", __FUNCTION__, video ? "video" : "audio", pkt->pts, pkt->dts, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
 	}
 
@@ -130,6 +161,8 @@ void AVLivePlayer::Present(void* video)
 		app_log(LOG_ERROR, "[%s] video_output_write(%ld, %ld) => %d\n", __FUNCTION__, frame.pts, frame.dts, r);
 	}
 
+	m_video_delay.Tick((int)(system_time() - frame.pts));
+
 	//avdecoder_freeframe(m_vdecoder, (void*)video);
 }
 
@@ -171,15 +204,16 @@ int AVLivePlayer::OnThread()
 
 void AVLivePlayer::DecodeAudio()
 {
-	struct avpacket_t pkt;
+	struct avpacket_t* pkt;
 	{
 		AutoThreadLocker locker(m_locker);
 		pkt = m_audioQ.front();
 		m_audioQ.pop_front();
-		//app_log(LOG_DEBUG, "[%s] pts: %" PRId64 ", dts: %" PRId64 "\n", __FUNCTION__, pkt.pts, pkt.dts);
+		//app_log(LOG_DEBUG, "[%s] pts: %" PRId64 ", dts: %" PRId64 "\n", __FUNCTION__, pkt->pts, pkt->dts);
 	}
 
-	int r = avdecoder_input(m_adecoder, &pkt);
+	int r = avdecoder_input(m_adecoder, pkt);
+	avpacket_free(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_adecoder);
@@ -193,21 +227,22 @@ void AVLivePlayer::DecodeAudio()
 			AudioDiscard();
 		}
 	}
-
-	free(pkt.data);
 }
 
 void AVLivePlayer::DecodeVideo()
 {
-	struct avpacket_t pkt;
+	struct avpacket_t* pkt;
 	{
 		AutoThreadLocker locker(m_locker);
 		pkt = m_videoQ.front();
 		m_videoQ.pop_front();
-		//app_log(LOG_DEBUG, "[%s] pts: %" PRId64 ", dts: %" PRId64 "\n", __FUNCTION__, pkt.pts, pkt.dts);
+		if (m_h264_idr == pkt->data)
+			m_h264_idr = NULL; // clear last video IDR frame flags
+		//app_log(LOG_DEBUG, "[%s] pts: %" PRId64 ", dts: %" PRId64 "\n", __FUNCTION__, pkt->pts, pkt->dts);
 	}
 
-	int r = avdecoder_input(m_vdecoder, &pkt);
+	int r = avdecoder_input(m_vdecoder, pkt);
+	avpacket_free(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_vdecoder);
@@ -220,8 +255,6 @@ void AVLivePlayer::DecodeVideo()
 			VideoDiscard();
 		}
 	}
-
-	free(pkt.data);
 }
 
 void AVLivePlayer::AudioDiscard()
@@ -229,14 +262,18 @@ void AVLivePlayer::AudioDiscard()
 	if (m_audios < AUDIO_DECODED_FRAMES || avplayer_get_audio_duration(m_player) < m_delay)
 		return;
 
-	AutoThreadLocker locker(m_locker);
-	while (m_audioQ.size() > 1)
+	int n = 0;
 	{
-		struct avpacket_t& pkt = m_audioQ.back();
-		free(pkt.data);
-		app_log(LOG_WARNING, "[%s] discard pts: %" PRId64 ", dts: %" PRId64 ", v: %d(%d), a: %d(%d)\n", __FUNCTION__, pkt.pts, pkt.dts, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
-		m_audioQ.pop_back();
+		AutoThreadLocker locker(m_locker);
+		for (n = 0; !m_audioQ.empty(); ++n)
+		{
+			struct avpacket_t* pkt = m_audioQ.front();
+			avpacket_free(pkt);
+			m_audioQ.pop_front();
+		}
 	}
+
+	if(n > 0) app_log(LOG_WARNING, "Audio discard: %d, v: %d(%d), a: %d(%d)\n", n, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
 }
 
 void AVLivePlayer::VideoDiscard()
@@ -244,26 +281,27 @@ void AVLivePlayer::VideoDiscard()
 	if (m_videos < VIDEO_DECODED_FRAMES || (m_videos + m_videoQ.size()) * VIDEO_INTERVAL_MS < m_delay)
 		return;
 
-	AVPacketQ::reverse_iterator it;
-	AutoThreadLocker locker(m_locker);
-	for (it = m_videoQ.rbegin(); it != m_videoQ.rend(); ++it)
+	int n = 0;
 	{
-		struct avpacket_t& idr = *it;
-		if (h264_idr(idr.data, idr.bytes))
+		AutoThreadLocker locker(m_locker);
+		if (!m_h264_idr)
+			return; // don't have h264 IDR packet
+
+		for (n = 0; !m_videoQ.empty(); ++n)
 		{
-			AVPacketQ::reverse_iterator pkt = m_videoQ.rbegin();
-			while (pkt->data != idr.data)
-			{
-				free(pkt->data);
-				app_log(LOG_WARNING, "[%s] discard pts: %" PRId64 ", dts: %" PRId64 ", v: %d(%d), a: %d(%d)\n", __FUNCTION__, pkt->pts, pkt->dts, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
+			struct avpacket_t* pkt = m_videoQ.front();
+			if (pkt->data == m_h264_idr)
+				break;
 
-				m_videoQ.pop_back();
-				pkt = m_videoQ.rbegin();
-			}
-
-			it = m_videoQ.rbegin();
+			avpacket_free(pkt);
+			m_videoQ.pop_front();
 		}
+
+		// check again
+		assert(!m_videoQ.empty() && m_videoQ.front()->data == m_h264_idr);
 	}
+	
+	if(n > 0) app_log(LOG_WARNING, "Video discard: %d, v: %d(%d), a: %d(%d)\n", n, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
 }
 
 uint64_t AVLivePlayer::OnAVRender(void* param, int type, const void* frame, int discard)
@@ -317,7 +355,6 @@ uint64_t AVLivePlayer::OnPlayVideo(const void* video, int discard)
 		return 0;
 	}
 
-
 	if (m_window)
 	{
 		Present((void*)video);
@@ -364,11 +401,12 @@ uint64_t AVLivePlayer::OnPlayAudio(const void* audio, int discard)
 		app_log(LOG_ERROR, "[%s] audio_output_write(%d, %ld, %ld) => %d\n", __FUNCTION__, frame.linesize[0], frame.pts, frame.dts, r);
 	}
 
-	int sample_rate = frame.sample_rate;
-	avdecoder_freeframe(m_adecoder, (void*)audio);
-
 	// calculate audio buffer sample duration (ms)
 	int samples = audio_output_getavailablesamples(m_arender);
-	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%dms)\n", __FUNCTION__, samples, (int)((uint64_t)samples * 1000 / sample_rate));
-	return samples >= 0 ? (uint64_t)samples * 1000 / sample_rate : 0;
+	int duration = (uint64_t)samples * 1000 / frame.sample_rate;
+	m_audio_delay.Tick((int)(system_time() - frame.pts) + duration);
+	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%dms)\n", __FUNCTION__, samples, duration);
+
+	avdecoder_freeframe(m_adecoder, (void*)audio);
+	return samples >= 0 ? duration : 0;
 }

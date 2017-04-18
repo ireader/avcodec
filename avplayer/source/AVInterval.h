@@ -18,20 +18,23 @@ public:
 	void Tick(uint64_t clock)
 	{
 		if (0 != m_clock) {
-			int diff = (int)(clock - m_clock);
-			if (diff > m_max)
-				m_max = diff;
-			if (diff < m_min)
-				m_min = diff;
-			m_total += diff;
+			Tick((int)(clock - m_clock));
 		}
+		m_clock = clock;
+	}
 
-		if (++m_count == 50) {
+	void Tick(int diff)
+	{
+		if (diff > m_max)
+			m_max = diff;
+		if (diff < m_min)
+			m_min = diff;
+		m_total += diff;
+
+		if (++m_count == 100) {
 			app_log(LOG_DEBUG, "%s|AVG: %0.2f, MIN: %d, MAX: %d\n", m_tag.c_str(), m_total * 1.0f / m_count, m_min, m_max);
 			Reset();
 		}
-
-		m_clock = clock;
 	}
 
 private:

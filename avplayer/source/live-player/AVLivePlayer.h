@@ -7,6 +7,7 @@
 #include "sys/thread.h"
 #include "sys/sync.hpp"
 #include <list>
+#include "../AVInterval.h"
 
 class AVLivePlayer
 {
@@ -54,8 +55,12 @@ private:
 	bool m_buffering;
 	uint32_t m_delay;
 	int32_t m_videos, m_audios; // frames in avplayer buffer queue
-	typedef std::list<struct avpacket_t> AVPacketQ;
+	typedef std::list<struct avpacket_t*> AVPacketQ;
 	AVPacketQ m_audioQ, m_videoQ;
+	const uint8_t* m_h264_idr;
+
+	AVInterval m_audio_delay;
+	AVInterval m_video_delay;
 };
 
 #endif /* !_AVLivePlayer_h_ */
