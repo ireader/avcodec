@@ -10,8 +10,8 @@ struct av_class_t
 	const void* avclass;
 };
 
-static const char* s_name[4];
 static struct av_class_t s_classes[4][N_CLASSES];
+static const struct av_class_t* s_default[4];
 
 void av_list(int avtype, void(*item)(void* param, const char*), void* param)
 {
@@ -46,7 +46,7 @@ int av_set_name(int avtype, const char* name)
 	avclass = av_find(avtype, name);
 	if (NULL == avclass) return -1;
 
-	s_name[avtype] = avclass->name;
+	s_default[avtype] = avclass;
 	return 0;
 }
 
@@ -55,20 +55,15 @@ const char* av_get_name(int avtype)
 	if (avtype < AV_AUDIO_CAPTURE || avtype > AV_VIDEO_RENDER)
 		return NULL;
 
-	return s_name[avtype];
+	return s_default[avtype] ? s_default[avtype]->name : NULL;
 }
 
 const void* av_get_class(int avtype)
 {
-	struct av_class_t* avclass;
 	if (avtype < AV_AUDIO_CAPTURE || avtype > AV_VIDEO_RENDER)
 		return NULL;
 
-	if (NULL != s_name[avtype])
-		avclass = av_find(avtype, s_name[avtype]);
-	else
-		avclass = &s_classes[avtype][0];
-	return avclass->avclass;
+	return s_default[avtype] ? s_default[avtype]->avclass : s_classes[avtype][0].avclass;
 }
 
 int av_set_class(int avtype, const char* name, const void* cls)
