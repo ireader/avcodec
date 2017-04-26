@@ -208,5 +208,5 @@ int alsa_player_register()
 	ao.get_available_sample = alsa_get_samples;
 	ao.get_volume = alsa_get_volume;
 	ao.set_volume = alsa_set_volume;
-	return av_set_class(AV_AUDIO_OUTPUT, "alsa", &ao);
+	return av_set_class(AV_AUDIO_PLAYER, "alsa", &ao);
 }

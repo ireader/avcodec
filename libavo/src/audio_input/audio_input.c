@@ -15,7 +15,7 @@ void* audio_input_open(int channels, int bits_per_sample, int samples_per_second
 	if (NULL == h)
 		return NULL;
 
-	h->ai = (const audio_input_t*)av_get_class(AV_AUDIO_CAPTURE);
+	h->ai = (const audio_input_t*)av_get_class(AV_AUDIO_RECORDER);
 	if (NULL == h->ai)
 	{
 		audio_input_close(h);

@@ -267,7 +267,7 @@ static int GetVolume(void* /*object*/)
 	return -1;
 }
 
-extern "C" int alsa_capture_register()
+extern "C" int alsa_recoder_register()
 {
 	static audio_input_t ai;
 	memset(&ai, 0, sizeof(ai));
@@ -278,5 +278,5 @@ extern "C" int alsa_capture_register()
 	ai.setvolume = SetVolume;
 	ai.pause = Pause;
 	ai.reset = Reset;
-	return av_set_class(AV_AUDIO_CAPTURE, "alsa", &ai);
+	return av_set_class(AV_AUDIO_RECORDER, "alsa", &ai);
 }

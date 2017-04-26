@@ -15,7 +15,7 @@ void* audio_output_open(int channels, int bits_per_sample, int samples_per_secon
 	if (NULL == h)
 		return NULL;
 	
-	h->ao = (const audio_output_t*)av_get_class(AV_AUDIO_OUTPUT);
+	h->ao = (const audio_output_t*)av_get_class(AV_AUDIO_PLAYER);
 	if (NULL == h->ao)
 	{
 		audio_output_close(h);

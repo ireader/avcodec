@@ -6,10 +6,10 @@ extern "C" {
 #endif
 
 enum {
-	AV_AUDIO_CAPTURE = 0,
-	AV_AUDIO_OUTPUT,
-	AV_VIDEO_CAPTURE,
-	AV_VIDEO_RENDER,
+	AV_AUDIO_RECORDER = 0,	// audio input
+	AV_AUDIO_PLAYER,		// audio output
+	AV_VIDEO_CAPTURE,		// video input
+	AV_VIDEO_RENDER,		// video output
 };
 
 void av_list(int avtype, void (*item)(void* param, const char*), void* param);

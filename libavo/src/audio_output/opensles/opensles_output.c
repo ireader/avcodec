@@ -13,7 +13,7 @@ static int opensles_close(void* p)
 	player = (struct opensles_player_t*)p;
 	opensles_player_destroy(player);
 	opensles_outputmix_destroy(player);
-	opensles_engine_destroy(player);
+	opensles_engine_destroy(&player->engineObject, &player->engine);
 
 	if (player->ptr)
 	{
@@ -39,7 +39,7 @@ static void* opensles_open(int channels, int bits_per_samples, int samples_per_s
 	player->ptr = (sl_uint8_t*)malloc(OPENSLES_BUFFERS * player->samples_per_buffer * player->bytes_per_sample);
 
 	if (NULL == player->ptr
-		|| 0 != opensles_engine_create(player)
+		|| 0 != opensles_engine_create(&player->engineObject, &player->engine)
 		|| 0 != opensles_outputmix_create(player)
 		|| 0 != opensles_player_create(player, channels, bits_per_samples, samples_per_seconds))
 	{
@@ -211,5 +211,5 @@ int opensles_player_register()
 	ao.get_available_sample = opensles_get_samples;
 	ao.get_volume = opensles_get_volume;
 	ao.set_volume = opensles_set_volume;
-	return av_set_class(AV_AUDIO_OUTPUT, "opensles", &ao);
+	return av_set_class(AV_AUDIO_PLAYER, "opensles", &ao);
 }

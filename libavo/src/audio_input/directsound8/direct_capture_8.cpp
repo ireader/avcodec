@@ -244,7 +244,7 @@ static int GetVolume(void* ai)
 	return -1;
 }
 
-extern "C" int directsound8_capture_register()
+extern "C" int directsound8_recorder_register()
 {
 	HMODULE hDSound = LoadLibraryEx("dsound.dll", NULL, 0);
 	pDirectSoundCaptureCreate8 = (fpDirectSoundCaptureCreate8)GetProcAddress(hDSound, "DirectSoundCaptureCreate8");
@@ -260,5 +260,5 @@ extern "C" int directsound8_capture_register()
 	ai.setvolume = SetVolume;
 	ai.pause = Pause;
 	ai.reset = Reset;
-	return av_set_class(AV_AUDIO_CAPTURE, "directsound8", &ai);
+	return av_set_class(AV_AUDIO_RECORDER, "directsound8", &ai);
 }

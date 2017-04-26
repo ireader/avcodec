@@ -17,6 +17,7 @@ LOCAL_SRC_FILES += $(wildcard src/audio_output/*.c)
 LOCAL_SRC_FILES += $(wildcard src/audio_output/*.cpp)
 LOCAL_SRC_FILES += $(wildcard src/render/*.c)
 LOCAL_SRC_FILES += $(wildcard src/render/*.cpp)
+LOCAL_SRC_FILES += src/audio_input/opensles/opensles_input.c
 LOCAL_SRC_FILES += src/audio_output/opensles/opensles_output.c
 LOCAL_SRC_FILES += src/render/opengles2/gles2_render.c
 

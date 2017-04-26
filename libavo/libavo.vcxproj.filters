@@ -52,6 +52,9 @@
     <Filter Include="Source Files\audio-input\alsa">
       <UniqueIdentifier>{a04d3de2-b910-4d5e-aca6-c1acba63c8e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\audio-input\opensles">
+      <UniqueIdentifier>{42a56ba5-e663-45c0-a002-b190b32a274b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\GDIText2Bitmap.c">
