@@ -1,7 +1,7 @@
 #ifndef _alsa_format_h_
 #define _alsa_format_h_
 
-static snd_pcm_format_t alsa_format(int sample_bits)
+static snd_pcm_format_t alsa_format(unsigned int sample_bits)
 {
 	switch (sample_bits)
 	{

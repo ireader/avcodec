@@ -23,7 +23,7 @@ static int opensles_close(void* p)
 	free(player);
 }
 
-static void* opensles_open(int channels, int bits_per_samples, int samples_per_seconds)
+static void* opensles_open(int channels, int bits_per_samples, int samples_per_second, int samples)
 {
 	int r;
 	struct opensles_player_t* player;
@@ -33,15 +33,16 @@ static void* opensles_open(int channels, int bits_per_samples, int samples_per_s
 	memset(player, 0, sizeof(struct opensles_player_t));
 	player->channels = channels;
 	player->sample_bits = bits_per_samples;
-	player->sample_rate = samples_per_seconds;
+	player->sample_rate = samples_per_second;
 	player->bytes_per_sample = player->channels * player->sample_bits / 8;
 	player->samples_per_buffer = player->sample_rate * OPENSLES_TIME / 1000;
-	player->ptr = (sl_uint8_t*)malloc(OPENSLES_BUFFERS * player->samples_per_buffer * player->bytes_per_sample);
+	player->buffer_count = samples * 1000 / player->sample_rate / OPENSLES_TIME;
+	player->ptr = (sl_uint8_t*)malloc(player->buffer_count * player->samples_per_buffer * player->bytes_per_sample);
 
 	if (NULL == player->ptr
 		|| 0 != opensles_engine_create(&player->engineObject, &player->engine)
 		|| 0 != opensles_outputmix_create(player)
-		|| 0 != opensles_player_create(player, channels, bits_per_samples, samples_per_seconds))
+		|| 0 != opensles_player_create(player, player->channels, player->sample_bits, player->sample_rate))
 	{
 		opensles_close(player);
 		return NULL;
@@ -64,11 +65,11 @@ static int opensles_write(void* p, const void* samples, int count)
 	if (SL_RESULT_SUCCESS != ret)
 		return ret;
 
-	assert(state.count <= OPENSLES_BUFFERS);
-	if (state.count >= OPENSLES_BUFFERS)
+	assert(state.count <= player->buffer_count);
+	if (state.count >= player->buffer_count)
 		return -1; // no more space to write data
 
-	for (i = 0; i < count && state.count < OPENSLES_BUFFERS; ++state.count)
+	for (i = 0; i < count && state.count < player->buffer_count; ++state.count)
 	{
 		free = player->samples_per_buffer - (player->offset % player->samples_per_buffer);
 		if (count - i >= free)
@@ -79,14 +80,14 @@ static int opensles_write(void* p, const void* samples, int count)
 				return ret > 0 ? -ret : ret;
 
 			i += free;
-			player->offset = (player->offset + free) % (player->samples_per_buffer * OPENSLES_BUFFERS);
+			player->offset = (player->offset + free) % (player->samples_per_buffer * player->buffer_count);
 		}
 		else
 		{
 			memcpy(player->ptr + player->offset * player->bytes_per_sample, src + i * player->bytes_per_sample, (count - i) * player->bytes_per_sample);
 			player->offset += count - i;
 			i = count;
-			assert(player->offset < player->samples_per_buffer * OPENSLES_BUFFERS);
+			assert(player->offset < player->samples_per_buffer * player->buffer_count);
 			break;
 		}
 	}
@@ -128,23 +129,6 @@ static int opensles_flush(void* p)
 		return (*player->bufferQ)->Clear(player->bufferQ);
 	}
 	return -1;
-}
-
-static int opensles_get_info(void *p, int *channels, int *bits_per_sample, int *samples_per_second)
-{
-	struct opensles_player_t* player;
-	player = (struct opensles_player_t*)p;
-	*channels = player->channels;
-	*bits_per_sample = player->sample_bits;
-	*samples_per_second = player->sample_rate;
-	return 0;
-}
-
-static int opensles_get_buffer_size(void* p)
-{
-	struct opensles_player_t* player;
-	player = (struct opensles_player_t*)p;
-	return OPENSLES_BUFFERS * player->samples_per_buffer;
 }
 
 static int opensles_get_samples(void* p)
@@ -206,10 +190,8 @@ int opensles_player_register()
 	ao.play = opensles_play;
 	ao.pause = opensles_pause;
 	ao.reset = opensles_flush;
-	ao.get_info = opensles_get_info;
-	ao.get_buffer_size = opensles_get_buffer_size;
-	ao.get_available_sample = opensles_get_samples;
 	ao.get_volume = opensles_get_volume;
 	ao.set_volume = opensles_set_volume;
+	ao.get_samples = opensles_get_samples;
 	return av_set_class(AV_AUDIO_PLAYER, "opensles", &ao);
 }

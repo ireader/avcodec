@@ -27,8 +27,6 @@ EXPORTS
    audio_output_play
    audio_output_pause
    audio_output_reset
-   audio_output_getbuffersize
-   audio_output_getavailablesamples
-   audio_output_getinfo
+   audio_output_getsamples
    audio_output_setvolume
    audio_output_getvolume

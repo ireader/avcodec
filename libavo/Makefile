@@ -20,7 +20,7 @@ INCLUDES = . \
 SOURCE_PATHS = src src/audio_input src/audio_output src/render
 SOURCE_FILES = $(foreach dir,$(SOURCE_PATHS),$(wildcard $(dir)/*.cpp))
 SOURCE_FILES += $(foreach dir,$(SOURCE_PATHS),$(wildcard $(dir)/*.c))
-SOURCE_FILES += 
+SOURCE_FILES += src/audio_output/alsa/alsa_player.c
 
 SOURCE_FILES := $(filter-out $(_SOURCE_FILES),$(SOURCE_FILES))
 

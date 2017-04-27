@@ -9,7 +9,6 @@
 #include <assert.h>
 
 #define MIN(a, b) ((a)<(b) ? (a) : (b))
-#define BUFFER_TIME	(1000)
 
 static GUID s_IID_IDirectSoundBuffer8 = { 0x6825a449, 0x7524, 0x4d82, { 0x92, 0x0f, 0x50, 0xe3, 0x6a, 0xb3, 0xab, 0x1e } };
 static pDirectSoundCreate8 fpDirectSoundCreate8;
@@ -33,7 +32,7 @@ DxSound8Out::~DxSound8Out()
 	Close();
 }
 
-int DxSound8Out::Open(int channels, int bitsPerSamples, int samplesPerSec)
+int DxSound8Out::Open(int channels, int bitsPerSamples, int samplesPerSec, int count)
 {
 	assert(1 == channels || 2 == channels);
 	assert(8 == bitsPerSamples || 16 == bitsPerSamples || 32 == bitsPerSamples);
@@ -41,6 +40,7 @@ int DxSound8Out::Open(int channels, int bitsPerSamples, int samplesPerSec)
 	m_channels = channels;
 	m_bitsPerSample = bitsPerSamples;
 	m_samplesPerSec = samplesPerSec;
+	m_samples = count;
 
 	assert(NULL==m_sound && NULL==m_dsb);
 	HRESULT hr = fpDirectSoundCreate8(NULL, &m_sound, NULL);
@@ -79,7 +79,7 @@ int DxSound8Out::Open(int channels, int bitsPerSamples, int samplesPerSec)
 	ZeroMemory(&desc, sizeof(DSBUFFERDESC));
 	desc.dwSize = sizeof(DSBUFFERDESC);
 	desc.dwFlags = DSBCAPS_GLOBALFOCUS|DSBCAPS_CTRLFX|DSBCAPS_CTRLVOLUME|DSBCAPS_GETCURRENTPOSITION2/*|DSBCAPS_CTRLPOSITIONNOTIFY*/;
-	desc.dwBufferBytes = GetBufferSize() * channels * bitsPerSamples / 8;
+	desc.dwBufferBytes = m_samples * channels * bitsPerSamples / 8;
 	desc.lpwfxFormat = (LPWAVEFORMATEX)&format;
 
 	LPDIRECTSOUNDBUFFER lpBuffer = NULL;
@@ -135,12 +135,12 @@ BOOL DxSound8Out::GetSamplesInfo(DWORD& dwWrite, DWORD& dwLen) const
 {
 	DWORD dwPlay = 0;
 	DWORD dwTick = GetTickCount();
-	DWORD bufferSize = GetBufferSize()*m_channels*m_bitsPerSample/8;
+	DWORD bufferSize = m_samples * m_channels * m_bitsPerSample/8;
 	assert(m_segment.len <= bufferSize);
 
 	if(FAILED(m_dsb->GetCurrentPosition(&dwPlay, &dwWrite)))
 		return FALSE;
-	assert(dwWrite % (m_channels*m_bitsPerSample/8) == 0);
+	assert(dwWrite % (m_channels * m_bitsPerSample/8) == 0);
 
 	bool empty = false;
 	if(dwWrite < m_segment.pos)
@@ -149,14 +149,14 @@ BOOL DxSound8Out::GetSamplesInfo(DWORD& dwWrite, DWORD& dwLen) const
 		empty = (m_segment.pos + m_segment.len) < dwWrite ;
 
 	assert(0==m_segment.len || m_segment.tick > 0);
-	if(m_segment.len > 0 && dwTick - m_segment.tick > BUFFER_TIME)
+	if(m_segment.len > 0 && dwTick - m_segment.tick > (DWORD)(m_samples*1000/m_samplesPerSec))
 		empty = true;
 
 	dwLen = empty ? 0 : (m_segment.pos + m_segment.len + bufferSize - (dwWrite+bufferSize)) % bufferSize;
 	return TRUE;
 }
 
-int DxSound8Out::GetAvailSample() const
+int DxSound8Out::GetSamples() const
 {
 	DWORD dwLen = 0;
 	DWORD dwWrite = 0;
@@ -164,11 +164,6 @@ int DxSound8Out::GetAvailSample() const
 		return 0;
 
 	return (dwLen * 8) / (m_channels * m_bitsPerSample);
-}
-
-int DxSound8Out::GetBufferSize() const
-{
-	return m_samplesPerSec * BUFFER_TIME / 1000;
 }
 
 int DxSound8Out::Write(const void* samples, int count)
@@ -180,7 +175,7 @@ int DxSound8Out::Write(const void* samples, int count)
 	if(!GetSamplesInfo(dwWrite, dwLen))
 		return 0;
 
-	DWORD bufferSize = GetBufferSize()*m_channels*m_bitsPerSample/8;
+	DWORD bufferSize = m_samples * m_channels * m_bitsPerSample/8;
 	DWORD offset = (dwWrite + dwLen) % bufferSize;
 	DWORD bytes = WriteSamples(offset, samples, count*m_channels*m_bitsPerSample/8);
 
@@ -308,20 +303,13 @@ int DxSound8Out::GetVolume() const
 	return volume;
 }
 
-void DxSound8Out::GetInfo(int &channels, int &bits_per_sample, int &samples_per_second) const
-{
-	channels = m_channels;
-	bits_per_sample = m_bitsPerSample;
-	samples_per_second = m_samplesPerSec;
-}
-
 //////////////////////////////////////////////////////////////////////////
 ///
 //////////////////////////////////////////////////////////////////////////
-static void* Open(int channels, int bits_per_samples, int samples_per_seconds)
+static void* Open(int channels, int bits_per_samples, int samples_per_seconds, int samples)
 {
 	DxSound8Out* obj = new DxSound8Out();
-	int r = obj->Open(channels, bits_per_samples, samples_per_seconds);
+	int r = obj->Open(channels, bits_per_samples, samples_per_seconds, samples);
 	if(r < 0)
 	{
 		delete obj;
@@ -335,11 +323,6 @@ static int Close(void* ao)
 	obj->Close();
 	delete obj;
 	return 0;
-}
-static int IsOpened(void* ao)
-{
-	DxSound8Out* obj = (DxSound8Out*)ao;
-	return obj->IsOpened()?1:0;
 }
 static int Write(void* ao, const void* samples, int count)
 {
@@ -361,15 +344,10 @@ static int Reset(void* ao)
 	DxSound8Out* obj = (DxSound8Out*)ao;
 	return obj->Reset();
 }
-static int GetBufferSize(void* ao)
+static int GetSamples(void* ao)
 {
 	DxSound8Out* obj = (DxSound8Out*)ao;
-	return obj->GetBufferSize();
-}
-static int GetAvailSample(void* ao)
-{
-	DxSound8Out* obj = (DxSound8Out*)ao;
-	return obj->GetAvailSample();
+	return obj->GetSamples();
 }
 static int SetVolume(void* ao, int v)
 {
@@ -380,12 +358,6 @@ static int GetVolume(void* ao, int *v)
 {
 	DxSound8Out* obj = (DxSound8Out*)ao;
 	*v = obj->GetVolume();
-	return 0;
-}
-static int AudioGetInfo(void *ao, int *channels, int *bits_per_sample, int *samples_per_second)
-{
-	DxSound8Out* obj = (DxSound8Out*)ao;
-	obj->GetInfo(*channels, *bits_per_sample, *samples_per_second);
 	return 0;
 }
 
@@ -404,10 +376,8 @@ extern "C" int directsound8_player_register()
 	ao.play = Play;
 	ao.pause = Pause;
 	ao.reset = Reset;
-	ao.get_info = AudioGetInfo;
-	ao.get_buffer_size = GetBufferSize;
-	ao.get_available_sample = GetAvailSample;
 	ao.get_volume = GetVolume;
 	ao.set_volume = SetVolume;
+	ao.get_samples = GetSamples;
 	return av_set_class(AV_AUDIO_PLAYER, "directsound8", &ao);
 }

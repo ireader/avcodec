@@ -10,22 +10,19 @@ public:
 	~DxSound8Out();
 
 public:
-	int Open(int channels, int bitsPerSamples, int samplesPerSec);
+	int Open(int channels, int bitsPerSamples, int samplesPerSec, int samples);
 	int Close();
 	int Reset();
 	int Pause();
 	int Play();
 
 	bool IsOpened() const;
-	int GetBufferSize() const;
-	int GetAvailSample() const;
+	int GetSamples() const;
 	
 	int Write(const void* samples, int count);	
 
 	int SetVolume(int volume);
 	int GetVolume() const;
-
-	void GetInfo(int &channels, int &bits_per_sample, int &samples_per_second) const;
 
 private:
 	BOOL GetSamplesInfo(DWORD& dwWrite, DWORD& samples) const;
@@ -35,6 +32,7 @@ private:
 	int m_channels;
 	int m_bitsPerSample;
 	int m_samplesPerSec;
+	int m_samples; // buffer sample count
 
 	struct Segment
 	{

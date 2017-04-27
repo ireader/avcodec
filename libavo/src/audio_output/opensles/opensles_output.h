@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #define OPENSLES_TIME 10
-#define OPENSLES_BUFFERS 200
 
 struct opensles_player_t
 {
@@ -26,6 +25,7 @@ struct opensles_player_t
 	int sample_rate;
 	int bytes_per_sample;
 	int samples_per_buffer;
+	int buffer_count;
 
 	sl_uint8_t* ptr;
 	size_t offset;

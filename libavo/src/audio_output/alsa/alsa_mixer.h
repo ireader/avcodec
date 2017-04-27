@@ -40,7 +40,7 @@ static int alsa_mixer_set_volume(snd_mixer_t* mixer, int volume)
 			snd_mixer_selem_get_playback_volume_range(e, &min, &max);
 
 			volume = ((long long)(volume & 0xFFFF) * (max - min) + 0xFFFF / 2) / 0xFFFF; // map (0-0xFFFF) to volume range
-			printf("mixer volume range: %ld-%ld, set: %d\n", min, max, volume);
+			//printf("mixer volume range: %ld-%ld, set: %d\n", min, max, volume);
 
 			snd_mixer_selem_set_playback_volume_all(e, volume);
 			return 0;
@@ -66,10 +66,10 @@ static int alsa_mixer_get_volume(snd_mixer_t* mixer, int* volume)
 
 			v = 0;
 			snd_mixer_selem_get_playback_volume(e, SND_MIXER_SCHN_FRONT_LEFT, &v);
-			printf("mixer volume range[%ld-%ld], current: %ld", min, max, v);
+			//printf("mixer volume range[%ld-%ld], current: %ld", min, max, v);
 
 			*volume = ((long long)v * 0xFFFF + (max - min) / 2) / (max - min); // map volume range to (0-0xFFFF)
-			printf(" map: %ld\n", *volume);
+			//printf(" map: %ld\n", *volume);
 			return 0;
 		}
 	}

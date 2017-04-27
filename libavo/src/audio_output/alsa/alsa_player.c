@@ -16,17 +16,11 @@
 struct alsa_player_t
 {
 	snd_pcm_t* handle;
-	int channels;
-	int sample_bits;
-	int sample_rate;
-	int samples;
+	unsigned int channels;
+	unsigned int sample_bits;
+	unsigned int sample_rate;
+	snd_pcm_uframes_t samples;
 };
-
-static int IsOpened(void* object)
-{
-	struct alsa_player_t* ao = (struct alsa_player_t*)object;
-	return NULL==ao->handle?0:1;
-}
 
 static int alsa_close(void* object)
 {
@@ -40,7 +34,7 @@ static int alsa_close(void* object)
 	return 0;
 }
 
-static void* alsa_open(int channels, int bits_per_samples, int samples_per_seconds)
+static void* alsa_open(int channels, int bits_per_sample, int samples_per_second, int samples)
 {
 	int r;
 	snd_pcm_format_t format;
@@ -49,8 +43,12 @@ static void* alsa_open(int channels, int bits_per_samples, int samples_per_secon
 	if(NULL == ao)
 		return NULL;
 	memset(ao, 0, sizeof(struct alsa_player_t));
+	ao->samples = samples;
+	ao->channels = channels;
+	ao->sample_bits = bits_per_sample;
+	ao->sample_rate = samples_per_second;
 
-	format = alsa_format(bits_per_samples);
+	format = alsa_format(ao->sample_bits);
 	if (SND_PCM_FORMAT_UNKNOWN == format)
 	{
 		alsa_close(ao);
@@ -63,12 +61,12 @@ static void* alsa_open(int channels, int bits_per_samples, int samples_per_secon
 	r = snd_pcm_open(&ao->handle, DEVICE_NAME, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
 	if(r < 0)
 	{
-		printf("alsa snd_pcm_open error:%s\r\n", snd_strerror(r));
+		printf("alsa snd_pcm_open(%s) error:%s\r\n", DEVICE_NAME, snd_strerror(r));
 		alsa_close(ao);
 		return NULL;
 	}
 
-	r = alsa_hw_param(ao->handle, format, channels, samples_per_seconds);
+	r = alsa_hw_param(ao->handle, format, ao->channels, &ao->sample_rate, &ao->samples);
 	if(r < 0)
 	{
 		printf("snd_pcm_hw_params: %s\n", snd_strerror(r));
@@ -76,10 +74,7 @@ static void* alsa_open(int channels, int bits_per_samples, int samples_per_secon
 		return NULL;
 	}
 
-	ao->channels = channels;
-	ao->sample_bits = bits_per_samples;
-	ao->sample_rate = samples_per_seconds;
-	ao->samples = ao->sample_rate;
+	
 	return ao;
 }
 
@@ -122,21 +117,6 @@ static int alsa_reset(void* object)
 	return 0;
 }
 
-static int alsa_get_info(void* object, int *channels, int *bits_per_sample, int *samples_per_second)
-{
-	struct alsa_player_t* ao = (struct alsa_player_t*)object;
-	*channels = ao->channels;
-	*bits_per_sample = ao->sample_bits;
-	*samples_per_second = ao->sample_rate;
-	return 0;
-}
-
-static int alsa_get_buffer(void* object)
-{
-	struct alsa_player_t* ao = (struct alsa_player_t*)object;
-	return ao->samples;
-}
-
 static int alsa_get_samples(void* object)
 {
 	snd_pcm_state_t state;
@@ -157,7 +137,7 @@ static int alsa_get_samples(void* object)
 	//snd_pcm_sframes_t frames = snd_pcm_avail(ao->handle); // exact avail value
 	if(frames < 0)
 	{
-		printf("space: samples: %d, frames: %d, err: %s\n", ao->samples, (int)frames, snd_strerror(frames));
+		printf("space: samples: %d, frames: %d, err: %s\n", (int)ao->samples, (int)frames, snd_strerror(frames));
 		return 0;
 	}
 	return ao->samples <= frames ? 0 : ao->samples - frames;
@@ -203,9 +183,7 @@ int alsa_player_register()
 	ao.play = alsa_play;
 	ao.pause = alsa_pause;
 	ao.reset = alsa_reset;
-	ao.get_info = alsa_get_info;
-	ao.get_buffer_size = alsa_get_buffer;
-	ao.get_available_sample = alsa_get_samples;
+	ao.get_samples = alsa_get_samples;
 	ao.get_volume = alsa_get_volume;
 	ao.set_volume = alsa_set_volume;
 	return av_set_class(AV_AUDIO_PLAYER, "alsa", &ao);

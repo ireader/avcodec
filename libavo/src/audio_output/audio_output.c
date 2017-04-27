@@ -8,7 +8,7 @@ struct ao_context_t
 	void* id;
 };
 
-void* audio_output_open(int channels, int bits_per_sample, int samples_per_second)
+void* audio_output_open(int channels, int bits_per_sample, int samples_per_second, int samples)
 {
 	struct ao_context_t* h;
 	h = (struct ao_context_t*)malloc(sizeof(struct ao_context_t));
@@ -22,7 +22,7 @@ void* audio_output_open(int channels, int bits_per_sample, int samples_per_secon
 		return NULL;
 	}
 
-	h->id = h->ao->open(channels, bits_per_sample, samples_per_second);
+	h->id = h->ao->open(channels, bits_per_sample, samples_per_second, samples);
 	if (NULL == h->id)
 	{
 		audio_output_close(h);
@@ -65,23 +65,10 @@ int audio_output_reset(void* ao)
 	return h->ao->reset(h->id);
 }
 
-int audio_output_getbuffersize(void* ao)
+int audio_output_getsamples(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->get_buffer_size(h->id);
-}
-
-int audio_output_getavailablesamples(void* ao)
-{
-	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->get_available_sample(h->id);
-}
-
-int audio_output_getinfo(void* ao, int *channel, int *bits_per_sample, int *samples_per_second)
-{
-	struct ao_context_t* h;
-	h = (struct ao_context_t*)ao;
-	return h->ao->get_info(h->id, channel, bits_per_sample, samples_per_second);
+	return h->ao->get_samples(h->id);
 }
 
 int audio_output_getvolume(void* ao, int* v)
