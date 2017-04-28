@@ -154,9 +154,11 @@
     <ClCompile Include="source\live-player\avplayer-live.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AVFilter.h" />
     <ClInclude Include="include\avplayer.h" />
     <ClInclude Include="include\avplayer-file.h" />
     <ClInclude Include="include\avplayer-live.h" />
+    <ClInclude Include="include\VOFilter.h" />
     <ClInclude Include="source\AVFrameQ.h" />
     <ClInclude Include="source\AVInterval.h" />
     <ClInclude Include="source\AVPlayerCore.h" />

@@ -1,5 +1,5 @@
-#ifndef _file_player_h_
-#define _file_player_h_
+#ifndef _avplayer_file_h_
+#define _avplayer_file_h_
 
 #include <stdint.h>
 #include "avpacket.h"
@@ -25,4 +25,4 @@ void avplayer_file_reset(void* player);
 #if defined(__cplusplus)
 }
 #endif
-#endif /* !_file_player_h_ */
+#endif /* !_avplayer_file_h_ */

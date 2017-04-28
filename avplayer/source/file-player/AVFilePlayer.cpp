@@ -1,8 +1,8 @@
 #include "AVFilePlayer.h"
-#include "video_output.h"
 #include "audio_output.h"
 #include "avdecoder.h"
 #include "avplayer.h"
+#include "VOFilter.h"
 #include "app-log.h"
 #include <stdlib.h>
 #include <string.h>
@@ -12,10 +12,11 @@
 
 AVFilePlayer::AVFilePlayer(void* window, avplayer_file_read reader, void* param)
 	:m_window(window)
-	,m_vrender(NULL), m_arender(NULL)
+	,m_arender(NULL)
 	,m_running(false)
 	,m_videos(0), m_audios(0)
 	,m_reader(reader), m_param(param)
+	,m_vfilter(new VOFilter(window))
 {
 	m_player = avplayer_create(OnAVRender, this);
 	m_vdecoder = avdecoder_create_h264();
@@ -43,12 +44,6 @@ AVFilePlayer::~AVFilePlayer()
 	{
 		audio_output_close(m_arender);
 		m_arender = NULL;
-	}
-
-	if (m_vrender)
-	{
-		video_output_close(m_vrender);
-		m_vrender = NULL;
 	}
 
 	if (m_adecoder)
@@ -227,17 +222,12 @@ uint64_t AVFilePlayer::OnPlayVideo(const void* video, int discard)
 	struct avframe_t frame;
 	avdecoder_frame_to(video, &frame);
 
-	// open and play video in same thread
-	if (NULL == m_vrender)
-	{
-		m_vrender = video_output_open(m_window, frame.format, frame.width, frame.height);
-		if (NULL == m_vrender) return 0;
-	}
+	//uint8_t* u = frame.data[1];
+	//frame.data[1] = frame.data[2];
+	//frame.data[2] = u;
 
-	uint8_t* u = frame.data[1];
-	frame.data[1] = frame.data[2];
-	frame.data[2] = u;
-	int r = video_output_write(m_vrender, &frame, 0, 0, 0, 0, 0, 0, 0, 0);
+	// open and play video in same thread
+	int r = m_vfilter.get() ? m_vfilter->VideoFilter(&frame) : 0;
 	if (0 != r)
 	{
 		assert(0);
@@ -261,10 +251,11 @@ uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
 
 	struct avframe_t frame;
 	avdecoder_frame_to(audio, &frame);
+	if (m_afilter.get()) m_afilter->AudioFilter(&frame);
 
 	if (NULL == m_arender)
 	{
-		m_arender = audio_output_open(1/*frame.channel*/, frame.sample_bits, frame.sample_rate);
+		m_arender = audio_output_open(1/*frame.channel*/, frame.sample_bits, frame.sample_rate, frame.sample_rate);
 		if (NULL == m_arender) return 0;
 		audio_output_play(m_arender);
 	}
@@ -280,7 +271,7 @@ uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
 	avdecoder_freeframe(m_adecoder, (void*)audio);
 
 	// calculate audio buffer sample duration (ms)
-	int samples = audio_output_getavailablesamples(m_arender);
+	int samples = audio_output_getsamples(m_arender);
 	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%d)\n", __FUNCTION__, samples, (int)((uint64_t)samples * 1000 / sample_rate));
 	return samples >= 0 ? (uint64_t)samples * 1000 / sample_rate : 0;
 }

@@ -8,6 +8,8 @@
 #include "sys/thread.h"
 #include "sys/sync.hpp"
 #include <list>
+#include "cpm/shared_ptr.h"
+#include "AVFilter.h"
 
 class AVFilePlayer
 {
@@ -19,6 +21,10 @@ public:
 	void Play();
 	void Pause();
 	void Reset();
+
+public:
+	void SetAudioFilter(std::shared_ptr<IAudioFilter> filter) { m_afilter = filter; }
+	void SetVideoFilter(std::shared_ptr<IVideoFilter> filter) { m_vfilter = filter; }
 
 private:
 	static uint64_t OnAVRender(void* param, int video, const void* frame, int discard);
@@ -36,7 +42,6 @@ private:
 	void* m_window;
 
 	void* m_player;
-	void* m_vrender;
 	void* m_arender;
 	void* m_vdecoder;
 	void* m_adecoder;
@@ -52,6 +57,9 @@ private:
 
 	avplayer_file_read m_reader;
 	void* m_param;
+
+	std::shared_ptr<IAudioFilter> m_afilter;
+	std::shared_ptr<IVideoFilter> m_vfilter;
 };
 
 #endif /* !_AVFilePlayer_h_ */

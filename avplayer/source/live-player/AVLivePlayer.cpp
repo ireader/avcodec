@@ -1,11 +1,11 @@
 #include "ctypedef.h"
 #include "AVLivePlayer.h"
-#include "video_output.h"
 #include "audio_output.h"
 #include "sys/system.h"
 #include "h264-util.h"
 #include "avdecoder.h"
 #include "avplayer.h"
+#include "VOFilter.h"
 #include "app-log.h"
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +19,7 @@
 
 AVLivePlayer::AVLivePlayer(void* window)
 	: m_window(window)
-	, m_vrender(NULL), m_arender(NULL)
+	, m_arender(NULL)
 	, m_play_video(NULL), m_present_video(NULL)
 	, m_running(false)
 	, m_buffering(true), m_delay(100)
@@ -27,6 +27,7 @@ AVLivePlayer::AVLivePlayer(void* window)
 	, m_h264_idr(NULL)
 	, m_audio_delay("A-delay")
 	, m_video_delay("V-delay")
+	, m_vfilter(new VOFilter(window))
 {
 	m_player = avplayer_create(OnAVRender, this);
 	m_vdecoder = avdecoder_create_h264();
@@ -54,12 +55,6 @@ AVLivePlayer::~AVLivePlayer()
 	{
 		audio_output_close(m_arender);
 		m_arender = NULL;
-	}
-
-	if (m_vrender)
-	{
-		video_output_close(m_vrender);
-		m_vrender = NULL;
 	}
 
 	if (m_present_video && m_present_video != m_play_video)
@@ -142,19 +137,12 @@ void AVLivePlayer::Present(void* video)
 	struct avframe_t frame;
 	avdecoder_frame_to(video, &frame);
 
-	// open and play video in same thread
-	if (NULL == m_vrender)
-	{
-		// don't create EGL context
-		m_vrender = video_output_open(m_window, frame.format, frame.width, frame.height);
-		if (NULL == m_vrender) return;
-	}
-
 	//uint8_t* u = frame.data[1];
 	//frame.data[1] = frame.data[2];
 	//frame.data[2] = u;
 
-	int r = video_output_write(m_vrender, &frame, 0, 0, 0, 0, 0, 0, 0, 0);
+	// open and play video in same thread
+	int r = m_vfilter.get() ? m_vfilter->VideoFilter(&frame) : 0;
 	if (0 != r)
 	{
 		assert(0);
@@ -385,11 +373,12 @@ uint64_t AVLivePlayer::OnPlayAudio(const void* audio, int discard)
 
 	struct avframe_t frame;
 	avdecoder_frame_to(audio, &frame);
+	if (m_afilter.get()) m_afilter->AudioFilter(&frame);
 
 	// Windows 10 Audio Open: ~= 200ms
 	if (NULL == m_arender)
 	{
-		m_arender = audio_output_open(1/*frame.channels*/, frame.sample_bits, frame.sample_rate);
+		m_arender = audio_output_open(1/*frame.channels*/, frame.sample_bits, frame.sample_rate, frame.sample_rate/5);
 		if (NULL == m_arender) return 0;
 		audio_output_play(m_arender);
 	}
@@ -402,7 +391,7 @@ uint64_t AVLivePlayer::OnPlayAudio(const void* audio, int discard)
 	}
 
 	// calculate audio buffer sample duration (ms)
-	int samples = audio_output_getavailablesamples(m_arender);
+	int samples = audio_output_getsamples(m_arender);
 	int duration = (uint64_t)samples * 1000 / frame.sample_rate;
 	m_audio_delay.Tick((int)(system_time() - frame.pts) + duration);
 	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%dms)\n", __FUNCTION__, samples, duration);

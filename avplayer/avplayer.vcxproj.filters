@@ -48,6 +48,12 @@
     <ClInclude Include="source\AVInterval.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\AVFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VOFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\avplayer.cpp">

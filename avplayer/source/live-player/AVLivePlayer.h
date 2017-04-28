@@ -7,7 +7,9 @@
 #include "sys/thread.h"
 #include "sys/sync.hpp"
 #include <list>
+#include "cpm/shared_ptr.h"
 #include "../AVInterval.h"
+#include "AVFilter.h"
 
 class AVLivePlayer
 {
@@ -19,6 +21,10 @@ public:
 	int Input(struct avpacket_t* pkt, bool video);
 
 	void Present();
+
+public:
+	void SetAudioFilter(std::shared_ptr<IAudioFilter> filter) { m_afilter = filter; }
+	void SetVideoFilter(std::shared_ptr<IVideoFilter> filter) { m_vfilter = filter; }
 
 private:
 	static uint64_t OnAVRender(void* param, int type, const void* frame, int discard);
@@ -40,7 +46,6 @@ private:
 	void* m_window;
 
 	void* m_player;
-	void* m_vrender;
 	void* m_arender;
 	void* m_vdecoder;
 	void* m_adecoder;
@@ -61,6 +66,9 @@ private:
 
 	AVInterval m_audio_delay;
 	AVInterval m_video_delay;
+	
+	std::shared_ptr<IAudioFilter> m_afilter;
+	std::shared_ptr<IVideoFilter> m_vfilter;
 };
 
 #endif /* !_AVLivePlayer_h_ */
