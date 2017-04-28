@@ -7,14 +7,14 @@ struct IAudioFilter
 {
 	virtual ~IAudioFilter() {}
 
-	virtual int AudioFilter(const struct avframe_t* frame) = 0;
+	virtual int Process(const struct avframe_t* frame) = 0;
 };
 
 struct IVideoFilter
 {
 	virtual ~IVideoFilter() {}
 
-	virtual int VideoFilter(const struct avframe_t* frame) = 0;
+	virtual int Process(const struct avframe_t* frame) = 0;
 };
 
 #endif /* !_AVFilter_h_ */

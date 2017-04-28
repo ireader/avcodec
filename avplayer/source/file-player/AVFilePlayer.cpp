@@ -227,7 +227,7 @@ uint64_t AVFilePlayer::OnPlayVideo(const void* video, int discard)
 	//frame.data[2] = u;
 
 	// open and play video in same thread
-	int r = m_vfilter.get() ? m_vfilter->VideoFilter(&frame) : 0;
+	int r = m_vfilter.get() ? m_vfilter->Process(&frame) : 0;
 	if (0 != r)
 	{
 		assert(0);
@@ -251,7 +251,7 @@ uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
 
 	struct avframe_t frame;
 	avdecoder_frame_to(audio, &frame);
-	if (m_afilter.get()) m_afilter->AudioFilter(&frame);
+	if (m_afilter.get()) m_afilter->Process(&frame);
 
 	if (NULL == m_arender)
 	{

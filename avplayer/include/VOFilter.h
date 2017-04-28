@@ -23,7 +23,7 @@ public:
 	}
 
 public:
-	virtual int VideoFilter(const struct avframe_t* frame)
+	virtual int Process(const struct avframe_t* frame)
 	{
 		if (NULL == m_vo)
 		{
