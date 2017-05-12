@@ -84,4 +84,6 @@ struct avframe_t
 	int linesize[8];
 };
 
+int avframe_get_pcm_sample_bits(int format);
+
 #endif /* !_avframe_h_ */

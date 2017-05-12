@@ -83,5 +83,8 @@
     <ClCompile Include="source\text-render-gdi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\avframe.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
