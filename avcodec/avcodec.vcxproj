@@ -30,7 +30,6 @@
     <ClInclude Include="include\yuv-overlay.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\avframe.c" />
     <ClCompile Include="source\bitmap.c" />
     <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\interpolation-bilinear.c" />

@@ -43,21 +43,25 @@ enum pcm_sample_format
 {
 	PCM_SAMPLE_FMT_NONE = -1,
 
-	PCM_SAMPLE_FMT_U8	= 0,	///< unsigned 8 bits
-	PCM_SAMPLE_FMT_S16	= 1,	///< signed 16 bits
-	PCM_SAMPLE_FMT_S32	= 2,	///< signed 32 bits
-	PCM_SAMPLE_FMT_FLOAT = 3,	///< float
-	PCM_SAMPLE_FMT_DOUBLE = 4,	///< double
+	PCM_SAMPLE_FMT_U8		= 0x0008,	///< unsigned 8 bits
+	PCM_SAMPLE_FMT_S16		= 0x0010,	///< signed 16 bits
+	PCM_SAMPLE_FMT_S32		= 0x0020,	///< signed 32 bits
+	PCM_SAMPLE_FMT_FLOAT	= 0x0820,	///< float
+	PCM_SAMPLE_FMT_DOUBLE	= 0x0840,	///< double
 
-	PCM_SAMPLE_FMT_U8P	= 5,	///< unsigned 8 bits, planar
-	PCM_SAMPLE_FMT_S16P = 6,	///< signed 16 bits, planar
-	PCM_SAMPLE_FMT_S32P = 7,	///< signed 32 bits, planar
-	PCM_SAMPLE_FMT_FLTP = 8,	///< float, planar
-	PCM_SAMPLE_FMT_DBLP = 9,	///< double, planar
+	PCM_SAMPLE_FMT_U8P		= 0x8008,	///< unsigned 8 bits, planar
+	PCM_SAMPLE_FMT_S16P		= 0x8010,	///< signed 16 bits, planar
+	PCM_SAMPLE_FMT_S32P		= 0x8020,	///< signed 32 bits, planar
+	PCM_SAMPLE_FMT_FLTP		= 0x8820,	///< float, planar
+	PCM_SAMPLE_FMT_DBLP		= 0x8840,	///< double, planar
 
-	PCM_SAMPLE_FMT_S64	= 10,	///< signed 64 bits
-	PCM_SAMPLE_FMT_S64P = 11,	///< signed 64 bits, planar
+	PCM_SAMPLE_FMT_S64		= 0x0040,	///< signed 64 bits
+	PCM_SAMPLE_FMT_S64P		= 0x8040,	///< signed 64 bits, planar
 };
+
+#define PCM_SAMPLE_BITS(format) ((format) & 0xFF) /// get pcm sample bits
+#define PCM_SAMPLE_FLOAT(format) ((format) & 0x0800) /// pcm sample is float
+#define PCM_SAMPLE_PLANAR(format) ((format) & 0x8000) /// pcm sample is planar
 
 struct avframe_t
 {
@@ -83,7 +87,5 @@ struct avframe_t
 	/// For audio, size in bytes of each plane
 	int linesize[8];
 };
-
-int avframe_get_pcm_sample_bits(int format);
 
 #endif /* !_avframe_h_ */
