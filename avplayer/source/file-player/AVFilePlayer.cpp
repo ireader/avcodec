@@ -261,7 +261,7 @@ uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
 	}
 
 	int r = audio_output_write(m_arender, frame.data[0], frame.samples);
-	if (r <= 0)
+	if (r != frame.samples)
 	{
 		assert(0);
 		app_log(LOG_ERROR, "[%s] audio_output_write(%d, %ld, %ld) => %d\n", __FUNCTION__, frame.linesize[0], frame.pts, frame.dts, r);
