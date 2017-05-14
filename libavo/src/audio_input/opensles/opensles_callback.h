@@ -26,7 +26,7 @@ static void opensles_recorder_callback(SLAndroidSimpleBufferQueueItf bufferQueue
 	for (i = 0; i < OPENSLES_BUFFERS - state.count; ++i)
 	{
 		// capture callback
-		recorder->cb(recorder->param, recorder->ptr + (i + state.index) * N(recorder), N(recorder));
+		recorder->cb(recorder->param, recorder->ptr + (i + state.index) * N(recorder), recorder->samples_per_buffer);
 
 		// fill buffer
 		ret = (*recorder->bufferQ)->Enqueue(recorder->bufferQ, recorder->ptr + (i + state.index) * N(recorder), N(recorder));
@@ -35,7 +35,7 @@ static void opensles_recorder_callback(SLAndroidSimpleBufferQueueItf bufferQueue
 	}
 }
 
-static int opensles_recorder_start(struct opensles_recorder_t* recorder)
+static int opensles_recorder_register_callback(struct opensles_recorder_t* recorder)
 {
 	int i, ret;
 
@@ -49,10 +49,6 @@ static int opensles_recorder_start(struct opensles_recorder_t* recorder)
 	// callback
 	ret = (*recorder->bufferQ)->RegisterCallback(recorder->bufferQ, opensles_recorder_callback, recorder);
 	CHECK_OPENSL_ERROR(ret, "%s: SLAndroidSimpleBufferQueueItf->RegisterCallback() failed: %d", __FUNCTION__, ret);
-
-	// start recording
-	ret = (*recorder->record)->SetRecordState(recorder->record, SL_RECORDSTATE_RECORDING);
-	CHECK_OPENSL_ERROR(ret, "%s: SLRecordItf->SetRecordState(SL_RECORDSTATE_RECORDING) failed: %d", __FUNCTION__, ret);
 
 	return 0;
 }

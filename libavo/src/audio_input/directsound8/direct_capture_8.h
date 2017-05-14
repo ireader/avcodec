@@ -4,37 +4,20 @@
 #include <dsound.h>
 #include "audio_input.h"
 
-#define MAX_EVENTS 25
+#define MAX_EVENTS 5
 
-class DxSound8In
+struct direct_capture_t
 {
-public:
-	DxSound8In(audio_input_callback cb, void* param);
-	~DxSound8In();
+	int samples;
+	int bytes_per_sample;
 
-public:
-	int Open(int channels, int bitsPerSamples, int samplesPerSec);
-	int Close();
-	int Stop();
-	int Start();
-	bool IsOpened() const;
+	audio_input_callback cb;
+	void* param;
 
-private:
-	static DWORD WINAPI OnWorker(LPVOID lpParameter);
-	DWORD OnWorker();
-
-private:
-	int m_channels;
-	int m_bitsPerSample;
-	int m_samplesPerSec;
-
-	audio_input_callback m_cb;
-	void* m_param;
-
-	HANDLE m_thread;
-	HANDLE m_events[MAX_EVENTS+1];
-	LPDIRECTSOUNDCAPTURE8 m_sound;
-	LPDIRECTSOUNDCAPTUREBUFFER8 m_dsb;
+	HANDLE thread;
+	HANDLE events[MAX_EVENTS+1];
+	LPDIRECTSOUNDCAPTURE8 sound;
+	LPDIRECTSOUNDCAPTUREBUFFER8 dsb;
 };
 
 #endif /* !_direct_capture_8_h_ */

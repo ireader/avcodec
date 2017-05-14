@@ -1,6 +1,7 @@
 #include "audio_input.h"
 #include "opensles_input.h"
 #include "opensles_engine.h"
+#include "opensles_format.h"
 #include "opensles_recorder.h"
 #include "opensles_callback.h"
 #include "av_register.h"
@@ -22,27 +23,27 @@ static int opensles_close(void* p)
 	free(recorder);
 }
 
-static void* opensles_open(int channels, int bits_per_samples, int samples_per_seconds, audio_input_callback cb, void* param)
+static void* opensles_open(int channels, int rate, int format, int samples, audio_input_callback cb, void* param)
 {
 	int r;
+	SLAndroidDataFormat_PCM_EX pcm;
 	struct opensles_recorder_t* recorder;
 	recorder = (struct opensles_recorder_t*)malloc(sizeof(*recorder));
 	if (NULL == recorder)
 		return NULL;
 	memset(recorder, 0, sizeof(struct opensles_recorder_t));
+	opensles_format(&pcm, channels, rate, format);
+
 	recorder->cb = cb;
 	recorder->param = param;
-	recorder->channels = channels;
-	recorder->sample_bits = bits_per_samples;
-	recorder->sample_rate = samples_per_seconds;
-	recorder->bytes_per_sample = recorder->channels * recorder->sample_bits / 8;
-	recorder->samples_per_buffer = recorder->sample_rate * OPENSLES_TIME / 1000;
+	recorder->bytes_per_sample = channels * PCM_SAMPLE_BITS(format) / 8;
+	recorder->samples_per_buffer = samples;
 	recorder->ptr = (sl_uint8_t*)malloc(OPENSLES_BUFFERS * recorder->samples_per_buffer * recorder->bytes_per_sample);
 	
 	if (NULL == recorder->ptr
 		|| 0 != opensles_engine_create(&recorder->engineObject, &recorder->engine)
-		|| 0 != opensles_recorder_create(recorder, channels, bits_per_samples, samples_per_seconds)
-		|| 0 != opensles_recorder_start(recorder))
+		|| 0 != opensles_recorder_create(recorder, &pcm)
+		|| 0 != opensles_recorder_register_callback(recorder))
 	{
 		opensles_close(recorder);
 		return NULL;
@@ -51,28 +52,18 @@ static void* opensles_open(int channels, int bits_per_samples, int samples_per_s
 	return recorder;
 }
 
-static int opensles_pause(void* p)
+static int opensles_start(void* p)
 {
 	struct opensles_recorder_t* recorder;
 	recorder = (struct opensles_recorder_t*)p;
-
-	if (recorder->record)
-	{
-		return (*recorder->record)->SetRecordState(recorder->record, SL_RECORDSTATE_PAUSED);
-	}
-	return -1;
+	return (*recorder->record)->SetRecordState(recorder->record, SL_RECORDSTATE_RECORDING);
 }
 
-static int opensles_flush(void* p)
+static int opensles_stop(void* p)
 {
 	struct opensles_recorder_t* recorder;
 	recorder = (struct opensles_recorder_t*)p;
-
-	if (recorder->bufferQ)
-	{
-		return (*recorder->bufferQ)->Clear(recorder->bufferQ);
-	}
-	return -1;
+	return (*recorder->record)->SetRecordState(recorder->record, SL_RECORDSTATE_STOPPED);
 }
 
 int opensles_recorder_register()
@@ -81,7 +72,7 @@ int opensles_recorder_register()
 	memset(&ai, 0, sizeof(ai));
 	ai.open = opensles_open;
 	ai.close = opensles_close;
-	ai.pause = opensles_pause;
-	ai.reset = opensles_flush;
+	ai.start = opensles_start;
+	ai.stop = opensles_stop;
 	return av_set_class(AV_AUDIO_RECORDER, "opensles", &ai);
 }

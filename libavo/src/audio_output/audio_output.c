@@ -8,7 +8,7 @@ struct ao_context_t
 	void* id;
 };
 
-void* audio_output_open(int channels, int bits_per_sample, int samples_per_second, int samples)
+void* audio_output_open(int channels, int samples_per_second, int format, int samples)
 {
 	struct ao_context_t* h;
 	h = (struct ao_context_t*)malloc(sizeof(struct ao_context_t));
@@ -22,7 +22,7 @@ void* audio_output_open(int channels, int bits_per_sample, int samples_per_secon
 		return NULL;
 	}
 
-	h->id = h->ao->open(channels, bits_per_sample, samples_per_second, samples);
+	h->id = h->ao->open(channels, samples_per_second, format, samples);
 	if (NULL == h->id)
 	{
 		audio_output_close(h);
@@ -35,50 +35,38 @@ void* audio_output_open(int channels, int bits_per_sample, int samples_per_secon
 int audio_output_close(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	if(h->ao && h->id)
+	if(h && h->ao && h->ao->close && h->id)
 		h->ao->close(h->id);
 	free(h);
 	return 0;
 }
 
-int audio_output_write(void* ao, const void* samples, int count)
+int audio_output_write(void* ao, const void* pcm, int samples)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->write(h->id, samples, count);
+	return (h && h->ao && h->ao->write && h->id) ? h->ao->write(h->id, pcm, samples) : -1;
 }
 
 int audio_output_play(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->play(h->id);
+	return (h && h->ao && h->ao->play && h->id) ? h->ao->play(h->id) : -1;
 }
 
 int audio_output_pause(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->pause(h->id);
+	return (h && h->ao && h->ao->pause && h->id) ? h->ao->pause(h->id) : -1;
 }
 
 int audio_output_reset(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->reset(h->id);
+	return (h && h->ao && h->ao->reset && h->id) ? h->ao->reset(h->id) : -1;
 }
 
 int audio_output_getsamples(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return h->ao->get_samples(h->id);
-}
-
-int audio_output_getvolume(void* ao, int* v)
-{
-	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return (h->ao&&h->ao->get_volume)?h->ao->get_volume(h->id, v):-1;
-}
-
-int audio_output_setvolume(void* ao, int v)
-{
-	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return (h->ao&&h->ao->set_volume)?h->ao->set_volume(h->id, v):-1;
+	return (h && h->ao && h->ao->get_samples && h->id) ? h->ao->get_samples(h->id) : -1;
 }

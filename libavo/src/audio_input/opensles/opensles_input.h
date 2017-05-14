@@ -1,6 +1,7 @@
 #ifndef _opensles_input_h_
 #define _opensles_input_h_
 
+#include "avframe.h"
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include <SLES/OpenSLES_AndroidConfiguration.h>
@@ -8,39 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define OPENSLES_TIME 20
 #define OPENSLES_BUFFERS 10
-
-struct opensles_recorder_t
-{
-	SLObjectItf engineObject;
-	SLObjectItf recorderObject; // recorder object
-
-	SLEngineItf engine; // engine interface
-	SLRecordItf record; // record interface
-	SLAndroidSimpleBufferQueueItf bufferQ; // buffer queue interface
-
-	int channels;
-	int sample_bits;
-	int sample_rate;
-	int bytes_per_sample;
-	int samples_per_buffer;
-
-	sl_uint8_t* ptr;
-	size_t offset;
-
-	audio_input_callback cb;
-	void* param;
-};
-
-#define CHECK_OPENSL_ERROR(ret__, ...) \
-    do { \
-    	if ((ret__) != SL_RESULT_SUCCESS) \
-    	{ \
-    		__android_log_print(ANDROID_LOG_ERROR, "SLES", __VA_ARGS__); \
-    		return ret; \
-    	} \
-    } while (0)
 
 #ifndef SL_ANDROID_DATAFORMAT_PCM_EX
 /* The following pcm representations and data formats map to those in OpenSLES 1.1 */
@@ -61,5 +30,33 @@ typedef struct SLAndroidDataFormat_PCM_EX_ {
 	SLuint32         representation;
 } SLAndroidDataFormat_PCM_EX;
 #endif
+
+struct opensles_recorder_t
+{
+	SLObjectItf engineObject;
+	SLObjectItf recorderObject; // recorder object
+
+	SLEngineItf engine; // engine interface
+	SLRecordItf record; // record interface
+	SLAndroidSimpleBufferQueueItf bufferQ; // buffer queue interface
+
+	int bytes_per_sample;
+	int samples_per_buffer;
+
+	sl_uint8_t* ptr;
+	size_t offset;
+
+	audio_input_callback cb;
+	void* param;
+};
+
+#define CHECK_OPENSL_ERROR(ret__, ...) \
+    do { \
+    	if ((ret__) != SL_RESULT_SUCCESS) \
+    	{ \
+    		__android_log_print(ANDROID_LOG_ERROR, "SLES", __VA_ARGS__); \
+    		return ret; \
+    	} \
+    } while (0)
 
 #endif /* !_opensles_input_h_ */

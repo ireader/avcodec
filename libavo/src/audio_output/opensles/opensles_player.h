@@ -2,9 +2,8 @@
 #define _opensles_player_h_
 
 #include "opensles_output.h"
-#include "opensles_format.h"
 
-static int opensles_player_create(struct opensles_player_t* player, int channels, int bits_per_samples, int samples_per_seconds)
+static int opensles_player_create(struct opensles_player_t* player, SLAndroidDataFormat_PCM_EX* format)
 {
 	int ret;
 	const SLboolean req2[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE };
@@ -13,14 +12,7 @@ static int opensles_player_create(struct opensles_player_t* player, int channels
 
 	SLDataLocator_OutputMix loc_outmix = { SL_DATALOCATOR_OUTPUTMIX, player->outputObject };
 	SLDataSink audio_sink = { &loc_outmix, NULL };
-
-	SLAndroidDataFormat_PCM_EX format_pcm;
-	SLDataSource audio_source = { &loc_bufq, &format_pcm };
-
-	if(32 == bits_per_samples || 64 == bits_per_samples)
-		opensles_format_float(&format_pcm, channels, bits_per_samples, samples_per_seconds);
-	else
-		opensles_format((SLDataFormat_PCM*)&format_pcm, channels, bits_per_samples, samples_per_seconds);
+	SLDataSource audio_source = { &loc_bufq, format };
 
 	ret = (*player->engine)->CreateAudioPlayer(player->engine, &player->playerObject, &audio_source, &audio_sink, sizeof(ids2) / sizeof(*ids2), ids2, req2);
 	CHECK_OPENSL_ERROR(ret, "%s: SLEngine->CreateAudioPlayer() failed", __FUNCTION__);

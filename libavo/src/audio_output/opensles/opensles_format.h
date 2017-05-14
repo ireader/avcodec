@@ -3,17 +3,15 @@
 
 #include <assert.h>
 
-static int opensles_pcm_bits(int bits_per_samples)
+static int opensles_pcm_bits(int format)
 {
-	switch (bits_per_samples)
+	switch (format)
 	{
-	case 8:	return SL_PCMSAMPLEFORMAT_FIXED_8;
-	case 16:return SL_PCMSAMPLEFORMAT_FIXED_16;
-	case 20:return SL_PCMSAMPLEFORMAT_FIXED_20;
-	case 24:return SL_PCMSAMPLEFORMAT_FIXED_24;
-	case 28:return SL_PCMSAMPLEFORMAT_FIXED_28;
-	case 32:return SL_PCMSAMPLEFORMAT_FIXED_32;
-	default: return bits_per_samples;
+	case PCM_SAMPLE_FMT_U8:	return SL_PCMSAMPLEFORMAT_FIXED_8;
+	case PCM_SAMPLE_FMT_S16:return SL_PCMSAMPLEFORMAT_FIXED_16;
+	case PCM_SAMPLE_FMT_S32:return SL_PCMSAMPLEFORMAT_FIXED_32;
+	case PCM_SAMPLE_FMT_FLOAT:return SL_PCMSAMPLEFORMAT_FIXED_32;
+	default: return PCM_SAMPLE_BITS(format);
 	}
 }
 
@@ -53,28 +51,13 @@ static int opensles_channel_mask(int channels)
 	}
 }
 
-static int opensles_format(SLDataFormat_PCM *pcm, int channels, int bits_per_samples, int samples_per_seconds)
+static int opensles_format(SLAndroidDataFormat_PCM_EX *pcm, int channels, int rate, int format)
 {
-	assert(bits_per_samples <= 32);
-	pcm->formatType = SL_DATAFORMAT_PCM;
+	pcm->formatType = PCM_SAMPLE_FLOAT(format) ? SL_ANDROID_DATAFORMAT_PCM_EX : SL_DATAFORMAT_PCM;
 	pcm->numChannels = channels;
-	pcm->samplesPerSec = opensles_pcm_freq(samples_per_seconds); // samples_per_seconds * 1000
-	pcm->bitsPerSample = opensles_pcm_bits(bits_per_samples); // SL_PCMSAMPLEFORMAT_FIXED_16
-	pcm->containerSize = pcm->bitsPerSample;
-	pcm->channelMask = opensles_channel_mask(channels);
-	pcm->endianness = SL_BYTEORDER_LITTLEENDIAN;
-	//pcm->representation = SL_ANDROID_PCM_REPRESENTATION_UNSIGNED_INT;
-	return 0;
-}
-
-static int opensles_format_float(SLAndroidDataFormat_PCM_EX *pcm, int channels, int bits_per_samples, int samples_per_seconds)
-{
-	assert(32 == bits_per_samples || 64 == bits_per_samples);
-	pcm->formatType = SL_ANDROID_DATAFORMAT_PCM_EX;
-	pcm->numChannels = channels;
-	pcm->sampleRate = opensles_pcm_freq(samples_per_seconds); // samples_per_seconds * 1000
-	pcm->bitsPerSample = opensles_pcm_bits(bits_per_samples); // 32
-	pcm->containerSize = pcm->bitsPerSample;
+	pcm->sampleRate = opensles_pcm_freq(rate); // samples_per_seconds * 1000
+	pcm->bitsPerSample = opensles_pcm_bits(format); // 32
+	pcm->containerSize = PCM_SAMPLE_BITS(format);
 	pcm->channelMask = opensles_channel_mask(channels);
 	pcm->endianness = SL_BYTEORDER_LITTLEENDIAN;
 	pcm->representation = SL_ANDROID_PCM_REPRESENTATION_FLOAT;

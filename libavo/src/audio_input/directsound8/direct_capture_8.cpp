@@ -1,7 +1,12 @@
 #include "direct_capture_8.h"
 #include "av_register.h"
+#include "avframe.h"
 #include <stdio.h>
 #include <assert.h>
+#include <mmreg.h>
+
+#define MIN(a, b) ((a)<(b) ? (a) : (b))
+#define MAX(a, b) ((a)>(b) ? (a) : (b))
 
 //#pragma comment(lib, "dsound.lib")
 typedef HRESULT (WINAPI *fpDirectSoundCaptureCreate8)(_In_opt_ LPCGUID pcGuidDevice, _Outptr_ LPDIRECTSOUNDCAPTURE8 *ppDSC8, _Pre_null_ LPUNKNOWN pUnkOuter);
@@ -10,238 +15,166 @@ static GUID s_IID_IDirectSoundCaptureBuffer8 = { 0x990df4, 0xdbb, 0x4872,{ 0x83,
 static GUID s_IID_IDirectSoundNotify8 = { 0xb0210783, 0x89cd, 0x11d0, { 0xaf, 0x8, 0x0, 0xa0, 0xc9, 0x25, 0xcd, 0x16 } };
 static GUID s_DSDEVID_DefaultCapture = { 0xdef00001, 0x9c6d, 0x47ed, { 0xaa, 0xf1, 0x4d, 0xda, 0x8f, 0x2b, 0x5c, 0x03 } };
 
-inline void DxLog(const char* format, ...)
+static DWORD WINAPI direct_capture_worker(LPVOID param)
 {
-	static TCHAR msg[2*1024] = {0};
+	struct direct_capture_t* ds;
+	ds = (struct direct_capture_t*)param;
 
-	va_list vl;
-	va_start(vl, format);
-	vsnprintf(msg, sizeof(msg)-1, format, vl);
-	va_end(vl);
+	while(1)
+	{
+		DWORD r = WaitForMultipleObjects(MAX_EVENTS+1, ds->events, FALSE, INFINITE);
+		if(WAIT_OBJECT_0 + MAX_EVENTS == r)
+			break;
 
-	OutputDebugString(msg);
+		if(WAIT_OBJECT_0 <= r && r < WAIT_OBJECT_0 + MAX_EVENTS)
+		{
+			int step = ds->samples * ds->bytes_per_sample;
+
+			DWORD len1, len2;
+			LPVOID ptr1, ptr2;
+			HRESULT hr = ds->dsb->Lock(step * (r - WAIT_OBJECT_0), step, &ptr1, &len1, &ptr2, &len2, 0);
+			if(SUCCEEDED(hr))
+			{
+				assert(0 == len2);
+				assert(0 == (len1 + len2) % ds->bytes_per_sample);
+				ds->cb(ds->param, ptr1, len1 / ds->bytes_per_sample);
+				ds->dsb->Unlock(ptr1, len1, ptr2, len2);
+			}
+		}
+	}
+
+	return 0;
 }
 
-DxSound8In::DxSound8In(audio_input_callback cb, void* param)
+static int direct_capture_start(void* ai)
 {
-	m_cb = cb;
-	m_param = param;
-	m_thread = NULL;
-	m_sound = NULL;
-	m_dsb = NULL;
-	memset(m_events, 0, sizeof(m_events));
-	m_events[MAX_EVENTS] = CreateEvent(NULL, FALSE, FALSE, NULL);
+	struct direct_capture_t* ds;
+	ds = (struct direct_capture_t*)ai;
+
+	LPDIRECTSOUNDNOTIFY8 notify = NULL;
+	DSBPOSITIONNOTIFY pos[MAX_EVENTS];
+	if (FAILED(ds->dsb->QueryInterface(s_IID_IDirectSoundNotify8, (LPVOID*)&notify)))
+		return -1;
+
+	DWORD step = ds->samples * ds->bytes_per_sample;
+	for (int i = 0; i < MAX_EVENTS; i++)
+	{
+		assert(NULL == ds->events[i]);
+		ds->events[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
+		pos[i].dwOffset = step * (i + 1) - 1;
+		pos[i].hEventNotify = ds->events[i];
+	}
+	notify->SetNotificationPositions(MAX_EVENTS, pos);
+	notify->Release();
+
+	ds->thread = CreateThread(NULL, 0, direct_capture_worker, ds, 0, NULL);
+	return SUCCEEDED(ds->dsb->Start(DSCBSTART_LOOPING)) ? 0 : -1;
 }
 
-DxSound8In::~DxSound8In()
+static int direct_capture_stop(void* ai)
 {
-	Close();
-	CloseHandle(m_events[MAX_EVENTS]);
+	struct direct_capture_t* ds;
+	ds = (struct direct_capture_t*)ai;
+	if (ds->thread)
+	{
+		SetEvent(ds->events[MAX_EVENTS]);
+		WaitForSingleObject(ds->thread, INFINITE);
+		CloseHandle(ds->thread);
+		ds->thread = NULL;
+	}
+
+	for (int i = 0; i < MAX_EVENTS; i++)
+	{
+		if (ds->events[i])
+		{
+			CloseHandle(ds->events[i]);
+			ds->events[i] = 0;
+		}
+	}
+
+	return SUCCEEDED(ds->dsb->Stop()) ? 0 : -1;
 }
 
-int DxSound8In::Open(int channels, int bitsPerSamples, int samplesPerSec)
+static int direct_capture_close(void* ai)
 {
-	m_channels = channels;
-	m_bitsPerSample = bitsPerSamples;
-	m_samplesPerSec = samplesPerSec;
+	struct direct_capture_t* ds;
+	ds = (struct direct_capture_t*)ai;
 
-	assert(NULL==m_sound && NULL==m_dsb);
-	HRESULT hr = pDirectSoundCaptureCreate8(&s_DSDEVID_DefaultCapture, &m_sound, NULL);
-	if(FAILED(hr))
-		return hr;
+	direct_capture_stop(ds);
 
-	WAVEFORMATEX format;
-	memset(&format, 0, sizeof(format));
-	format.cbSize = 0;
-	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = (WORD)channels;
-	format.nSamplesPerSec = samplesPerSec;
-	format.wBitsPerSample = (WORD)bitsPerSamples;
-	format.nBlockAlign = (WORD)(channels*bitsPerSamples/8);
-	format.nAvgBytesPerSec = (samplesPerSec/MAX_EVENTS)*MAX_EVENTS*channels*bitsPerSamples/8;
+	CloseHandle(ds->events[MAX_EVENTS]);
+
+	if (ds->dsb)
+	{
+		ds->dsb->Stop();
+		ds->dsb->Release();
+		ds->dsb = NULL;
+	}
+
+	if (ds->sound)
+	{
+		ds->sound->Release();
+		ds->sound = NULL;
+	}
+
+	free(ds);
+	return 0;
+}
+
+static void* direct_capture_open(int channels, int samples_per_second, int fmt, int samples, audio_input_callback cb, void* param)
+{
+	struct direct_capture_t* ds;
+	ds = (struct direct_capture_t*)malloc(sizeof(*ds));
+	if (NULL == ds)
+		return NULL;
+
+	memset(ds, 0, sizeof(*ds));
+	ds->cb = cb;
+	ds->param = param;
+	ds->samples = MAX(samples, samples_per_second / 100); // at least 10ms;
+	ds->bytes_per_sample = channels * PCM_SAMPLE_BITS(fmt) / 8;
+
+	assert(NULL == ds->sound && NULL == ds->dsb);
+	if (FAILED(pDirectSoundCaptureCreate8(&s_DSDEVID_DefaultCapture, &ds->sound, NULL)))
+	{
+		direct_capture_close(ds);
+		return NULL;
+	}
+
+	WAVEFORMATEX wave;
+	memset(&wave, 0, sizeof(wave));
+	wave.cbSize = 0;
+	wave.wFormatTag = PCM_SAMPLE_FLOAT(fmt) ? WAVE_FORMAT_IEEE_FLOAT : WAVE_FORMAT_PCM;
+	wave.nChannels = (WORD)channels;
+	wave.nSamplesPerSec = samples_per_second;
+	wave.wBitsPerSample = (WORD)(ds->bytes_per_sample / channels * 8);
+	wave.nBlockAlign = (WORD)ds->bytes_per_sample;
+	wave.nAvgBytesPerSec = wave.nSamplesPerSec * wave.nBlockAlign;
 
 	DSCBUFFERDESC desc;
 	ZeroMemory(&desc, sizeof(desc));
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = 0;
-	desc.dwBufferBytes = format.nAvgBytesPerSec;
-	desc.lpwfxFormat = &format;
+	desc.dwBufferBytes = ds->samples * ds->bytes_per_sample * MAX_EVENTS;
+	desc.lpwfxFormat = &wave;
 
 	LPDIRECTSOUNDCAPTUREBUFFER lpBuffer = NULL;
-	if(FAILED(hr = m_sound->CreateCaptureBuffer(&desc, &lpBuffer, NULL)))
+	if (FAILED(ds->sound->CreateCaptureBuffer(&desc, &lpBuffer, NULL)))
 	{
-		Close();
-		return hr;
+		direct_capture_close(ds);
+		return NULL;
 	}
 
-	if(FAILED(hr = lpBuffer->QueryInterface(s_IID_IDirectSoundCaptureBuffer8, (LPVOID*)&m_dsb)))
+	if (FAILED(lpBuffer->QueryInterface(s_IID_IDirectSoundCaptureBuffer8, (LPVOID*)&ds->dsb)))
 	{
 		lpBuffer->Release();
-		Close();
-		return hr;
+		direct_capture_close(ds);
+		return NULL;
 	}
 	lpBuffer->Release();
 
-	LPDIRECTSOUNDNOTIFY8 notify = NULL;
-	DSBPOSITIONNOTIFY pos[MAX_EVENTS];
-	if(FAILED(hr = m_dsb->QueryInterface(s_IID_IDirectSoundNotify8, (LPVOID*)&notify)))
-	{
-		Close();
-		return hr;
-	}
-
-	DWORD step = format.nAvgBytesPerSec*8/(MAX_EVENTS*channels*bitsPerSamples);
-	for(int i=0; i<MAX_EVENTS; i++)
-	{
-		m_events[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
-		pos[i].dwOffset = step * (i+1);
-		pos[i].hEventNotify = m_events[i];
-	}
-	notify->SetNotificationPositions(MAX_EVENTS, pos);
-	notify->Release();
-
-	m_thread = CreateThread(NULL, 0, OnWorker, this, 0, NULL);
-	return 0;
-}
-
-int DxSound8In::Close()
-{
-	if(m_thread)
-	{
-		SetEvent(m_events[MAX_EVENTS]);
-		WaitForSingleObject(m_thread, INFINITE);
-		CloseHandle(m_thread);
-		m_thread = NULL;
-	}
-
-	for(int i=0; i<MAX_EVENTS; i++)
-	{
-		if(m_events[i])
-		{
-			CloseHandle(m_events[i]);
-			m_events[i] = 0;
-		}
-	}
-
-	if(m_dsb)
-	{
-		m_dsb->Stop();
-		m_dsb->Release();
-		m_dsb = NULL;
-	}
-
-	if(m_sound)
-	{
-		m_sound->Release();
-		m_sound = NULL;
-	}
-	return 0;
-}
-
-bool DxSound8In::IsOpened() const
-{
-	return NULL!=m_dsb;
-}
-
-int DxSound8In::Start()
-{
-	HRESULT hr = m_dsb->Start(DSCBSTART_LOOPING);
-	return hr;
-}
-
-int DxSound8In::Stop()
-{
-	HRESULT hr = m_dsb->Stop();
-	return hr;
-}
-
-DWORD DxSound8In::OnWorker()
-{
-	DWORD r;
-
-	while(1)
-	{
-		r = WaitForMultipleObjects(MAX_EVENTS+1, m_events, FALSE, INFINITE);
-		DxLog("WaitForMultipleObjects: %d\n", r);
-		if(WAIT_OBJECT_0 + MAX_EVENTS == r)
-			break;
-
-		if(r < WAIT_OBJECT_0 + MAX_EVENTS)
-		{
-			int step = (m_samplesPerSec/MAX_EVENTS)*m_channels*m_bitsPerSample / 8;
-
-			DWORD len1, len2;
-			LPVOID ptr1, ptr2;
-			HRESULT hr = m_dsb->Lock(step * (r - WAIT_OBJECT_0), step, &ptr1, &len1, &ptr2, &len2, 0);
-			if(SUCCEEDED(hr))
-			{
-				assert(0 == len2);
-				m_cb(m_param, ptr1, len1);
-				m_dsb->Unlock(ptr1, len1, ptr2, len2);
-			}
-		}
-		else
-		{
-		}
-	}
-
-	return 0;
-}
-
-DWORD WINAPI DxSound8In::OnWorker(LPVOID lpParameter)
-{
-	DxSound8In* self = (DxSound8In*)lpParameter;
-	return self->OnWorker();
-}
-
-//////////////////////////////////////////////////////////////////////////
-///
-//////////////////////////////////////////////////////////////////////////
-static void* Open(int channels, int bits_per_samples, int samples_per_seconds, audio_input_callback cb, void* param)
-{
-	assert(cb && channels && bits_per_samples && samples_per_seconds);
-	DxSound8In* obj = new DxSound8In(cb, param);
-	int r = obj->Open(channels, bits_per_samples, samples_per_seconds);
-	if(r < 0)
-	{
-		delete obj;
-		return NULL;
-	}
-	obj->Start();
-	return obj;
-}
-
-static int Close(void* ai)
-{
-	DxSound8In* obj = (DxSound8In*)ai;
-	obj->Close();
-	delete obj;
-	return 0;
-}
-
-static int IsOpened(void* ai)
-{
-	return ((DxSound8In*)ai)->IsOpened()?1:0;
-}
-
-static int Pause(void* ai)
-{
-	return ((DxSound8In*)ai)->Stop();
-}
-
-static int Reset(void* ai)
-{
-	return ((DxSound8In*)ai)->Start();
-}
-
-static int SetVolume(void* ai, int v)
-{
-	return -1;
-}
-
-static int GetVolume(void* ai)
-{
-	return -1;
+	ds->events[MAX_EVENTS] = CreateEvent(NULL, FALSE, FALSE, NULL);
+	return ds;
 }
 
 extern "C" int directsound8_recorder_register()
@@ -253,12 +186,9 @@ extern "C" int directsound8_recorder_register()
 
 	static audio_input_t ai;
 	memset(&ai, 0, sizeof(ai));
-	ai.open = Open;
-	ai.close = Close;
-	ai.isopened = IsOpened;
-	ai.getvolume = GetVolume;
-	ai.setvolume = SetVolume;
-	ai.pause = Pause;
-	ai.reset = Reset;
+	ai.open = direct_capture_open;
+	ai.close = direct_capture_close;
+	ai.start = direct_capture_start;
+	ai.stop = direct_capture_stop;
 	return av_set_class(AV_AUDIO_RECORDER, "directsound8", &ai);
 }

@@ -2,9 +2,8 @@
 #define _opensles_recorder_h_
 
 #include "opensles_input.h"
-#include "opensles_format.h"
 
-static int opensles_recorder_create(struct opensles_recorder_t* recorder, int channels, int bits_per_samples, int samples_per_seconds)
+static int opensles_recorder_create(struct opensles_recorder_t* recorder, SLAndroidDataFormat_PCM_EX* format)
 {
 	int ret;
 	const SLboolean requireds[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE };
@@ -14,16 +13,10 @@ static int opensles_recorder_create(struct opensles_recorder_t* recorder, int ch
 	SLDataSource inputSource = { &device, NULL };
 
 	SLDataLocator_AndroidSimpleBufferQueue locator = { SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, OPENSLES_BUFFERS };
-	SLAndroidDataFormat_PCM_EX format;
-	SLDataSink inputSink = { &locator, &format };
+	SLDataSink inputSink = { &locator, format };
 
 	SLAndroidConfigurationItf config;
 	SLint32 audio_device = SL_ANDROID_RECORDING_PRESET_GENERIC; // SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION
-
-	if (32 == bits_per_samples || 64 == bits_per_samples)
-		opensles_format_float(&format, channels, bits_per_samples, samples_per_seconds);
-	else
-		opensles_format((SLDataFormat_PCM*)&format, channels, bits_per_samples, samples_per_seconds);
 
 	ret = (*recorder->engine)->CreateAudioRecorder(recorder->engine, &recorder->recorderObject, &inputSource, &inputSink, sizeof(interfaces) / sizeof(interfaces[0]), interfaces, requireds);
 	CHECK_OPENSL_ERROR(ret, "%s: SLEngine->CreateAudioRecorder() failed", __FUNCTION__);

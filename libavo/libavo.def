@@ -8,11 +8,8 @@ EXPORTS
 
    audio_input_open
    audio_input_close
-   audio_input_isopened
-   audio_input_pause
-   audio_input_reset
-   audio_input_setvolume
-   audio_input_getvolume
+   audio_input_start
+   audio_input_stop
 
    video_output_open
    video_output_close
@@ -28,5 +25,3 @@ EXPORTS
    audio_output_pause
    audio_output_reset
    audio_output_getsamples
-   audio_output_setvolume
-   audio_output_getvolume

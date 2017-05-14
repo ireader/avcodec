@@ -1,4 +1,5 @@
 #include "opensles_output.h"
+#include "opensles_format.h"
 #include "opensles_player.h"
 #include "opensles_engine.h"
 #include "opensles_outputmix.h"
@@ -23,26 +24,26 @@ static int opensles_close(void* p)
 	free(player);
 }
 
-static void* opensles_open(int channels, int bits_per_samples, int samples_per_second, int samples)
+static void* opensles_open(int channels, int samples_per_second, int format, int samples)
 {
 	int r;
+	SLAndroidDataFormat_PCM_EX pcm;
 	struct opensles_player_t* player;
 	player = (struct opensles_player_t*)malloc(sizeof(*player));
 	if (NULL == player)
 		return NULL;
 	memset(player, 0, sizeof(struct opensles_player_t));
-	player->channels = channels;
-	player->sample_bits = bits_per_samples;
-	player->sample_rate = samples_per_second;
-	player->bytes_per_sample = player->channels * player->sample_bits / 8;
-	player->samples_per_buffer = player->sample_rate * OPENSLES_TIME / 1000;
-	player->buffer_count = samples * 1000 / player->sample_rate / OPENSLES_TIME;
+	opensles_format(&pcm, channels, samples_per_second, format);
+
+	player->bytes_per_sample = channels * PCM_SAMPLE_BITS(format) / 8;
+	player->samples_per_buffer = samples_per_second * OPENSLES_TIME / 1000;
+	player->buffer_count = samples / player->samples_per_buffer;
 	player->ptr = (sl_uint8_t*)malloc(player->buffer_count * player->samples_per_buffer * player->bytes_per_sample);
 
 	if (NULL == player->ptr
 		|| 0 != opensles_engine_create(&player->engineObject, &player->engine)
 		|| 0 != opensles_outputmix_create(player)
-		|| 0 != opensles_player_create(player, player->channels, player->sample_bits, player->sample_rate))
+		|| 0 != opensles_player_create(player, &pcm))
 	{
 		opensles_close(player);
 		return NULL;
@@ -99,36 +100,21 @@ static int opensles_play(void* p)
 {
 	struct opensles_player_t* player;
 	player = (struct opensles_player_t*)p;
-
-	if (player->player)
-	{
-		return (*player->player)->SetPlayState(player->player, SL_PLAYSTATE_PLAYING);
-	}
-	return -1;
+	return (*player->player)->SetPlayState(player->player, SL_PLAYSTATE_PLAYING);
 }
 
 static int opensles_pause(void* p)
 {
 	struct opensles_player_t* player;
 	player = (struct opensles_player_t*)p;
-
-	if (player->player)
-	{
-		return (*player->player)->SetPlayState(player->player, SL_PLAYSTATE_PAUSED);
-	}
-	return -1;
+	return (*player->player)->SetPlayState(player->player, SL_PLAYSTATE_PAUSED);
 }
 
 static int opensles_flush(void* p)
 {
 	struct opensles_player_t* player;
 	player = (struct opensles_player_t*)p;
-
-	if (player->bufferQ)
-	{
-		return (*player->bufferQ)->Clear(player->bufferQ);
-	}
-	return -1;
+	return (*player->bufferQ)->Clear(player->bufferQ);
 }
 
 static int opensles_get_samples(void* p)
@@ -145,41 +131,6 @@ static int opensles_get_samples(void* p)
 	return 0;
 }
 
-static int opensles_get_volume(void* p, int* volume)
-{
-	SLresult r;
-	SLmillibel level = 0;
-	struct opensles_player_t* player;
-	player = (struct opensles_player_t*)p;
-
-	if (player->volume)
-	{
-		r = (*player->volume)->GetVolumeLevel(player->volume, &level);
-		if (r == SL_RESULT_SUCCESS)
-		{
-			*volume = pow(level * 1.0f, 10) / 20;
-			return 0;
-		}
-	}
-	return -1;
-}
-
-static int opensles_set_volume(void* p, int volume)
-{
-	SLmillibel level;
-	struct opensles_player_t* player;
-	player = (struct opensles_player_t*)p;
-
-	if (player->volume)
-	{
-		level = 20 * log10(volume / 65535.0f) * 0xFFFF - SL_MILLIBEL_MAX;
-		level = level < SL_MILLIBEL_MIN ? SL_MILLIBEL_MIN : level;
-		level = level > SL_MILLIBEL_MAX ? SL_MILLIBEL_MAX : level;
-		return (*player->volume)->SetVolumeLevel(player->volume, level);
-	}
-	return -1;
-}
-
 int opensles_player_register()
 {
 	static audio_output_t ao;
@@ -190,8 +141,6 @@ int opensles_player_register()
 	ao.play = opensles_play;
 	ao.pause = opensles_pause;
 	ao.reset = opensles_flush;
-	ao.get_volume = opensles_get_volume;
-	ao.set_volume = opensles_set_volume;
 	ao.get_samples = opensles_get_samples;
 	return av_set_class(AV_AUDIO_PLAYER, "opensles", &ao);
 }

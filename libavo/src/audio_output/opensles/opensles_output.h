@@ -6,6 +6,7 @@
 #include <android/log.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "avframe.h"
 
 #define OPENSLES_TIME 10
 
@@ -20,9 +21,6 @@ struct opensles_player_t
 	SLAndroidSimpleBufferQueueItf bufferQ; // buffer queue interface
 	SLVolumeItf volume; // volume interface
 
-	int channels;
-	int sample_bits;
-	int sample_rate;
 	int bytes_per_sample;
 	int samples_per_buffer;
 	int buffer_count;
