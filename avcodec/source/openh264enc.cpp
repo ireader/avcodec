@@ -13,7 +13,7 @@ struct openh264_encoder_t
 	int skipped;
 };
 
-static void* openh264enc_create(struct h264_parameter_t* param)
+static void* openh264enc_create(const struct h264_parameter_t* param)
 {
 	int ret;
 	struct openh264_encoder_t* p;
