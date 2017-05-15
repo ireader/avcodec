@@ -45,6 +45,12 @@
     <ClInclude Include="include\avframe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\audio-encoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio-decoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">
@@ -81,6 +87,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\text-render-gdi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\opus-encoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\opus-decoder.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
