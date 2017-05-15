@@ -255,7 +255,7 @@ uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
 
 	if (NULL == m_arender)
 	{
-		m_arender = audio_output_open(1/*frame.channel*/, frame.sample_bits, frame.sample_rate, frame.sample_rate);
+		m_arender = audio_output_open(1/*frame.channel*/, frame.sample_rate, frame.format, frame.sample_rate);
 		if (NULL == m_arender) return 0;
 		audio_output_play(m_arender);
 	}

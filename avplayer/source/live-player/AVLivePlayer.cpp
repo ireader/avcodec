@@ -378,7 +378,7 @@ uint64_t AVLivePlayer::OnPlayAudio(const void* audio, int discard)
 	// Windows 10 Audio Open: ~= 200ms
 	if (NULL == m_arender)
 	{
-		m_arender = audio_output_open(1/*frame.channels*/, frame.sample_bits, frame.sample_rate, frame.sample_rate/5);
+		m_arender = audio_output_open(1/*frame.channels*/, frame.sample_rate, frame.format, frame.sample_rate/5);
 		if (NULL == m_arender) return 0;
 		audio_output_play(m_arender);
 	}
