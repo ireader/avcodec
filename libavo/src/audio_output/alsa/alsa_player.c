@@ -12,6 +12,8 @@
 #include "alsa_recovery.h"
 
 #define DEVICE_NAME "default"
+//#define DEVICE_NAME "plughw:0,0"
+//#define DEVICE_NAME "hw:0,0"
 
 struct alsa_player_t
 {
@@ -26,7 +28,8 @@ static int alsa_close(void* object)
 	struct alsa_player_t* ao = (struct alsa_player_t*)object;
 	if(NULL != ao->handle)
 	{
-		snd_pcm_drain(ao->handle);
+		snd_pcm_drop(ao->handle); // Stop PCM device and drop pending frames
+		//snd_pcm_drain(ao->handle); // Stop PCM device after pending frames have been played
 		snd_pcm_close(ao->handle);
 	}
 	free(ao);
