@@ -214,7 +214,8 @@ int AVPlayerCore::AVSync(uint64_t clock)
 	m_system.pts = m_audio.pts /*+ m_audio.duration*/ - m_aclock.frame_time;
 	m_system.clock = clock;
 
-	if (m_system.clock - m_vclock.frame_time > 100)
+	// adjust video play time if has video stream
+	if (m_system.clock - m_vclock.frame_time > 100 && m_vclock.clock + 1000 > clock)
 	{
 		app_log(LOG_WARNING, "AVSync: v-pts: %" PRIu64 " -> %" PRIu64 ", v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.pts, m_system.pts, m_vclock.frame_time, m_system.clock);
 		m_vclock.pts = m_system.pts;
