@@ -16,7 +16,7 @@ global:
    audio_output_play;
    audio_output_pause;
    audio_output_reset;
-   audio_output_getsamples;
+   audio_output_getframes;
 
    video_output_open;
    video_output_close;
