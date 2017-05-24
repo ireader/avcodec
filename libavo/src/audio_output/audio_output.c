@@ -8,7 +8,7 @@ struct ao_context_t
 	void* id;
 };
 
-void* audio_output_open(int channels, int samples_per_second, int format, int samples)
+void* audio_output_open(int channels, int frequency, int format, int frames)
 {
 	struct ao_context_t* h;
 	h = (struct ao_context_t*)malloc(sizeof(struct ao_context_t));
@@ -22,7 +22,7 @@ void* audio_output_open(int channels, int samples_per_second, int format, int sa
 		return NULL;
 	}
 
-	h->id = h->ao->open(channels, samples_per_second, format, samples);
+	h->id = h->ao->open(channels, frequency, format, frames);
 	if (NULL == h->id)
 	{
 		audio_output_close(h);
@@ -41,10 +41,10 @@ int audio_output_close(void* ao)
 	return 0;
 }
 
-int audio_output_write(void* ao, const void* pcm, int samples)
+int audio_output_write(void* ao, const void* pcm, int frames)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return (h && h->ao && h->ao->write && h->id) ? h->ao->write(h->id, pcm, samples) : -1;
+	return (h && h->ao && h->ao->write && h->id) ? h->ao->write(h->id, pcm, frames) : -1;
 }
 
 int audio_output_play(void* ao)
@@ -65,8 +65,8 @@ int audio_output_reset(void* ao)
 	return (h && h->ao && h->ao->reset && h->id) ? h->ao->reset(h->id) : -1;
 }
 
-int audio_output_getsamples(void* ao)
+int audio_output_getframes(void* ao)
 {
 	struct ao_context_t* h = (struct ao_context_t*)ao;
-	return (h && h->ao && h->ao->get_samples && h->id) ? h->ao->get_samples(h->id) : -1;
+	return (h && h->ao && h->ao->get_frames && h->id) ? h->ao->get_frames(h->id) : -1;
 }

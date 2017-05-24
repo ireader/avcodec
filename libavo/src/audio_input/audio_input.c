@@ -8,7 +8,7 @@ struct ai_context_t
 	void* id;
 };
 
-void* audio_input_open(int channels, int rate, int format, int samples, audio_input_callback cb, void* param)
+void* audio_input_open(int channels, int frequency, int format, int frames, audio_input_callback cb, void* param)
 {
 	struct ai_context_t* h;
 	h = (struct ai_context_t*)malloc(sizeof(struct ai_context_t));
@@ -22,7 +22,7 @@ void* audio_input_open(int channels, int rate, int format, int samples, audio_in
 		return NULL;
 	}
 
-	h->id = h->ai->open(channels, rate, format, samples, cb, param);
+	h->id = h->ai->open(channels, frequency, format, frames, cb, param);
 	if (NULL == h->id)
 	{
 		audio_input_close(h);

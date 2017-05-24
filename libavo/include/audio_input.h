@@ -6,13 +6,13 @@ extern "C" {
 #endif
 
 ///@param[in] pcm sample buffer
-///@param[in] samples number of samples per channel
-typedef void (*audio_input_callback)(void* param, const void* pcm, int samples);
+///@param[in] frames number of samples per channel
+typedef void (*audio_input_callback)(void* param, const void* pcm, int frames);
 
 typedef struct
 {
 	///@see audio_input_open
-	void* (*open)(int channels, int samples_per_second, int format, int samples, audio_input_callback cb, void* param);
+	void* (*open)(int channels, int frequency, int format, int frames, audio_input_callback cb, void* param);
 	int (*close)(void* ai);
 
 	int (*start)(void* ai);
@@ -20,10 +20,10 @@ typedef struct
 } audio_input_t;
 
 ///@param[in] channels audio channel number
-///@param[in] samples_per_second clock rate in Hz
+///@param[in] frequency clock rate in Hz
 ///@param[in] format audio format, PCM_SAMPLE_FMT_XXX(avframe.h)
-///@param[in] samples capture buffer size
-void* audio_input_open(int channels, int samples_per_second, int format, int samples, audio_input_callback cb, void* param);
+///@param[in] frames capture buffer size by sample (per channel)
+void* audio_input_open(int channels, int frequency, int format, int frames, audio_input_callback cb, void* param);
 int audio_input_close(void* ai);
 
 int audio_input_start(void* ai);
@@ -39,18 +39,18 @@ public:
 	~audio_input(){ close(); }
 
 public:
-	bool open(int channels, int samples_per_second, int format, int samples, audio_input_callback cb, void* param)
+	bool open(int channels, int frequency, int format, int samples, audio_input_callback cb, void* param)
 	{
 		if(isopened())
 			return true;
 
-		m_ai = audio_input_open(channels, samples_per_second, format, samples, cb, param);
+		m_ai = audio_input_open(channels, frequency, format, samples, cb, param);
 		if(!m_ai)
 			return false;
 
-		m_rate = samples_per_second;
 		m_format = format;
 		m_channels = channels;
+		m_frequency = frequency;
 		return true;
 	}
 
@@ -66,9 +66,9 @@ private:
 
 private:
 	void* m_ai;
-	int m_rate;
 	int m_format;
 	int m_channels;
+	int m_frequency;
 };
 
 #endif
