@@ -179,6 +179,6 @@ int alsa_player_register()
 	ao.play = alsa_play;
 	ao.pause = alsa_pause;
 	ao.reset = alsa_reset;
-	ao.get_samples = alsa_get_samples;
+	ao.get_frames = alsa_get_samples;
 	return av_set_class(AV_AUDIO_PLAYER, "alsa", &ao);
 }

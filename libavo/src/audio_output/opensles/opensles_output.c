@@ -141,6 +141,6 @@ int opensles_player_register()
 	ao.play = opensles_play;
 	ao.pause = opensles_pause;
 	ao.reset = opensles_flush;
-	ao.get_samples = opensles_get_samples;
+	ao.get_frames = opensles_get_samples;
 	return av_set_class(AV_AUDIO_PLAYER, "opensles", &ao);
 }

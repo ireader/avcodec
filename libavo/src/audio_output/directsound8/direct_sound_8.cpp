@@ -250,6 +250,6 @@ extern "C" int directsound8_player_register()
 	ao.play = direct_sound_play;
 	ao.pause = direct_sound_pause;
 	ao.reset = direct_sound_reset;
-	ao.get_samples = direct_sound_getsamples;
+	ao.get_frames = direct_sound_getsamples;
 	return av_set_class(AV_AUDIO_PLAYER, "directsound8", &ao);
 }

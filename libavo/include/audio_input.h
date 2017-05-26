@@ -35,7 +35,7 @@ int audio_input_stop(void* ai);
 class audio_input
 {
 public:
-	audio_input():m_ai(0), m_channels(0), m_rate(0), m_format(0) {};
+	audio_input():m_ai(0), m_channels(0), m_frequency(0), m_format(0) {};
 	~audio_input(){ close(); }
 
 public:
