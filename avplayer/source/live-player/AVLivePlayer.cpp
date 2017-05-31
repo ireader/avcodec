@@ -15,8 +15,6 @@
 #define VIDEO_DECODED_FRAMES 2
 #define AUDIO_DECODED_FRAMES 2
 
-#define avpacket_free(pkt) free(pkt)
-
 AVLivePlayer::AVLivePlayer(void* window)
 	: m_window(window)
 	, m_arender(NULL)
@@ -81,19 +79,20 @@ AVLivePlayer::~AVLivePlayer()
 
 	while (!m_audioQ.empty())
 	{
-		avpacket_free(m_audioQ.front());
+		avpacket_release(m_audioQ.front());
 		m_audioQ.pop_front();
 	}
 
 	while (!m_videoQ.empty())
 	{
-		avpacket_free(m_videoQ.front());
+		avpacket_release(m_videoQ.front());
 		m_videoQ.pop_front();
 	}
 }
 
 int AVLivePlayer::Input(struct avpacket_t* pkt, bool video)
 {
+	avpacket_addref(pkt);
 	{
 		AutoThreadLocker locker(m_locker);
 		if (video)
@@ -201,7 +200,7 @@ void AVLivePlayer::DecodeAudio()
 	}
 
 	int r = avdecoder_input(m_adecoder, pkt);
-	avpacket_free(pkt);
+	avpacket_release(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_adecoder);
@@ -230,7 +229,7 @@ void AVLivePlayer::DecodeVideo()
 	}
 
 	int r = avdecoder_input(m_vdecoder, pkt);
-	avpacket_free(pkt);
+	avpacket_release(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_vdecoder);
@@ -255,8 +254,7 @@ void AVLivePlayer::AudioDiscard()
 		AutoThreadLocker locker(m_locker);
 		for (n = 0; !m_audioQ.empty(); ++n)
 		{
-			struct avpacket_t* pkt = m_audioQ.front();
-			avpacket_free(pkt);
+			avpacket_release(m_audioQ.front());
 			m_audioQ.pop_front();
 		}
 	}
@@ -281,7 +279,7 @@ void AVLivePlayer::VideoDiscard()
 			if (pkt->data == m_h264_idr)
 				break;
 
-			avpacket_free(pkt);
+			avpacket_release(pkt);
 			m_videoQ.pop_front();
 		}
 
@@ -391,7 +389,7 @@ uint64_t AVLivePlayer::OnPlayAudio(const void* audio, int discard)
 	}
 
 	// calculate audio buffer sample duration (ms)
-	int samples = audio_output_getsamples(m_arender);
+	int samples = audio_output_getframes(m_arender);
 	int duration = (uint64_t)samples * 1000 / frame.sample_rate;
 	m_audio_delay.Tick((int)(system_time() - frame.pts) + duration);
 	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%dms)\n", __FUNCTION__, samples, duration);

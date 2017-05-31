@@ -48,14 +48,11 @@ void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t 
 		return;
 	}
 
-	struct avpacket_t* pkt;
-	pkt = (struct avpacket_t*)malloc(sizeof(*pkt) + bytes);
-	memset(pkt, 0, sizeof(struct avpacket_t));
-	pkt->data = (uint8_t*)(pkt + 1);
+	struct avpacket_t* pkt = avpacket_alloc(bytes);
+	memcpy(pkt->data, data, bytes);
 	pkt->bytes = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
-	memcpy(pkt->data, data, bytes);
 	*s_param.pkt = pkt;
 }
 

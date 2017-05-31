@@ -8,8 +8,6 @@
 #include <string.h>
 #include <assert.h>
 
-#define avpacket_free(pkt) free(pkt)
-
 AVFilePlayer::AVFilePlayer(void* window, avplayer_file_read reader, void* param)
 	:m_window(window)
 	,m_arender(NULL)
@@ -60,13 +58,13 @@ AVFilePlayer::~AVFilePlayer()
 
 	while (!m_audioQ.empty())
 	{
-		avpacket_free(m_audioQ.front());
+		avpacket_release(m_audioQ.front());
 		m_audioQ.pop_front();
 	}
 
 	while (!m_videoQ.empty())
 	{
-		avpacket_free(m_videoQ.front());
+		avpacket_release(m_videoQ.front());
 		m_videoQ.pop_front();
 	}
 }
@@ -105,6 +103,7 @@ int AVFilePlayer::OnThread()
 		while (m_videoQ.size() + m_audioQ.size() < 20
 			&& m_reader && m_reader(m_param, &pkt, &type) > 0)
 		{
+			avpacket_addref(pkt);
 			0 == type ? m_audioQ.push_back(pkt) : m_videoQ.push_back(pkt);
 		}
 
@@ -133,7 +132,7 @@ void AVFilePlayer::DecodeAudio()
 	m_audioQ.pop_front();
 
 	int r = avdecoder_input(m_adecoder, pkt);
-	avpacket_free(pkt);
+	avpacket_release(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_adecoder);
@@ -154,7 +153,7 @@ void AVFilePlayer::DecodeVideo()
 	m_videoQ.pop_front();
 
 	int r = avdecoder_input(m_vdecoder, pkt);
-	avpacket_free(pkt);
+	avpacket_release(pkt);
 	if (r >= 0)
 	{
 		void* frame = avdecoder_getframe(m_vdecoder);
@@ -271,7 +270,7 @@ uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
 	avdecoder_freeframe(m_adecoder, (void*)audio);
 
 	// calculate audio buffer sample duration (ms)
-	int samples = audio_output_getsamples(m_arender);
+	int samples = audio_output_getframes(m_arender);
 	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%d)\n", __FUNCTION__, samples, (int)((uint64_t)samples * 1000 / sample_rate));
 	return samples >= 0 ? (uint64_t)samples * 1000 / sample_rate : 0;
 }

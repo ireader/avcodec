@@ -54,14 +54,11 @@ static inline const uint8_t* h264_frame(const uint8_t *data, ptrdiff_t bytes)
 
 struct avpacket_t* h264_packet(uint8_t* data, size_t bytes, int64_t pts, int64_t dts)
 {
-	struct avpacket_t* pkt;
-	pkt = (struct avpacket_t*)malloc(sizeof(*pkt));
-	memset(pkt, 0, sizeof(struct avpacket_t));
-	pkt->data = (uint8_t*)(pkt + 1);
+	struct avpacket_t* pkt = avpacket_alloc(bytes);
+	memcpy(pkt->data, data, bytes);
 	pkt->bytes = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
-	pkt->data = data;
 	return pkt;
 }
 
