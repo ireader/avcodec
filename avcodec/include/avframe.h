@@ -74,6 +74,10 @@ struct avframe_t
 	int flags;		///< PICTURE_TYPE_XXX
 	int width;		///< video width
 	int height;		///< video height
+	int crop_top;   ///< The number of pixels to discard from the the top/bottom/left/right border of the frame
+	int crop_bottom;
+	int crop_left;
+	int crop_right;
 	
 	/// audio only
 	int channels;	 ///< number of audio channels
@@ -86,6 +90,21 @@ struct avframe_t
 	/// For video, size in bytes of each picture line
 	/// For audio, size in bytes of each plane
 	int linesize[8];
+
+	int32_t ref;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+///@param[in] bytes alloc frame data size, don't include sizeof(struct avframe_t), data[0] pointer to memory
+///@return alloc new avframe_t, use avframe_release to free memory
+struct avframe_t* avframe_alloc(size_t bytes);
+int32_t avframe_addref(struct avframe_t* frame);
+int32_t avframe_release(struct avframe_t* frame);
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* !_avframe_h_ */
