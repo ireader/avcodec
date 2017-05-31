@@ -147,7 +147,7 @@ static int Prepare(d3d9_render_t* vo, const struct avframe_t* pic, const RECT& r
 	}
 	else if(!vo->surface)
 	{
-		if(0 != d3d9_surface_release(vo))
+		if(0 != d3d9_surface_create(vo))
 			return -1;
 	}
 
