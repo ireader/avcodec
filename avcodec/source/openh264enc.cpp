@@ -139,24 +139,20 @@ static int openh264enc_getpacket(void* h264, avpacket_t* pkt)
 	switch (p->out.eFrameType) {
 	case videoFrameTypeIDR:
 	case videoFrameTypeI:
-		pkt->pic_type = PICTURE_TYPE_I;
 		pkt->flags = AVPACKET_FLAG_KEY;
 		break;
 	case videoFrameTypeP:
-		pkt->pic_type = PICTURE_TYPE_P;
 		break;
 	//case videoFrameTypeB:
 	//	pkt->pic_type = PICTURE_TYPE_B;
 	//	break;
 	case videoFrameTypeSkip:
 		printf("%s: frame skipped\n", __FUNCTION__);
-		pkt->pic_type = PICTURE_TYPE_NONE;
 		p->skipped++;
 		return 0;
 
 	default:
 		printf("%s: unknown frame type\n", __FUNCTION__);
-		pkt->pic_type = PICTURE_TYPE_NONE;
 		return 0;
 	}
 
@@ -190,6 +186,7 @@ static int openh264enc_getpacket(void* h264, avpacket_t* pkt)
 	//}
 
 	pkt->dts = pkt->pts = p->out.uiTimeStamp;
+	pkt->codecid = AVCODEC_VIDEO_H264;
 	return 1;
 }
 

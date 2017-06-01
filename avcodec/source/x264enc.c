@@ -166,6 +166,7 @@ static int x264enc_getpacket(void* h264, struct avpacket_t* pkt)
 {
 	struct x264_encoder_t* p;
 	p = (struct x264_encoder_t*)h264;
+	pkt->codecid = AVCODEC_VIDEO_H264;
 	pkt->bytes = p->bytes;
 	pkt->data = p->nal->p_payload; // the payloads of all output NALs are guaranteed to be sequential in memory.
 	pkt->pts = p->out.i_pts;
@@ -174,18 +175,14 @@ static int x264enc_getpacket(void* h264, struct avpacket_t* pkt)
 	switch (p->out.i_type) {
 	case X264_TYPE_IDR:
 	case X264_TYPE_I:
-		pkt->pic_type = PICTURE_TYPE_I;
 		pkt->flags = AVPACKET_FLAG_KEY;
 		break;
+
 	case X264_TYPE_P:
-		pkt->pic_type = PICTURE_TYPE_P;
-		break;
 	case X264_TYPE_B:
 	case X264_TYPE_BREF:
-		pkt->pic_type = PICTURE_TYPE_B;
-		break;
 	default:
-		pkt->pic_type = PICTURE_TYPE_NONE;
+		break;
 	}
 
 	return p->nnal;

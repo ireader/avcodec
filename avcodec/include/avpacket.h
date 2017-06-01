@@ -4,10 +4,28 @@
 #include <stdint.h>
 #include <stddef.h>
 
-enum avpacket_flag
+enum AVPACKET_CODEC_ID
 {
-	AVPACKET_FLAG_KEY = 0x01,
+	AVCODEC_UNKNOWN = 0x00,
+
+	AVCODEC_VIDEO_MPEG2,
+	AVCODEC_VIDEO_MPEG4,
+	AVCODEC_VIDEO_H264,
+	AVCODEC_VIDEO_H265,
+	AVCODEC_VIDEO_VP8,
+	AVCODEC_VIDEO_VP9,
+
+	AVCODEC_AUDIO_PCM = 0x10000,
+	AVCODEC_AUDIO_G711,
+	AVCODEC_AUDIO_G726,
+	AVCODEC_AUDIO_G729,
+	AVCODEC_AUDIO_MP3,
+	AVCODEC_AUDIO_AAC,
+	AVCODEC_AUDIO_AC3,
+	AVCODEC_AUDIO_OPUS,
 };
+
+#define AVPACKET_FLAG_KEY 0x01
 
 struct avpacket_t
 {
@@ -17,8 +35,8 @@ struct avpacket_t
 	int64_t pts;
 	int64_t dts;
 
-	int pic_type;	// picture type(PICTURE_TYPE_XXX)
-	int flags;		// AVPACKET_FLAG_XXX
+	enum AVPACKET_CODEC_ID codecid;
+	int flags; // AVPACKET_FLAG_XXX
 
 	int32_t ref;
 };

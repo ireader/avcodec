@@ -16,6 +16,9 @@ struct audio_parameter_t
 
 	int profile;
 	int level;
+
+	int bitrate;
+	int bitrate_mode; // CBR/VBR
 };
 
 struct audio_encoder_t
@@ -25,7 +28,7 @@ struct audio_encoder_t
 
 	/// pic->flags & AVPACKET_FLAG_KEY => force IDR
 	/// @return >0-ok, other-error
-	int (*encode)(void* audio, const struct avframe_t* pic);
+	int (*encode)(void* audio, const struct avframe_t* frame);
 
 	/// @return >=0-got packet, <0-error
 	int (*getpacket)(void* audio, struct avpacket_t* pkt);

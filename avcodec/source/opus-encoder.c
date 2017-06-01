@@ -53,7 +53,7 @@ static int opus_input(void* audio, const struct avframe_t* pic)
 	if (enc->pkt.bytes > 0)
 	{
 		enc->pkt.flags = 0;
-		enc->pkt.pic_type = 0;
+		enc->pkt.codecid = AVCODEC_AUDIO_OPUS;
 		enc->pkt.pts = pic->pts;
 		enc->pkt.dts = pic->dts;
 	}
