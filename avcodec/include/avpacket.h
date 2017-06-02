@@ -2,7 +2,6 @@
 #define _avpacket_h_
 
 #include <stdint.h>
-#include <stddef.h>
 
 enum AVPACKET_CODEC_ID
 {
@@ -30,7 +29,7 @@ enum AVPACKET_CODEC_ID
 struct avpacket_t
 {
 	uint8_t* data;
-	size_t bytes;
+	int size;
 
 	int64_t pts;
 	int64_t dts;
@@ -45,9 +44,9 @@ struct avpacket_t
 extern "C" {
 #endif
 
-///@param[in] bytes alloc packet data size, don't include sizeof(struct avpacket_t)
+///@param[in] size alloc packet data size, don't include sizeof(struct avpacket_t)
 ///@return alloc new avpacket_t, use avpacket_release to free memory
-struct avpacket_t* avpacket_alloc(size_t bytes);
+struct avpacket_t* avpacket_alloc(int size);
 int32_t avpacket_addref(struct avpacket_t* pkt);
 int32_t avpacket_release(struct avpacket_t* pkt);
 
