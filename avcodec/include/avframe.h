@@ -91,7 +91,7 @@ struct avframe_t
 	/// For audio, size in bytes of each plane
 	int linesize[8];
 
-	int32_t ref;
+	void* opaque; // internal use only
 };
 
 #ifdef __cplusplus

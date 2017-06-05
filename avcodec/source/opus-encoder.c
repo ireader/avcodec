@@ -34,6 +34,7 @@ static void* opus_create(const struct audio_parameter_t* param)
 		return NULL;
 
 	memset(enc, 0, sizeof(*enc));
+	enc->pkt.codecid = AVCODEC_AUDIO_OPUS;
 	enc->pkt.data = (uint8_t*)(enc + 1);
 	enc->capacity = r;
 	enc->opus = opus_encoder_create(param->frequency, param->channels, OPUS_APPLICATION_VOIP, &r);
@@ -49,25 +50,24 @@ static int opus_input(void* audio, const struct avframe_t* pic)
 {
 	struct opus_encoder_t* enc;
 	enc = (struct opus_encoder_t*)audio;
-	enc->pkt.bytes = opus_encode(enc->opus, (const opus_int16*)pic->data[0], pic->samples, enc->pkt.data, enc->capacity);
-	if (enc->pkt.bytes > 0)
+	enc->pkt.size = opus_encode(enc->opus, (const opus_int16*)pic->data[0], pic->samples, enc->pkt.data, enc->capacity);
+	if (enc->pkt.size > 0)
 	{
 		enc->pkt.flags = 0;
-		enc->pkt.codecid = AVCODEC_AUDIO_OPUS;
 		enc->pkt.pts = pic->pts;
 		enc->pkt.dts = pic->dts;
 	}
-	return enc->pkt.bytes;
+	return enc->pkt.size;
 }
 
 static int opus_getpacket(void* audio, struct avpacket_t* pkt)
 {
 	struct opus_encoder_t* enc;
 	enc = (struct opus_encoder_t*)audio;
-	if (enc->pkt.bytes > 0)
+	if (enc->pkt.size > 0)
 	{
 		memcpy(pkt, &enc->pkt, sizeof(*pkt));
-		enc->pkt.bytes = 0; // clear
+		enc->pkt.size = 0; // clear
 		return 0;
 	}
 	return -1;

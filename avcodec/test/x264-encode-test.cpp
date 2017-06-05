@@ -47,7 +47,7 @@ void x264_encode_test(const char* output, const char* input, int width, int heig
 		avpacket_t pkt;
 		memset(&pkt, 0, sizeof(pkt));
 		assert(api->getpacket(h264, &pkt) > 0);
-		assert(pkt.bytes == fwrite(pkt.data, 1, pkt.bytes, wfp));
+		assert(pkt.size == fwrite(pkt.data, 1, pkt.size, wfp));
 	}
 	fclose(rfp);
 	fclose(wfp);

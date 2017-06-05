@@ -164,13 +164,13 @@ static int openh264enc_getpacket(void* h264, avpacket_t* pkt)
 	//if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
 	//	first_layer = fbi.iLayerNum - 1;
 
-	pkt->bytes = 0;
+	pkt->size = 0;
 	memset(layer_size, 0, sizeof(layer_size));
 	for (layer = 0; layer < p->out.iLayerNum; layer++) {
 		for (i = 0; i < p->out.sLayerInfo[layer].iNalCount; i++)
 			layer_size[layer] += p->out.sLayerInfo[layer].pNalLengthInByte[i];
-		assert(p->out.sLayerInfo[layer].pBsBuf == p->out.sLayerInfo[0].pBsBuf + pkt->bytes);
-		pkt->bytes += layer_size[layer];
+		assert(p->out.sLayerInfo[layer].pBsBuf == p->out.sLayerInfo[0].pBsBuf + pkt->size);
+		pkt->size += layer_size[layer];
 	}
 	//printf("%s: %d slices\n", __FUNCTION__, p->out.sLayerInfo[p->out.iLayerNum - 1].iNalCount);
 

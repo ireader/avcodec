@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct opus_decoder_t
 {
@@ -53,7 +54,7 @@ static int opus_input(void* audio, const struct avpacket_t* pkt)
 {
 	struct opus_decoder_t* dec;
 	dec = (struct opus_decoder_t*)audio;
-	dec->pic.samples = opus_decode(dec->opus, (const unsigned char*)pkt->data, pkt->bytes, (opus_int16*)dec->pic.data[0], dec->capacity, 0);
+	dec->pic.samples = opus_decode(dec->opus, (const unsigned char*)pkt->data, pkt->size, (opus_int16*)dec->pic.data[0], dec->capacity, 0);
 	if (dec->pic.samples > 0)
 	{
 		dec->pic.pts = pkt->pts;
@@ -63,17 +64,28 @@ static int opus_input(void* audio, const struct avpacket_t* pkt)
 	return dec->pic.samples;
 }
 
-static int opus_getframe(void* audio, struct avframe_t* pic)
+static int opus_getframe(void* audio, struct avframe_t* frame)
 {
 	struct opus_decoder_t* dec;
 	dec = (struct opus_decoder_t*)audio;
 	if (dec->pic.samples > 0)
 	{
-		memcpy(pic, &dec->pic, sizeof(*pic));
+		memcpy(frame, &dec->pic, sizeof(*frame));
 		dec->pic.samples = 0; // clear
+
+		frame->data[0] = malloc(dec->pic.linesize[0]);
+		if (NULL == frame->data)
+			return -ENOMEM;
+		memcpy(frame->data[0], dec->pic.data[0], dec->pic.linesize[0]);
 		return 0;
 	}
 	return -1;
+}
+
+static int opus_freeframe(void* audio, struct avframe_t* frame)
+{
+	free(frame);
+	return 0;
 }
 
 struct audio_decoder_t* opus_decoder()
@@ -83,6 +95,7 @@ struct audio_decoder_t* opus_decoder()
 		opus_destroy,
 		opus_input,
 		opus_getframe,
+		opus_freeframe,
 	};
 	return &s_decoder;
 }

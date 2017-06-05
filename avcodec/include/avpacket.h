@@ -14,6 +14,11 @@ enum AVPACKET_CODEC_ID
 	AVCODEC_VIDEO_VP8,
 	AVCODEC_VIDEO_VP9,
 
+	AVCODEC_IMAGE_PNG = 0x100,
+	AVCODEC_IMAGE_GIF,
+	AVCODEC_IMAGE_BMP,
+	AVCODEC_IMAGE_JPEG,
+
 	AVCODEC_AUDIO_PCM = 0x10000,
 	AVCODEC_AUDIO_G711,
 	AVCODEC_AUDIO_G726,
@@ -37,7 +42,7 @@ struct avpacket_t
 	enum AVPACKET_CODEC_ID codecid;
 	int flags; // AVPACKET_FLAG_XXX
 
-	int32_t ref;
+	void* opaque; // internal use only
 };
 
 #ifdef __cplusplus
