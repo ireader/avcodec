@@ -18,9 +18,12 @@ static int ffoutput_interrupt(void* p)
 	return 0;
 }
 
-static int ffoutput_video_stream(struct ffoutput_t* ff, enum AVCodecID codecId)
+int ffoutput_add_video_stream(void* p, enum AVCodecID codecId)
 {
-	AVStream* st = NULL;
+	AVStream* st ;
+	struct ffoutput_t* ff;
+	ff = (struct ffoutput_t*)p;
+
 	st = avformat_new_stream(ff->oc, NULL);
 	st->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
 	st->codecpar->codec_id = codecId;
@@ -33,32 +36,34 @@ static int ffoutput_video_stream(struct ffoutput_t* ff, enum AVCodecID codecId)
 	if (ff->oc->oformat->flags & AVFMT_GLOBALHEADER) {
 		st->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
 	}
-	return 0;
+	return st->index;
 }
 
-static int ffoutput_audio_stream(struct ffoutput_t* ff, enum AVCodecID codecId)
+int ffoutput_add_audio_stream(void* p, enum AVCodecID codecId, int channel, int frequency, int bits_per_sample)
 {
-	AVStream* st = NULL;
+	AVStream* st;
+	struct ffoutput_t* ff;
+	ff = (struct ffoutput_t*)p;
+	
 	st = avformat_new_stream(ff->oc, NULL);
 	st->codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 	st->codecpar->codec_id = codecId;
-	st->codecpar->channels = 1;
-	st->codecpar->sample_rate = 44000;
+	st->codecpar->channels = channel;
+	st->codecpar->sample_rate = frequency;
 	st->codecpar->frame_size = 0;
 
 	if (ff->oc->oformat->flags & AVFMT_GLOBALHEADER) {
 		st->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
 	}
-	return 0;
+	return st->index;
 }
 
-static int ffoutput_open(struct ffoutput_t* ff, const char* url, AVStream* streams[], int count)
+static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* format)
 {
-	int i, r;
-	AVStream* st;
+	int r;
 	AVDictionary* opts = NULL;
 
-	r = avformat_alloc_output_context2(&ff->oc, NULL, "flv", url);
+	r = avformat_alloc_output_context2(&ff->oc, NULL, format, url);
 	if (NULL == ff->oc)
 	{
 		printf("%s(%s): avformat_alloc_context failed.\n", __FUNCTION__, url);
@@ -72,11 +77,12 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, AVStream* strea
 		return r;
 	}
 
-	for (i = 0; i < count; i++)
-	{
-		st = avformat_new_stream(ff->oc, NULL);
-		avcodec_parameters_copy(st->codecpar, streams[i]->codecpar);
-	}
+	//for (i = 0; i < count; i++)
+	//{
+	//	AVStream* st;
+	//	st = avformat_new_stream(ff->oc, NULL);
+	//	avcodec_parameters_copy(st->codecpar, streams[i]->codecpar);
+	//}
 
 //	avformat_write_header(ff->oc, NULL);
 
@@ -84,7 +90,7 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, AVStream* strea
 	return 0;
 }
 
-void* ffoutput_create(const char* url, AVStream* streams[], int count)
+void* ffoutput_create(const char* url, const char* format)
 {
 	struct ffoutput_t* ff;
 	ff = (struct ffoutput_t*)malloc(sizeof(*ff));
@@ -95,7 +101,7 @@ void* ffoutput_create(const char* url, AVStream* streams[], int count)
 	ff->interrupt_callback.callback = ffoutput_interrupt;
 	ff->interrupt_callback.opaque = ff;
 
-	if (0 != ffoutput_open(ff, url, streams, count))
+	if (0 != ffoutput_open(ff, url, format))
 	{
 		ffoutput_destroy(ff);
 		return NULL;

@@ -8,9 +8,11 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 
-void* ffoutput_create(const char* url, AVStream* streams[], int count);
-
+void* ffoutput_create(const char* url, const char* format);
 void ffoutput_destroy(void* ff);
+
+int ffoutput_add_video_stream(void* ff, enum AVCodecID codecid);
+int ffoutput_add_audio_stream(void* ff, enum AVCodecID codecid, int channel, int frequency, int bits_per_sample);
 
 /// @param[out] pkt audio/video packet, MUST be freed with av_packet_unref
 /// @return 0-ok, <0-error or end of file

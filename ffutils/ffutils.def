@@ -13,12 +13,13 @@ EXPORTS
    ffdecoder_getframe
 
    avdecoder_create_h264
-   avdecoder_create_aac
    avdecoder_destroy
    avdecoder_input
    avdecoder_getframe
    avdecoder_freeframe
-   avdecoder_frame_to
+
+   aac_decoder
+   mp3_decoder
 
    fffilter_create_source
    

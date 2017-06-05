@@ -40,7 +40,7 @@ static int ffinput_open(struct ffinput_t* ff, const char* url)
 
 	/* If not enough info to get the stream parameters, we decode the
 	first frames to get it. (used in mpeg case for example) */
-	r = avformat_find_stream_info(ff->ic, &opt);
+	r = avformat_find_stream_info(ff->ic, NULL/*&opt*/);
 	if (r < 0) {
 		printf("%s(%s): could not find codec parameters\n", __FUNCTION__, url);
 		return r;
