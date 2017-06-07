@@ -78,7 +78,6 @@ public:
 
 	int getframes() const	{ return isopened()?audio_output_getframes(m_ao) : -1; }
 
-private:
 	bool check(int channels, int frequency, int format)
 	{
 		if(!m_ao) return false;
