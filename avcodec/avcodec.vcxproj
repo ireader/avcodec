@@ -33,6 +33,9 @@
     <ClInclude Include="include\yuv-overlay.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\avbuffer.c" />
+    <ClCompile Include="source\avframe.c" />
+    <ClCompile Include="source\avpacket.c" />
     <ClCompile Include="source\bitmap.c" />
     <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\interpolation-bilinear.c" />
@@ -107,15 +110,15 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OS_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;freetype/include;freetype/include/freetype2;../../sdk/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>openh264;x264;freetype</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264-148.lib;freetype.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>openh264;x264;freetype;../../3rd/opus/debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264-148.lib;freetype.lib;opus.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>

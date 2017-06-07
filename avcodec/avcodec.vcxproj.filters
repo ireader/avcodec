@@ -98,5 +98,14 @@
     <ClCompile Include="source\opus-decoder.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\avbuffer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\avframe.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\avpacket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

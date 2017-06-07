@@ -12,6 +12,7 @@ OUTFILE = libcodec.a
 #--------------------------------------------------------------------
 INCLUDES = . \
 					./include \
+					$(ROOT)/include \
 					./ffmpeg/include \
 					/usr/include/freetype2
 
