@@ -1,14 +1,16 @@
 #ifndef _AVLivePlayer_h_
 #define _AVLivePlayer_h_
 
-#include "avpacket.h"
 #include "sys/event.h"
 #include "sys/atomic.h"
 #include "sys/thread.h"
 #include "sys/sync.hpp"
-#include <list>
 #include "cpm/shared_ptr.h"
+#include <list>
 #include "../AVInterval.h"
+#include "audio_output.h"
+#include "AudioDecoder.h"
+#include "VideoDecoder.h"
 #include "AVFilter.h"
 
 class AVLivePlayer
@@ -18,9 +20,11 @@ public:
 	~AVLivePlayer();
 
 public:
-	int Input(struct avpacket_t* pkt, bool video);
+	int Input(struct avpacket_t* pkt);
 
 	void Present();
+
+	int GetAudioSamples() const;
 
 public:
 	void SetAudioFilter(std::shared_ptr<IAudioFilter> filter) { m_afilter = filter; }
@@ -28,8 +32,8 @@ public:
 
 private:
 	static uint64_t OnAVRender(void* param, int type, const void* frame, int discard);
-	uint64_t OnPlayVideo(const void* frame, int discard);
-	uint64_t OnPlayAudio(const void* pcm, int discard);
+	uint64_t OnPlayVideo(avframe_t* video, int discard);
+	uint64_t OnPlayAudio(avframe_t* audio, int discard);
 
 	static int STDCALL OnThread(void* param);
 	int OnThread();
@@ -38,19 +42,15 @@ private:
 	void VideoDiscard();
 	void AudioDiscard();
 
-	void Present(void* video);
+	void Present(struct avframe_t* video);
 	void DecodeAudio();
 	void DecodeVideo();
 
 private:
 	void* m_window;
-
 	void* m_player;
-	void* m_arender;
-	void* m_vdecoder;
-	void* m_adecoder;
-	void* m_play_video;
-	void* m_present_video;
+	avframe_t* m_play_video;
+	avframe_t* m_present_video;
 
 	bool m_running;
 	pthread_t m_thread;
@@ -67,6 +67,9 @@ private:
 	AVInterval m_audio_delay;
 	AVInterval m_video_delay;
 	
+	std::shared_ptr<audio_output> m_audioout;
+	std::shared_ptr<AudioDecoder> m_adecoder;
+	std::shared_ptr<VideoDecoder> m_vdecoder;
 	std::shared_ptr<IAudioFilter> m_afilter;
 	std::shared_ptr<IVideoFilter> m_vfilter;
 };

@@ -2,13 +2,15 @@
 #define _AVFilePlayer_h_
 
 #include "avplayer-file.h"
-#include "avpacket.h"
 #include "sys/event.h"
 #include "sys/atomic.h"
 #include "sys/thread.h"
 #include "sys/sync.hpp"
-#include <list>
 #include "cpm/shared_ptr.h"
+#include <list>
+#include "audio_output.h"
+#include "AudioDecoder.h"
+#include "VideoDecoder.h"
 #include "AVFilter.h"
 
 class AVFilePlayer
@@ -28,8 +30,8 @@ public:
 
 private:
 	static uint64_t OnAVRender(void* param, int video, const void* frame, int discard);
-	uint64_t OnPlayVideo(const void* video, int discard);
-	uint64_t OnPlayAudio(const void* audio, int discard);
+	uint64_t OnPlayVideo(avframe_t* video, int discard);
+	uint64_t OnPlayAudio(avframe_t* audio, int discard);
 
 	static int STDCALL OnThread(void* param);
 	int OnThread();
@@ -40,11 +42,7 @@ private:
 
 private:
 	void* m_window;
-
 	void* m_player;
-	void* m_arender;
-	void* m_vdecoder;
-	void* m_adecoder;
 
 	bool m_running;
 	pthread_t m_thread;
@@ -58,6 +56,9 @@ private:
 	avplayer_file_read m_reader;
 	void* m_param;
 
+	std::shared_ptr<audio_output> m_audioout;
+	std::shared_ptr<AudioDecoder> m_adecoder;
+	std::shared_ptr<VideoDecoder> m_vdecoder;
 	std::shared_ptr<IAudioFilter> m_afilter;
 	std::shared_ptr<IVideoFilter> m_vfilter;
 };

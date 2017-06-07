@@ -9,10 +9,8 @@ extern "C" {
 #endif
 
 /// read one frame(audio or video)
-/// @param[out] pkt malloc new av packet(free by player)
-/// @param[out] type 0-audio, 1-video
-/// @return >0-ok, 0-eof, <0-error
-typedef int (*avplayer_file_read)(void* param, struct avpacket_t** pkt, int* type);
+/// @return new A/V apcket by avpacket_alloc (internal free by avpacket_release)
+typedef struct avpacket_t* (*avplayer_file_read)(void* param);
 
 void* avplayer_file_create(void* window, avplayer_file_read reader, void* param);
 void avplayer_file_destroy(void* player);

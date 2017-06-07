@@ -8,40 +8,42 @@ static void* s_reader;
 static void* s_demuxer;
 static struct
 {
-	struct avpacket_t** pkt;
-	int* type;
+	struct avpacket_t* pkt;
 } s_param;
 
-static int file_player_test_read(void* p, struct avpacket_t** pkt, int* type)
+static struct avpacket_t* file_player_test_read(void* p)
 {
 	int tagtype = 0;
 	uint32_t timestamp = 0;
 	static uint8_t s_buffer[512 * 1024];
 
-	s_param.pkt = pkt;
-	s_param.type = type;
-	*s_param.type = -1;
+	s_param.pkt = NULL;
 	do
 	{
 		int r = flv_reader_read(s_reader, &tagtype, &timestamp, s_buffer, sizeof(s_buffer));
 		if (r < 0)
-			return r;
+			return NULL;
 
 		flv_demuxer_input(s_demuxer, tagtype, s_buffer, r, timestamp);
-	} while (-1 == *s_param.type);
+	} while (!s_param.pkt);
 
-	return 1;
+	return s_param.pkt;
 }
 
 void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t bytes, uint32_t pts, uint32_t dts)
 {
+	enum AVPACKET_CODEC_ID codecid = AVCODEC_UNKNOWN;
 	if (FLV_AVC == type)
 	{
-		*s_param.type = 1;
+		codecid = AVCODEC_VIDEO_H264;
 	}
-	else if (FLV_AAC == type || FLV_MP3 == type)
+	else if (FLV_AAC == type)
 	{
-		*s_param.type = 0;
+		codecid = AVCODEC_AUDIO_AAC;
+	}
+	else if (FLV_MP3 == type)
+	{
+		codecid = AVCODEC_AUDIO_MP3;
 	}
 	else
 	{
@@ -50,10 +52,11 @@ void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t 
 
 	struct avpacket_t* pkt = avpacket_alloc(bytes);
 	memcpy(pkt->data, data, bytes);
-	pkt->bytes = bytes;
+	pkt->size = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
-	*s_param.pkt = pkt;
+	pkt->codecid = codecid;
+	s_param.pkt = pkt;
 }
 
 int file_player_test(void* window, const char* flv)

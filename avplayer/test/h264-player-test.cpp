@@ -56,16 +56,18 @@ struct avpacket_t* h264_packet(uint8_t* data, size_t bytes, int64_t pts, int64_t
 {
 	struct avpacket_t* pkt = avpacket_alloc(bytes);
 	memcpy(pkt->data, data, bytes);
-	pkt->bytes = bytes;
+	pkt->codecid = AVCODEC_VIDEO_H264;
+	pkt->size = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
 	return pkt;
 }
 
-static int h264_file_reader(void* end, struct avpacket_t** pkt, int* type)
+static struct avpacket_t* h264_file_reader(void* end)
 {
 	static int64_t pts = 0;
 	static const uint8_t* p = NULL;
+	struct avpacket_t* pkt = NULL;
 
 	if (NULL == p)
 	{
@@ -73,17 +75,16 @@ static int h264_file_reader(void* end, struct avpacket_t** pkt, int* type)
 	}
 
 	if (p >= end)
-		return 0;
+		return NULL;
 
 	const uint8_t* next = h264_frame(p, (uint8_t*)end - p);
 	next = h264_startcode(next + 4, (uint8_t*)end - next - 4);
 
-	*pkt = h264_packet((uint8_t*)p, next - p, pts, pts);
-	*type = 1;
+	pkt = h264_packet((uint8_t*)p, next - p, pts, pts);
 
 	p = next;
 	pts += 40; // 40ms
-	return 1;
+	return pkt;
 }
 
 int h264_player_test(void* window, const char* h264)

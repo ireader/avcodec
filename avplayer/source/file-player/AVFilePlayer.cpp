@@ -1,5 +1,4 @@
 #include "AVFilePlayer.h"
-#include "audio_output.h"
 #include "avdecoder.h"
 #include "avplayer.h"
 #include "VOFilter.h"
@@ -9,16 +8,16 @@
 #include <assert.h>
 
 AVFilePlayer::AVFilePlayer(void* window, avplayer_file_read reader, void* param)
-	:m_window(window)
-	,m_arender(NULL)
-	,m_running(false)
-	,m_videos(0), m_audios(0)
-	,m_reader(reader), m_param(param)
-	,m_vfilter(new VOFilter(window))
+	: m_window(window)
+	, m_running(false)
+	, m_videos(0), m_audios(0)
+	, m_reader(reader), m_param(param)
+	, m_audioout(new audio_output())
+	, m_adecoder(new AudioDecoder())
+	, m_vdecoder(new VideoDecoder())
+	, m_vfilter(new VOFilter(window))
 {
 	m_player = avplayer_create(OnAVRender, this);
-	m_vdecoder = avdecoder_create_h264();
-	m_adecoder = avdecoder_create_aac();
 
 	m_running = true;
 	thread_create(&m_thread, OnThread, this);
@@ -36,24 +35,6 @@ AVFilePlayer::~AVFilePlayer()
 	{
 		avplayer_destroy(m_player);
 		m_player = NULL;
-	}
-
-	if (m_arender)
-	{
-		audio_output_close(m_arender);
-		m_arender = NULL;
-	}
-
-	if (m_adecoder)
-	{
-		avdecoder_destroy(m_adecoder);
-		m_adecoder = NULL;
-	}
-
-	if (m_vdecoder)
-	{
-		avdecoder_destroy(m_vdecoder);
-		m_vdecoder = NULL;
 	}
 
 	while (!m_audioQ.empty())
@@ -98,13 +79,16 @@ int AVFilePlayer::OnThread()
 	bool needmoreframe = false;
 	while (m_running)
 	{
-		int type = 0;
-		struct avpacket_t* pkt;
-		while (m_videoQ.size() + m_audioQ.size() < 20
-			&& m_reader && m_reader(m_param, &pkt, &type) > 0)
+		while (m_videoQ.size() + m_audioQ.size() < 20 && m_reader)
 		{
-			avpacket_addref(pkt);
-			0 == type ? m_audioQ.push_back(pkt) : m_videoQ.push_back(pkt);
+			struct avpacket_t* pkt = m_reader(m_param);
+			if (NULL == pkt)
+				break;
+
+			if (pkt->codecid < AVCODEC_AUDIO_PCM)
+				m_videoQ.push_back(pkt);
+			else
+				m_audioQ.push_back(pkt);
 		}
 
 		if (m_videos < 2 && !m_videoQ.empty())
@@ -131,20 +115,14 @@ void AVFilePlayer::DecodeAudio()
 	struct avpacket_t* pkt = m_audioQ.front();
 	m_audioQ.pop_front();
 
-	int r = avdecoder_input(m_adecoder, pkt);
-	avpacket_release(pkt);
-	if (r >= 0)
+	avframe_t *pcm = NULL;
+	if (m_adecoder->Decode(pkt, &pcm) >= 0)
 	{
-		void* frame = avdecoder_getframe(m_adecoder);
-		if (NULL != frame)
-		{
-			struct avframe_t pcm;
-			avdecoder_frame_to(frame, &pcm);
-			uint64_t duration = pcm.samples * 1000 / pcm.sample_rate;
-			avplayer_input_audio(m_player, frame, pcm.pts, duration, 1);
-			atomic_increment32(&m_audios);
-		}
+		uint64_t duration = pcm->samples * 1000 / pcm->sample_rate;
+		avplayer_input_audio(m_player, pcm, pcm->pts, duration, 1);
+		atomic_increment32(&m_audios);
 	}
+	avpacket_release(pkt);
 }
 
 void AVFilePlayer::DecodeVideo()
@@ -152,23 +130,18 @@ void AVFilePlayer::DecodeVideo()
 	struct avpacket_t* pkt = m_videoQ.front();
 	m_videoQ.pop_front();
 
-	int r = avdecoder_input(m_vdecoder, pkt);
-	avpacket_release(pkt);
-	if (r >= 0)
+	avframe_t *yuv = NULL;
+	if (m_vdecoder->Decode(pkt, &yuv) >= 0)
 	{
-		void* frame = avdecoder_getframe(m_vdecoder);
-		if (NULL != frame)
-		{
-			struct avframe_t yuv;
-			avdecoder_frame_to(frame, &yuv);
-			avplayer_input_video(m_player, frame, yuv.pts, 1);
-			atomic_increment32(&m_videos);
-		}
+		avplayer_input_video(m_player, yuv, yuv->pts, 1);
+		atomic_increment32(&m_videos);
 	}
+	avpacket_release(pkt);
 }
 
 uint64_t AVFilePlayer::OnAVRender(void* param, int type, const void* frame, int discard)
 {
+	uint64_t ret;
 	AVFilePlayer* player = (AVFilePlayer*)param;
 
 	switch (type)
@@ -178,10 +151,14 @@ uint64_t AVFilePlayer::OnAVRender(void* param, int type, const void* frame, int 
 		break;
 
 	case avplayer_render_audio:
-		return player->OnPlayAudio(frame, discard);
+		ret = player->OnPlayAudio((avframe_t*)frame, discard);
+		avframe_release((avframe_t*)frame);
+		return ret;
 
 	case avplayer_render_video:
-		return player->OnPlayVideo(frame, discard);
+		ret = player->OnPlayVideo((avframe_t*)frame, discard);
+		avframe_release((avframe_t*)frame);
+		return ret;
 
 	default:
 		assert(0);
@@ -195,82 +172,67 @@ void AVFilePlayer::OnBuffering(bool buffering)
 	if (buffering)
 	{
 		avplayer_pause(m_player);
-		if (m_arender) audio_output_pause(m_arender);
+		m_audioout->pause();
 	}
 	else
 	{
 		avplayer_play(m_player);
-		if (m_arender) audio_output_play(m_arender);
+		m_audioout->play();
 	}
 
 	m_buffering = buffering;
 	app_log(LOG_INFO, "[%s] %s\n", __FUNCTION__, buffering ? "true" : "false");
 }
 
-uint64_t AVFilePlayer::OnPlayVideo(const void* video, int discard)
+uint64_t AVFilePlayer::OnPlayVideo(avframe_t* yuv, int discard)
 {
 	atomic_decrement32(&m_videos);
 	m_event.Signal(); // notify video decode
 
 	if (discard)
-	{
-		avdecoder_freeframe(m_vdecoder, (void*)video);
 		return 0;
-	}
-
-	struct avframe_t frame;
-	avdecoder_frame_to(video, &frame);
 
 	//uint8_t* u = frame.data[1];
 	//frame.data[1] = frame.data[2];
 	//frame.data[2] = u;
 
 	// open and play video in same thread
-	int r = m_vfilter.get() ? m_vfilter->Process(&frame) : 0;
+	int r = m_vfilter.get() ? m_vfilter->Process(yuv) : 0;
 	if (0 != r)
 	{
 		assert(0);
-		app_log(LOG_ERROR, "[%s] video_output_write(%ld, %ld) => %d\n", __FUNCTION__, frame.pts, frame.dts, r);
+		app_log(LOG_ERROR, "[%s] video_output_write(%u, %u) => %d\n", __FUNCTION__, (unsigned int)yuv->pts, (unsigned int)yuv->dts, r);
 	}
 
-	avdecoder_freeframe(m_vdecoder, (void*)video);
 	return 0;
 }
 
-uint64_t AVFilePlayer::OnPlayAudio(const void* audio, int discard)
+uint64_t AVFilePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 {
 	atomic_decrement32(&m_audios);
 	m_event.Signal(); // notify audio decode
 
 	if (discard)
-	{
-		avdecoder_freeframe(m_adecoder, (void*)audio);
 		return 0;
-	}
 
-	struct avframe_t frame;
-	avdecoder_frame_to(audio, &frame);
-	if (m_afilter.get()) m_afilter->Process(&frame);
+	if (m_afilter.get()) m_afilter->Process(pcm);
 
-	if (NULL == m_arender)
+	if (!m_audioout->isopened() || !m_audioout->check(1/*frame.channel*/, pcm->sample_rate, pcm->format))
 	{
-		m_arender = audio_output_open(1/*frame.channel*/, frame.sample_rate, frame.format, frame.sample_rate);
-		if (NULL == m_arender) return 0;
-		audio_output_play(m_arender);
+		if (!m_audioout->open(1/*frame.channel*/, pcm->sample_rate, pcm->format, pcm->sample_rate))
+			return 0;
+		m_audioout->play();
 	}
 
-	int r = audio_output_write(m_arender, frame.data[0], frame.samples);
-	if (r != frame.samples)
+	int r = m_audioout->write(pcm->data[0], pcm->samples);
+	if (r != pcm->samples)
 	{
 		assert(0);
-		app_log(LOG_ERROR, "[%s] audio_output_write(%d, %ld, %ld) => %d\n", __FUNCTION__, frame.linesize[0], frame.pts, frame.dts, r);
+		app_log(LOG_ERROR, "[%s] audio_output_write(%d, %ld, %ld) => %d\n", __FUNCTION__, pcm->linesize[0], pcm->pts, pcm->dts, r);
 	}
 	
-	int sample_rate = frame.sample_rate;
-	avdecoder_freeframe(m_adecoder, (void*)audio);
-
 	// calculate audio buffer sample duration (ms)
-	int samples = audio_output_getframes(m_arender);
-	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%d)\n", __FUNCTION__, samples, (int)((uint64_t)samples * 1000 / sample_rate));
-	return samples >= 0 ? (uint64_t)samples * 1000 / sample_rate : 0;
+	int samples = m_audioout->getframes();
+	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%d)\n", __FUNCTION__, samples, (int)((uint64_t)samples * 1000 / pcm->sample_rate));
+	return samples >= 0 ? (uint64_t)samples * 1000 / pcm->sample_rate : 0;
 }

@@ -10,7 +10,7 @@ extern "C" {
 
 void* avplayer_live_create(void* window);
 void avplayer_live_destroy(void* player);
-int avplayer_live_input(void* player, struct avpacket_t* pkt, int video);
+int avplayer_live_input(void* player, struct avpacket_t* pkt);
 
 #if defined(__cplusplus)
 }
