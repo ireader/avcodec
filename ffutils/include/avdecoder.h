@@ -15,11 +15,9 @@ void avdecoder_destroy(void* ff);
 /// @return 0-ok, other-error
 int avdecoder_input(void* ff, const struct avpacket_t* pkt);
 
-/// @param[in] frame don't need free
+/// @param[out] frame alloc memory internal, use avframe_release to free memory
 /// @return >=0-got frame, <0-error
-int avdecoder_getframe(void* ff, struct avframe_t* frame);
-
-int avdecoder_freeframe(void* ff, struct avframe_t* frame);
+int avdecoder_getframe(void* ff, struct avframe_t** frame);
 
 struct audio_decoder_t* aac_decoder();
 struct audio_decoder_t* mp3_decoder();

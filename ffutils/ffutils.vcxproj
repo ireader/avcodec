@@ -177,6 +177,11 @@
   <ItemGroup>
     <None Include="ffutils.def" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\avcodec\avcodec.vcxproj">
+      <Project>{01e9d416-4a49-416e-8182-22241f07c295}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

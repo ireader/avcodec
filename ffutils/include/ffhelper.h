@@ -95,7 +95,7 @@ inline enum pcm_sample_format ffmpeg_to_avpacket_audio_format(int format)
 
 static inline void avbuffer_free_AVPacket(void* opaque, void* data)
 {
-	(void*)data;
+	(void)data;
 	av_packet_unref((AVPacket*)opaque);
 }
 
@@ -138,13 +138,13 @@ inline int avpacket_to_ffmpeg(const struct avpacket_t* pkt, int stream_index, AV
 
 static inline void avbuffer_free_AVFrame(void* opaque, void* data)
 {
-	(void*)data;
+	(void)data;
 	av_frame_unref((AVFrame*)opaque);
 }
 
 inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
 {
-	int i;
+	size_t i;
 	AVFrame* ref;
 	struct avbuffer_t* buf;
 	struct avframe_t* frame = avframe_alloc(sizeof(AVFrame));
@@ -155,23 +155,25 @@ inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
 		buf->free = avbuffer_free_AVFrame;
 		buf->opaque = ref;
 
-		frame->format = ff->nb_samples > 0 ? ffmpeg_to_avpacket_audio_format(ff->format) : ff->format; //AV_PIX_FMT_YUV420P;
-		frame->pts = ff->pkt_pts;
-		frame->dts = ff->pkt_dts;
-		frame->flags = ff->flags;
-		frame->width = ff->width;
-		frame->height = ff->height;
-		frame->channels = ff->channels;
-		frame->samples = ff->nb_samples;
-		frame->sample_bits = 8 * av_get_bytes_per_sample((enum AVSampleFormat)ff->format);
-		frame->sample_rate = ff->sample_rate;
+		av_frame_move_ref(ref, ff);
+
+		if (AV_PIX_FMT_YUVJ420P == ref->format)
+			ref->format = AV_PIX_FMT_YUV420P;
+		frame->format = ref->nb_samples > 0 ? ffmpeg_to_avpacket_audio_format(ref->format) : ref->format; //AV_PIX_FMT_YUV420P;
+		frame->pts = AV_NOPTS_VALUE == ref->pts ? ref->pkt_dts : ref->pts;
+		frame->dts = ref->pkt_dts;
+		frame->flags = ref->flags;
+		frame->width = ref->width;
+		frame->height = ref->height;
+		frame->channels = ref->channels;
+		frame->samples = ref->nb_samples;
+		frame->sample_bits = 8 * av_get_bytes_per_sample((enum AVSampleFormat)ref->format);
+		frame->sample_rate = ref->sample_rate;
 		for (i = 0; i < sizeof(frame->data) / sizeof(frame->data[0]); i++)
 		{
-			frame->data[i] = ff->data[i];
-			frame->linesize[i] = ff->linesize[i];
+			frame->data[i] = ref->data[i];
+			frame->linesize[i] = ref->linesize[i];
 		}
-
-		av_frame_move_ref(ref, ff);
 	}
 
 	return frame;
@@ -179,9 +181,10 @@ inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
 
 inline void avframe_to_ffmpeg(struct avframe_t* frame, AVFrame* ff)
 {
-	int i;
+	size_t i;
 	memset(ff, 0, sizeof(AVFrame));
 	ff->format = frame->samples > 0 ? avpacket_to_ffmpeg_audio_format(frame->format) : frame->format;
+	ff->pts = frame->pts;
 	ff->pkt_pts = frame->pts;
 	ff->pkt_dts = frame->dts;
 	ff->flags = frame->flags;

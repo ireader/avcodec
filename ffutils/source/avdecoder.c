@@ -46,25 +46,18 @@ int avdecoder_input(void* ff, const struct avpacket_t* pkt)
 
 /// @param[in] frame must be memset to 0 or from av_frame_alloc()
 /// @return >=0-got frame, <0-error
-int avdecoder_getframe(void* ff, struct avframe_t* frame)
+int avdecoder_getframe(void* ff, struct avframe_t** frame)
 {
 	AVFrame ffmpeg;
-	struct avframe_t* frame2;
 	memset(&ffmpeg, 0, sizeof(ffmpeg));
 	int r = ffdecoder_getframe(ff, &ffmpeg);
 	if (r >= 0)
 	{
-		frame2 = ffmpeg_to_avframe(&ffmpeg);
-		if (NULL == frame2)
+		*frame = ffmpeg_to_avframe(&ffmpeg);
+		if (NULL == *frame)
 			return -ENOMEM;
-		*frame = *frame2;
-	}	
+	}
 	return r;
-}
-
-int avdecoder_freeframe(void* ff, struct avframe_t* frame)
-{
-	return avframe_release(frame);
 }
 
 static void* aac_create(int format, int channels, int frequency)
@@ -92,7 +85,6 @@ struct audio_decoder_t* aac_decoder()
 		avdecoder_destroy,
 		avdecoder_input,
 		avdecoder_getframe,
-		avdecoder_freeframe,
 	};
 	return &s_decoder;
 }
@@ -104,7 +96,6 @@ struct audio_decoder_t* mp3_decoder()
 		avdecoder_destroy,
 		avdecoder_input,
 		avdecoder_getframe,
-		avdecoder_freeframe,
 	};
 	return &s_decoder;
 }

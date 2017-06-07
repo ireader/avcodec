@@ -16,7 +16,6 @@ EXPORTS
    avdecoder_destroy
    avdecoder_input
    avdecoder_getframe
-   avdecoder_freeframe
 
    aac_decoder
    mp3_decoder
