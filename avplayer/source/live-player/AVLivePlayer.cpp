@@ -120,10 +120,6 @@ void AVLivePlayer::Present()
 
 void AVLivePlayer::Present(struct avframe_t* yuv)
 {
-	//uint8_t* u = frame.data[1];
-	//frame.data[1] = frame.data[2];
-	//frame.data[2] = u;
-
 	// open and play video in same thread
 	int r = m_vfilter.get() ? m_vfilter->Process(yuv) : 0;
 	if (0 != r)
@@ -342,9 +338,9 @@ uint64_t AVLivePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 		return 0;
 
 	// Windows 10 Audio Open: ~= 200ms
-	if (!m_audioout->isopened() || !m_audioout->check(1/*frame.channel*/, pcm->sample_rate, pcm->format))
+	if (!m_audioout->isopened() || !m_audioout->check(PCM_SAMPLE_PLANAR(pcm->format) ? 1 : pcm->channels, pcm->sample_rate, pcm->format))
 	{
-		if (!m_audioout->open(1/*frame.channel*/, pcm->sample_rate, pcm->format, pcm->sample_rate / 2))
+		if (!m_audioout->open(PCM_SAMPLE_PLANAR(pcm->format) ? 1 : pcm->channels, pcm->sample_rate, pcm->format, pcm->sample_rate / 2))
 			return 0;
 		m_audioout->play();
 	}

@@ -217,9 +217,9 @@ uint64_t AVFilePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 
 	if (m_afilter.get()) m_afilter->Process(pcm);
 
-	if (!m_audioout->isopened() || !m_audioout->check(1/*frame.channel*/, pcm->sample_rate, pcm->format))
+	if (!m_audioout->isopened() || !m_audioout->check(PCM_SAMPLE_PLANAR(pcm->format) ? 1 : pcm->channels, pcm->sample_rate, pcm->format))
 	{
-		if (!m_audioout->open(1/*frame.channel*/, pcm->sample_rate, pcm->format, pcm->sample_rate))
+		if (!m_audioout->open(PCM_SAMPLE_PLANAR(pcm->format) ? 1 : pcm->channels, pcm->sample_rate, pcm->format, pcm->sample_rate))
 			return 0;
 		m_audioout->play();
 	}
