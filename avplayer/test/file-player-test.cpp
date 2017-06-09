@@ -1,6 +1,7 @@
 #include "avplayer-file.h"
 #include "flv-demuxer.h"
 #include "flv-reader.h"
+#include "flv-proto.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -30,18 +31,18 @@ static struct avpacket_t* file_player_test_read(void* p)
 	return s_param.pkt;
 }
 
-void file_player_test_onflv(void* /*param*/, int type, const void* data, size_t bytes, uint32_t pts, uint32_t dts)
+void file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
 {
 	enum AVPACKET_CODEC_ID codecid = AVCODEC_UNKNOWN;
-	if (FLV_AVC == type)
+	if (FLV_VIDEO_H264 == avtype)
 	{
 		codecid = AVCODEC_VIDEO_H264;
 	}
-	else if (FLV_AAC == type)
+	else if (FLV_AUDIO_AAC == avtype)
 	{
 		codecid = AVCODEC_AUDIO_AAC;
 	}
-	else if (FLV_MP3 == type)
+	else if (FLV_AUDIO_MP3 == avtype)
 	{
 		codecid = AVCODEC_AUDIO_MP3;
 	}

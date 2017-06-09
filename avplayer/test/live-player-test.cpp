@@ -3,6 +3,7 @@
 #include "rtmp-client.h"
 #include "flv-demuxer.h"
 #include "flv-proto.h"
+#include "h264-util.h"
 #include "app-log.h"
 #include <assert.h>
 
@@ -41,28 +42,28 @@ static int rtmp_client_onmeta(void* /*param*/, const void* /*data*/, size_t /*by
 	return 0;
 }
 
-static void rtmp_client_ondata(void* player, int type, const void* data, size_t bytes, uint32_t pts, uint32_t dts)
+static void rtmp_client_ondata(void* player, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
 {
 	avpacket_t* pkt = avpacket_alloc(bytes);
 	memcpy(pkt->data, data, bytes);
 	pkt->size = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
-	if (FLV_AVC == type)
+
+	if (FLV_VIDEO_H264 == avtype)
 	{
-		app_log(LOG_DEBUG, "[V] pts: %u, dts: %u\n", pts, dts);
 		pkt->codecid = AVCODEC_VIDEO_H264;
+		if ((0x01 & flags) || h264_idr(pkt->data, pkt->size))
+			pkt->flags |= AVPACKET_FLAG_KEY;
 		avplayer_live_input(player, pkt);
 	}
-	else if (FLV_AAC == type)
+	else if (FLV_AUDIO_AAC == avtype)
 	{
-		app_log(LOG_DEBUG, "[A] pts: %u, dts: %u\n", pts, dts);
 		pkt->codecid = AVCODEC_AUDIO_AAC;
 		avplayer_live_input(player, pkt);
 	}
-	else if (FLV_MP3 == type)
+	else if (FLV_AUDIO_MP3 == avtype)
 	{
-		app_log(LOG_DEBUG, "[A] pts: %u, dts: %u\n", pts, dts);
 		pkt->codecid = AVCODEC_AUDIO_MP3;
 		avplayer_live_input(player, pkt);
 	}
