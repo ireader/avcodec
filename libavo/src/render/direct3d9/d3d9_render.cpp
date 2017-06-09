@@ -188,7 +188,14 @@ static int Write(void* object, const struct avframe_t* pic,
 	dstRect.bottom = (drw_h ? drw_y + drw_h : rc.bottom);
 	memcpy(&vo->dstRect, &dstRect, sizeof(vo->dstRect)); // for read video from buffer
 
-	r = d3d9_surface_lockwrite(vo, pic);
+	struct avframe_t yv12 = *pic;
+	if (PICTURE_YUV420 == pic->format || PICTURE_YUV422 == pic->format)
+	{
+		// switch U/V planar
+		yv12.data[1] = pic->data[2];
+		yv12.data[2] = pic->data[1];
+	}
+	r = d3d9_surface_lockwrite(vo, &yv12);
 	if (0 != r)
 		return r;
 

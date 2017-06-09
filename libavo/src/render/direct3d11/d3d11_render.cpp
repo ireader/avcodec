@@ -191,10 +191,11 @@ static int d3d11_yv12_texture_write(d3d11_render_t* vo, const struct avframe_t* 
 {
 	int w[3] = { vo->width, vo->width / 2, vo->width / 2 };
 	int h[3] = { vo->height, vo->height / 2, vo->height / 2 };
+	uint8_t* planar[3] = { pic->data[0], pic->data[2], pic->data[1] };
 
 	for (int i = 0; i < 3; i++)
 	{
-		HRESULT hr = d3d11_texture_write(vo->d3dContext, vo->yuv[i], pic->data[i], w[i], h[i], pic->linesize[i]);
+		HRESULT hr = d3d11_texture_write(vo->d3dContext, vo->yuv[i], planar[i], w[i], h[i], pic->linesize[i]);
 		if (FAILED(hr))
 			return hr;
 	}
