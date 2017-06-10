@@ -8,7 +8,7 @@ class AudioDecoder
 public:
 	AudioDecoder()
 	{
-		m_codecid = AVCODEC_UNKNOWN;
+		m_codecid = AVCODEC_NONE;
 		m_audio_class = NULL;
 		m_decoder = NULL;
 	}
@@ -66,7 +66,7 @@ private:
 			m_audio_class->destroy(m_decoder);
 		m_audio_class = NULL;
 		m_decoder = NULL;
-		m_codecid = AVCODEC_UNKNOWN;
+		m_codecid = AVCODEC_NONE;
 	}
 
 private:

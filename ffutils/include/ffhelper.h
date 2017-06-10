@@ -55,7 +55,7 @@ inline enum AVPACKET_CODEC_ID ffmpeg_to_avpacket_codecid(enum AVCodecID id)
 	case AV_CODEC_ID_MP3:		return AVCODEC_AUDIO_MP3;
 	case AV_CODEC_ID_OPUS:		return AVCODEC_AUDIO_OPUS;
 
-	default: assert(0);			return AVCODEC_UNKNOWN;
+	default: assert(0);			return AVCODEC_NONE;
 	}
 }
 
