@@ -3,13 +3,6 @@
 #include <assert.h>
 #include <string.h>
 
-struct ffencoder_t
-{
-	AVCodecContext *avctx;
-//	AVFrame *frame;
-//	AVPacket pkt;
-};
-
 //static void ffencoder_setparameter(struct ffencoder_t* ff, h264_parameter_t* param)
 //{
 //	ff->avctx->time_base = av_make_q(1000, param->frame_rate); // fps
@@ -26,59 +19,58 @@ struct ffencoder_t
 //	//ff->avctx->ticks_per_frame = 2; // Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
 //}
 
-static void ffencoder_destroy(void* p)
+void ffencoder_destroy(void* p)
 {
-	struct ffencoder_t* ff;
-	ff = (struct ffencoder_t*)p;
-	//	av_frame_free(&ff->frame);
-//	av_packet_unref(&ff->pkt);
-	avcodec_free_context(&ff->avctx);
-	free(ff);
+	AVCodecContext* avctx;
+	avctx = (AVCodecContext*)p;
+	avcodec_free_context(&avctx);
 }
 
-static void* ffencoder_create(/*h264_parameter_t* param*/)
+void* ffencoder_create(AVCodecParameters* codecpar)
 {
 	int ret;
 	AVCodec* codec = NULL;
 	AVDictionary *opts = NULL;
-	struct ffencoder_t* ff = NULL;
-	ff = (struct ffencoder_t*)malloc(sizeof(*ff));
-	if (NULL == ff)
-		return NULL;
-	memset(ff, 0, sizeof(*ff));
+	AVCodecContext* avctx = NULL;
 
-	codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+	codec = avcodec_find_encoder(codecpar->codec_id);
 	if (NULL == codec)
 	{
-		printf("[%s] avcodec_find_encoder(%d) not found.\n", __FUNCTION__, AV_CODEC_ID_H264);
-		ffencoder_destroy(ff);
+		printf("[%s] avcodec_find_encoder(%d) not found.\n", __FUNCTION__, codecpar->codec_id);
 		return NULL;
 	}
 
-//	ff->frame = av_frame_alloc();
-	ff->avctx = avcodec_alloc_context3(codec);
-//	ffencoder_setparameter(ff, param);
+	avctx = avcodec_alloc_context3(codec);
+	if (NULL == avctx)
+		return NULL;
 
-	ret = avcodec_open2(ff->avctx, codec, &opts);
+	ret = avcodec_parameters_to_context(avctx, codecpar);
+	if (ret < 0)
+	{
+		avcodec_free_context(&avctx);
+		return NULL;
+	}
+
+	ret = avcodec_open2(avctx, codec, &opts);
 	av_dict_free(&opts);
 	if (ret < 0)
 	{
-		printf("[%s] avcodec_open2(%d) => %d.\n", __FUNCTION__, AV_CODEC_ID_H264, ret);
-		ffencoder_destroy(ff);
+		printf("[%s] avcodec_open2(%d) => %d.\n", __FUNCTION__, codecpar->codec_id, ret);
+		avcodec_free_context(&avctx);
 		return NULL;
 	}
 
-	return ff;
+	avcodec_parameters_from_context(codecpar, avctx);
+	return avctx;
 }
 
-static int ffencoder_input(void* p, const AVFrame* frame)
+int ffencoder_input(void* p, const AVFrame* frame)
 {
 	int ret;
-	struct ffencoder_t* ff;
-	ff = (struct ffencoder_t*)p;
+	AVCodecContext *avctx;
+	avctx = (AVCodecContext*)p;
 
-	assert(AV_PIX_FMT_YUV420P == frame->format);
-	ret = avcodec_send_frame(ff->avctx, frame);
+	ret = avcodec_send_frame(avctx, frame);
 	if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
 	{
 		printf("[%s] avcodec_send_frame() => %d\n", __FUNCTION__, ret);
@@ -90,13 +82,13 @@ static int ffencoder_input(void* p, const AVFrame* frame)
 	return 0;
 }
 
-static int ffencoder_getpacket(void* p, AVPacket* pkt)
+int ffencoder_getpacket(void* p, AVPacket* pkt)
 {
 	int ret;
-	struct ffencoder_t* ff;
-	ff = (struct ffencoder_t*)p;
-	
-	ret = avcodec_receive_packet(ff->avctx, pkt);
+	AVCodecContext *avctx;
+	avctx = (AVCodecContext*)p;
+
+	ret = avcodec_receive_packet(avctx, pkt);
 	if (ret >= 0)
 	{
 		// ok

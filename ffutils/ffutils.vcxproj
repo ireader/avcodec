@@ -131,7 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>avcodec.lib;avutil.lib;swscale.lib;avformat.lib;avfilter.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>avcodec.lib;avutil.lib;swscale.lib;avformat.lib;avfilter.lib;swresample.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../3rd/ffmpeg/lib</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>ffutils.def</ModuleDefinitionFile>
     </Link>
@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClInclude Include="include\avdecoder.h" />
     <ClInclude Include="include\ffdecoder.h" />
+    <ClInclude Include="include\ffencoder.h" />
     <ClInclude Include="include\fffilter.h" />
     <ClInclude Include="include\ffhelper.h" />
     <ClInclude Include="include\ffinput.h" />

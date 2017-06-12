@@ -1,25 +1,29 @@
 LIBRARY   ffutils
 EXPORTS
-   ffutils_init
+	ffutils_init
 
-   ffinput_create
-   ffinput_destroy
-   ffinput_read
-   ffinput_getstream
+	ffinput_create
+	ffinput_destroy
+	ffinput_read
 
-   ffdecoder_create
-   ffdecoder_destroy
-   ffdecoder_input
-   ffdecoder_getframe
+	ffdecoder_create
+	ffdecoder_destroy
+	ffdecoder_input
+	ffdecoder_getframe
 
-   avdecoder_create_h264
-   avdecoder_destroy
-   avdecoder_input
-   avdecoder_getframe
+	ffencoder_create
+	ffencoder_destroy
+	ffencoder_input
+	ffencoder_getpacket
 
-   aac_decoder
-   mp3_decoder
+	avdecoder_create_h264
+	avdecoder_destroy
+	avdecoder_input
+	avdecoder_getframe
 
-   fffilter_create_source
+	aac_decoder
+	mp3_decoder
+
+	fffilter_create_source
    
-   ffscale
+	ffscale

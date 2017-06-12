@@ -36,6 +36,9 @@
     <ClInclude Include="include\ffhelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\ffencoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ffdecoder.c">
