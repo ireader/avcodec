@@ -145,6 +145,10 @@ static void ffinput_filter_init(struct ffinput_t* ff)
 		case AV_CODEC_ID_AAC_LATM:
 			mpeg4_aac_audio_specific_config_load(ff->ic->streams[i]->codecpar->extradata, ff->ic->streams[i]->codecpar->extradata_size, &ff->aac);
 			break;
+
+		default:
+			// do nothing
+			break;
 		}
 	}
 }
@@ -271,7 +275,7 @@ int ffinput_read(void* p, struct avpacket_t** pkt)
 			break;
 		}
 
-		if(ret >= 0 && AV_CODEC_ID_AAC != ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id && AV_CODEC_ID_AAC_LATM != AV_CODEC_ID_AAC_LATM)
+		if(ret >= 0 && AV_CODEC_ID_AAC != ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id && AV_CODEC_ID_AAC_LATM != ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id)
 			*pkt = ffmpeg_to_avpacket(&ffmpeg, ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id);
 
 		av_packet_unref(&ffmpeg);
