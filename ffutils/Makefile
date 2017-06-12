@@ -12,7 +12,7 @@ OUTFILE = libffutils.a
 #--------------------------------------------------------------------
 INCLUDES = . \
 			./include \
-			/cjp/ffmpeg-3.1.5
+			/root/ffmpeg-3.3.1
 
 #-------------------------------Source-------------------------------
 #
@@ -33,7 +33,7 @@ else
 LIBPATHS +=
 endif
 
-LIBS = avcodec avformat avutil
+LIBS = avcodec avformat avutil swscale
 
 STATIC_LIBS =
 
