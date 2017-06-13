@@ -74,7 +74,7 @@ static void rtmp_client_ondata(void* player, int avtype, const void* data, size_
 static void rtmp_play_test(void* player, const char* host, const char* app, const char* stream)
 {
 	static char packet[8 * 1024 * 1024];
-	snprintf(packet, sizeof(packet), "rtmp://%s/%s/%s", host, app, stream); // tcurl
+	snprintf(packet, sizeof(packet), "rtmp://%s/%s", host, app); // tcurl
 
 	socket_init();
 	socket_t socket = socket_connect_host(host, 1935, 2000);
