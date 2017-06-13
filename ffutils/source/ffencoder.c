@@ -50,6 +50,7 @@ void* ffencoder_create(AVCodecParameters* codecpar)
 		avcodec_free_context(&avctx);
 		return NULL;
 	}
+	avctx->time_base = av_make_q(1, 1000); // 1ms
 
 	ret = avcodec_open2(avctx, codec, &opts);
 	av_dict_free(&opts);
