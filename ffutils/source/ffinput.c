@@ -235,6 +235,7 @@ int ffinput_read(void* p, struct avpacket_t** pkt)
 	int ret;
 	AVPacket ffmpeg;
 	struct ffinput_t* ff;
+	enum AVCodecID codecid;
 	AVRational time_base = { 1, 1000/*ms*/ };
 
 	ff = (struct ffinput_t*)p;
@@ -254,7 +255,8 @@ int ffinput_read(void* p, struct avpacket_t** pkt)
 		ffmpeg.pts = av_rescale_q(ffmpeg.pts, ff->ic->streams[ffmpeg.stream_index]->time_base, time_base);
 
 		*pkt = NULL;
-		switch (ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id)
+		codecid = ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id;
+		switch (codecid)
 		{
 		case AV_CODEC_ID_H264:
 			ret = ffinput_filter_input(ff->h264bsf, &ffmpeg);
@@ -275,8 +277,8 @@ int ffinput_read(void* p, struct avpacket_t** pkt)
 			break;
 		}
 
-		if(ret >= 0 && AV_CODEC_ID_AAC != ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id && AV_CODEC_ID_AAC_LATM != ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id)
-			*pkt = ffmpeg_to_avpacket(&ffmpeg, ff->ic->streams[ffmpeg.stream_index]->codecpar->codec_id);
+		if(ret >= 0 && AV_CODEC_ID_NONE != codecid && AV_CODEC_ID_AAC != codecid && AV_CODEC_ID_AAC_LATM != codecid)
+			*pkt = ffmpeg_to_avpacket(&ffmpeg, codecid);
 
 		av_packet_unref(&ffmpeg);
 		return ret >= 0 ? (*pkt ? 1 : -ENOMEM) : ret;
