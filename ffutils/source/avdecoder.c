@@ -78,6 +78,29 @@ static void* mp3_create(int format, int channels, int frequency)
 	return ffdecoder_create(&param);
 }
 
+void* g726_create(int format, int channels, int frequency)
+{
+	AVCodecParameters param;
+	memset(&param, 0, sizeof(AVCodecParameters));
+	param.codec_type = AVMEDIA_TYPE_AUDIO;
+	param.codec_id = AV_CODEC_ID_ADPCM_G726;
+	param.sample_rate = 8000;
+	param.bits_per_coded_sample = 2;
+	param.channels = 1;
+	return ffdecoder_create(&param);
+}
+
+void* g729_create(int format, int channels, int frequency)
+{
+	AVCodecParameters param;
+	memset(&param, 0, sizeof(AVCodecParameters));
+	param.codec_type = AVMEDIA_TYPE_AUDIO;
+	param.codec_id = AV_CODEC_ID_G729;
+	param.sample_rate = 8000;
+	param.channels = 1;
+	return ffdecoder_create(&param);
+}
+
 struct audio_decoder_t* aac_decoder()
 {
 	static struct audio_decoder_t s_decoder = {
