@@ -32,6 +32,9 @@ inline enum AVCodecID avpacket_to_ffmpeg_codecid(enum AVPACKET_CODEC_ID id)
 	case AVCODEC_AUDIO_AAC:		return AV_CODEC_ID_AAC_LATM;
 	case AVCODEC_AUDIO_MP3:		return AV_CODEC_ID_MP3;
 	case AVCODEC_AUDIO_OPUS:	return AV_CODEC_ID_OPUS;
+	case AVCODEC_AUDIO_G729:	return AV_CODEC_ID_G729;
+	case AVCODEC_AUDIO_G711:	return AV_CODEC_ID_PCM_MULAW;
+	case AVCODEC_AUDIO_G726:	return AV_CODEC_ID_ADPCM_G726;
 
 	default: assert(0);			return AV_CODEC_ID_NONE;
 	}
@@ -54,6 +57,9 @@ inline enum AVPACKET_CODEC_ID ffmpeg_to_avpacket_codecid(enum AVCodecID id)
 	case AV_CODEC_ID_AAC:		return AVCODEC_AUDIO_AAC;
 	case AV_CODEC_ID_MP3:		return AVCODEC_AUDIO_MP3;
 	case AV_CODEC_ID_OPUS:		return AVCODEC_AUDIO_OPUS;
+	case AV_CODEC_ID_G729:		return AVCODEC_AUDIO_G729;
+	case AV_CODEC_ID_PCM_MULAW:	return AVCODEC_AUDIO_G711;
+	case AV_CODEC_ID_ADPCM_G726:return AVCODEC_AUDIO_G726;
 
 	default: assert(0);			return AVCODEC_NONE;
 	}
