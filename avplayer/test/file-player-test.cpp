@@ -33,7 +33,7 @@ static struct avpacket_t* file_player_test_read(void* p)
 
 void file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
 {
-	enum AVPACKET_CODEC_ID codecid = AVCODEC_UNKNOWN;
+	enum AVPACKET_CODEC_ID codecid = AVCODEC_NONE;
 	if (FLV_VIDEO_H264 == avtype)
 	{
 		codecid = AVCODEC_VIDEO_H264;

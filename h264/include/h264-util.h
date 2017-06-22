@@ -23,7 +23,8 @@ static inline uint8_t h264_type(const uint8_t *data, size_t bytes)
 	return data ? (data[0] & 0x1f)  : 0x00;
 }
 
-static inline uint8_t h264_idr(const uint8_t *data, size_t bytes)
+/// @return 1-IDR frame, 0-no IDR frame
+static inline int h264_idr(const uint8_t *data, size_t bytes)
 {
 	uint8_t nalutype;
 	const uint8_t *p;
