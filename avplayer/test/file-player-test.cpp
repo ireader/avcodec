@@ -6,7 +6,7 @@
 #include <string.h>
 
 static void* s_reader;
-static void* s_demuxer;
+static flv_demuxer_t* s_demuxer;
 static struct
 {
 	struct avpacket_t* pkt;
@@ -31,7 +31,7 @@ static struct avpacket_t* file_player_test_read(void* p)
 	return s_param.pkt;
 }
 
-void file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
+int file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
 {
 	enum AVPACKET_CODEC_ID codecid = AVCODEC_NONE;
 	if (FLV_VIDEO_H264 == avtype)
@@ -48,7 +48,7 @@ void file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_
 	}
 	else
 	{
-		return;
+		return -1;
 	}
 
 	struct avpacket_t* pkt = avpacket_alloc(bytes);
@@ -58,6 +58,7 @@ void file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_
 	pkt->dts = dts;
 	pkt->codecid = codecid;
 	s_param.pkt = pkt;
+	return 0;
 }
 
 int file_player_test(void* window, const char* flv)
