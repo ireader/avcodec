@@ -11,7 +11,7 @@ void* ffinput_create(const char* url);
 
 void ffinput_destroy(void* ff);
 
-/// @param[out] pkt audio/video packet, MUST be freed with av_packet_unref
+/// @param[out] pkt audio/video packet, MUST be freed with avpacket_release
 /// @return 0-EOF, >0-ok, <0-error
 int ffinput_read(void* ff, struct avpacket_t** pkt);
 

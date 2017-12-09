@@ -42,7 +42,8 @@ static int ffinput_open(struct ffinput_t* ff, const char* url)
 	//	scan_all_pmts_set = 1;
 	//}
 
-	r = avformat_open_input(&ff->ic, url, NULL, NULL/*&opt*/);
+	av_dict_set(&opt, "timeout", "5000000" /*microsecond*/, 0);
+	r = avformat_open_input(&ff->ic, url, NULL, &opt);
 	if (0 != r)
 	{
 		printf("%s: avformat_open_input(%s) => %d\n", __FUNCTION__, url, r);
