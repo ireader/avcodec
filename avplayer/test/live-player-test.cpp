@@ -7,16 +7,7 @@
 #include "app-log.h"
 #include <assert.h>
 
-static void* s_flv;
-
-static void* rtmp_client_alloc(void* /*param*/, int avtype, size_t bytes)
-{
-	static uint8_t s_audio[128 * 1024];
-	static uint8_t s_video[2 * 1024 * 1024];
-	assert(avtype || sizeof(s_audio) > bytes);
-	assert(sizeof(s_video) > bytes);
-	return avtype ? s_video : s_audio;
-}
+static flv_demuxer_t* s_flv;
 
 static int rtmp_client_send(void* param, const void* header, size_t len, const void* data, size_t bytes)
 {
@@ -42,7 +33,7 @@ static int rtmp_client_onmeta(void* /*param*/, const void* /*data*/, size_t /*by
 	return 0;
 }
 
-static void rtmp_client_ondata(void* player, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
+static int rtmp_client_ondata(void* player, int avtype, const void* data, size_t bytes, uint32_t pts, uint32_t dts, int flags)
 {
 	avpacket_t* pkt = avpacket_alloc(bytes);
 	memcpy(pkt->data, data, bytes);
@@ -55,7 +46,7 @@ static void rtmp_client_ondata(void* player, int avtype, const void* data, size_
 		pkt->codecid = AVCODEC_VIDEO_H264;
 		if ((0x01 & flags) || h264_idr(pkt->data, pkt->size))
 			pkt->flags |= AVPACKET_FLAG_KEY;
-		avplayer_live_input(player, pkt);
+		 avplayer_live_input(player, pkt);
 	}
 	else if (FLV_AUDIO_AAC == avtype)
 	{
@@ -68,6 +59,7 @@ static void rtmp_client_ondata(void* player, int avtype, const void* data, size_
 		avplayer_live_input(player, pkt);
 	}
 	avpacket_release(pkt);
+	return 0;
 }
 
 // rtmp_play_test("rtmp://strtmpplay.cdn.suicam.com/carousel/51632");
@@ -82,11 +74,10 @@ static void rtmp_play_test(void* player, const char* host, const char* app, cons
 
 	struct rtmp_client_handler_t handler;
 	handler.send = rtmp_client_send;
-	handler.alloc = rtmp_client_alloc;
 	handler.onmeta = rtmp_client_onmeta;
 	handler.onaudio = rtmp_client_onaudio;
 	handler.onvideo = rtmp_client_onvideo;
-	void* rtmp = rtmp_client_create(app, stream, packet/*tcurl*/, &socket, &handler);
+	rtmp_client_t* rtmp = rtmp_client_create(app, stream, packet/*tcurl*/, &socket, &handler);
 	s_flv = flv_demuxer_create(rtmp_client_ondata, player);
 
 	int r = rtmp_client_start(rtmp, 1);
