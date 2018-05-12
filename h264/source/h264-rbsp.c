@@ -11,7 +11,7 @@ int h264_rbsp_trailing_bits(bitstream_t* stream)
 	assert(1 == rbsp_stop_one_bit);
 
 	bitstream_get_offset(stream, &bytes, &bits);
-	for (i = bits; i < 8; i++)
+	for (i = bits; i < 8 && bytes < stream->bytes; i++)
 	{
 		rbsp_alignment_zero_bit = bitstream_read_bit(stream);
 		assert(0 == rbsp_alignment_zero_bit);

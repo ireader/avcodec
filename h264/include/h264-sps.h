@@ -21,7 +21,7 @@ struct h264_sps_t
 
 		uint8_t seq_scaling_matrix_present_flag; // bool
 		//if( seq_scaling_matrix_present_flag ) {
-			uint8_t pic_scaling_list_present_flag[12]; // bool
+			uint8_t seq_scaling_list_present_flag[12]; // bool
 			uint8_t UseDefaultScalingMatrix4x4Flag[6]; // bool
 			uint8_t UseDefaultScalingMatrix8x8Flag[6]; // bool
 			int32_t ScalingList4x4[6][16];

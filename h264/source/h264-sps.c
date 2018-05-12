@@ -23,7 +23,7 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->profile_idc == 122 || sps->profile_idc == 244 || sps->profile_idc == 44  ||
 		sps->profile_idc == 83  || sps->profile_idc == 86  || sps->profile_idc == 118 ||
 		sps->profile_idc == 128 || sps->profile_idc == 138 || sps->profile_idc == 139 ||
-		sps->profile_idc == 134)
+		sps->profile_idc == 134 || sps->profile_idc == 135)
 	{
 		sps->chroma_format_idc = (uint8_t)bitstream_read_ue(stream);
 		if(3 == sps->chroma_format_idc)
@@ -36,8 +36,8 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		{
 			for (i = 0; i < ((sps->chroma_format_idc != 3) ? 8 : 12); i++)
 			{
-				sps->chroma.pic_scaling_list_present_flag[ i ] = bitstream_read_bit(stream);
-				if(sps->chroma.pic_scaling_list_present_flag[ i ])
+				sps->chroma.seq_scaling_list_present_flag[ i ] = bitstream_read_bit(stream);
+				if(sps->chroma.seq_scaling_list_present_flag[ i ])
 				{
 					if(i < 6)
 					{
