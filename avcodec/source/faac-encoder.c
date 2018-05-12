@@ -66,7 +66,7 @@ static void* faac_create(const struct audio_parameter_t* param)
 	if (param->format != PCM_SAMPLE_FMT_S16)
 		return NULL; // faac only support FAAC_INPUT_16BIT ???
 
-	faac = faacEncOpen(param->frequency, param->channels, &samples, &bytes);
+	faac = faacEncOpen(param->samplerate, param->channels, &samples, &bytes);
 	bytes *= 2;
 	if (NULL == faac)
 		return NULL;

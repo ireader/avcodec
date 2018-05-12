@@ -28,7 +28,7 @@ static void* opus_create(const struct audio_parameter_t* param)
 	int r = OPUS_OK;
 	struct opus_encoder_t* enc;
 
-	r = param->frequency / 2 * param->channels * PCM_SAMPLE_BITS(param->format) / 8; // 500ms
+	r = param->samplerate / 2 * param->channels * PCM_SAMPLE_BITS(param->format) / 8; // 500ms
 	enc = (struct opus_encoder_t*)malloc(sizeof(*enc) + r);
 	if (NULL == enc)
 		return NULL;
@@ -37,7 +37,7 @@ static void* opus_create(const struct audio_parameter_t* param)
 	enc->pkt.codecid = AVCODEC_AUDIO_OPUS;
 	enc->pkt.data = (uint8_t*)(enc + 1);
 	enc->capacity = r;
-	enc->opus = opus_encoder_create(param->frequency, param->channels, OPUS_APPLICATION_VOIP, &r);
+	enc->opus = opus_encoder_create(param->samplerate, param->channels, OPUS_APPLICATION_VOIP, &r);
 	if (NULL == enc->opus)
 	{
 		opus_destroy(enc);

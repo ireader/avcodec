@@ -8,17 +8,25 @@
 extern "C" {
 #endif
 
+enum {
+    AUDIO_BITRATE_CBR = 0,
+    AUDIO_BITRATE_VBR,
+};
+
 struct audio_parameter_t
 {
 	int format; // enum pcm_sample_format
 	int channels; // 1, 2
-	int frequency; // 8000, 16000, 24000, 32000, 44100, 48000
+	int samplerate; // 8000, 16000, 24000, 32000, 44100, 48000
 
 	int profile;
 	int level;
 
 	int bitrate;
 	int bitrate_mode; // CBR/VBR
+
+    int min_bitrate_kbps; // vbr only
+    int max_bitrate_kbps; // vbr only
 };
 
 struct audio_encoder_t
@@ -35,6 +43,7 @@ struct audio_encoder_t
 };
 
 struct audio_encoder_t* opus_encoder();
+struct audio_encoder_t* mp2lame_encoder();
 
 #ifdef __cplusplus
 }

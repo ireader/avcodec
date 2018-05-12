@@ -19,7 +19,7 @@ void faac_encoder_test(const char* pcm, const char* adts)
 	audio_parameter_t param;
 	param.format = PCM_SAMPLE_FMT_S16;
 	param.channels = 1;
-	param.frequency = 8000;
+	param.samplerate = 8000;
 	void* faac = faac_encoder()->create(&param);
 
 	avframe_t frame;
@@ -28,7 +28,7 @@ void faac_encoder_test(const char* pcm, const char* adts)
 	frame.format = param.format;
 	frame.samples = FRAME_LEN;
 	frame.channels = param.channels;
-	frame.sample_rate = param.frequency;
+	frame.sample_rate = param.samplerate;
 	frame.sample_bits = PCM_SAMPLE_BITS(param.format);
 
 	avpacket_t pkt;
