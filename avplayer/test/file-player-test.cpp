@@ -38,6 +38,10 @@ int file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_t
 	{
 		codecid = AVCODEC_VIDEO_H264;
 	}
+	else if (FLV_VIDEO_H265 == avtype)
+	{
+		codecid = AVCODEC_VIDEO_H265;
+	}
 	else if (FLV_AUDIO_AAC == avtype)
 	{
 		codecid = AVCODEC_AUDIO_AAC;

@@ -31,9 +31,9 @@ public:
 private:
 	bool CreateDecoder(const avpacket_t* pkt)
 	{
-		assert(pkt->codecid == AVCODEC_VIDEO_H264);
+		assert(pkt->codecid == AVCODEC_VIDEO_H264 || pkt->codecid == AVCODEC_VIDEO_H265);
 		if(NULL == m_decoder)
-			m_decoder = avdecoder_create_h264();
+			m_decoder = pkt->codecid == AVCODEC_VIDEO_H264 ? avdecoder_create_h264() : avdecoder_create_h265();
 		return !!m_decoder;
 	}
 

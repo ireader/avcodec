@@ -28,7 +28,7 @@ static int rtmp_client_onvideo(void* /*param*/, const void* data, size_t bytes, 
 	return flv_demuxer_input(s_flv, FLV_TYPE_VIDEO, data, bytes, timestamp);
 }
 
-static int rtmp_client_onmeta(void* /*param*/, const void* /*data*/, size_t /*bytes*/)
+static int rtmp_client_onscript(void* /*param*/, const void* /*data*/, size_t /*bytes*/, uint32_t /*timestamp*/)
 {
 	return 0;
 }
@@ -46,7 +46,14 @@ static int rtmp_client_ondata(void* player, int avtype, const void* data, size_t
 		pkt->codecid = AVCODEC_VIDEO_H264;
 		if ((0x01 & flags) || h264_idr(pkt->data, pkt->size))
 			pkt->flags |= AVPACKET_FLAG_KEY;
-		 avplayer_live_input(player, pkt);
+		avplayer_live_input(player, pkt);
+	}
+	else if (FLV_VIDEO_H265 == avtype)
+	{
+		pkt->codecid = AVCODEC_VIDEO_H265;
+		//if ((0x01 & flags) || h265_idr(pkt->data, pkt->size))
+		//	pkt->flags |= AVPACKET_FLAG_KEY;
+		avplayer_live_input(player, pkt);
 	}
 	else if (FLV_AUDIO_AAC == avtype)
 	{
@@ -74,9 +81,9 @@ static void rtmp_play_test(void* player, const char* host, const char* app, cons
 
 	struct rtmp_client_handler_t handler;
 	handler.send = rtmp_client_send;
-	handler.onmeta = rtmp_client_onmeta;
 	handler.onaudio = rtmp_client_onaudio;
 	handler.onvideo = rtmp_client_onvideo;
+	handler.onscript = rtmp_client_onscript;
 	rtmp_client_t* rtmp = rtmp_client_create(app, stream, packet/*tcurl*/, &socket, &handler);
 	s_flv = flv_demuxer_create(rtmp_client_ondata, player);
 

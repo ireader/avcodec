@@ -21,6 +21,15 @@ void* avdecoder_create_h264()
 	return ffdecoder_create(&param);
 }
 
+void* avdecoder_create_h265()
+{
+	AVCodecParameters param;
+	memset(&param, 0, sizeof(AVCodecParameters));
+	param.codec_type = AVMEDIA_TYPE_VIDEO;
+	param.codec_id = AV_CODEC_ID_H265;
+	return ffdecoder_create(&param);
+}
+
 void* avdecoder_create_aac()
 {
 	AVCodecParameters param;
