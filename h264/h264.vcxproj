@@ -24,6 +24,7 @@
     <ClCompile Include="source\h264-nal.c" />
     <ClCompile Include="source\h264-parser.c" />
     <ClCompile Include="source\h264-pps.c" />
+    <ClCompile Include="source\h264-profile.c" />
     <ClCompile Include="source\h264-rbsp.c" />
     <ClCompile Include="source\h264-scaling.c" />
     <ClCompile Include="source\h264-slice-header.c" />
