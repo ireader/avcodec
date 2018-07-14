@@ -43,17 +43,17 @@ private:
 			if (AVCODEC_AUDIO_AAC == pkt->codecid)
 			{
 				m_audio_class = aac_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 0, 0);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 0, 0, NULL, 0);
 			}
 			else if (AVCODEC_AUDIO_OPUS == pkt->codecid)
 			{
 				m_audio_class = opus_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 1, 8000);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 1, 8000, NULL, 0);
 			}
 			else if (AVCODEC_AUDIO_MP3 == pkt->codecid)
 			{
 				m_audio_class = mp3_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 0, 0);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 0, 0, NULL, 0);
 			}
 		}
 

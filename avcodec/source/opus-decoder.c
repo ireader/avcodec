@@ -24,11 +24,12 @@ static void opus_destroy(void* audio)
 	free(dec);
 }
 
-static void* opus_create(int format, int channels, int frequency)
+static void* opus_create(int format, int channels, int frequency, const void* extradata, int extradata_size)
 {
 	int r = OPUS_OK;
 	struct opus_decoder_t* dec;
 
+    (void)extradata, (void)extradata_size;
 	r = frequency / 2 * channels * PCM_SAMPLE_BITS(format) / 8; // 500ms
 	dec = (struct opus_decoder_t*)malloc(sizeof(*dec) + r);
 	if (NULL == dec)

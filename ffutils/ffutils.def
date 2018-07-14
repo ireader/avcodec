@@ -17,6 +17,7 @@ EXPORTS
 	ffencoder_getpacket
 
 	avdecoder_create_h264
+	avdecoder_create_h265
 	avdecoder_destroy
 	avdecoder_input
 	avdecoder_getframe

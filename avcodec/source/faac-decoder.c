@@ -27,10 +27,11 @@ static void faad_destroy(void* audio)
 	free(dec);
 }
 
-static void* faad_create(int format, int channels, int frequency)
+static void* faad_create(int format, int channels, int frequency, const void* extradata, int extradata_size)
 {
 	struct faad_decoder_t* dec;
 
+	(void)extradata, (void)extradata_size;
 	dec = (struct faad_decoder_t*)malloc(sizeof(*dec));
 	if (NULL == dec)
 		return NULL;

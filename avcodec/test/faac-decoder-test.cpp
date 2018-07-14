@@ -30,7 +30,7 @@ void faac_decoder_test(const char* adts, const char* pcm)
 	FILE* fadts = fopen(adts, "rb");
 	FILE* fpcm = fopen(pcm, "wb");
 
-	void* faad = faac_decoder()->create(0, 0, 0);
+	void* faad = faac_decoder()->create(0, 0, 0, NULL, 0);
 
 	avpacket_t pkt;
 	memset(&pkt, 0, sizeof(pkt));

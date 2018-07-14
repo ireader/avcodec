@@ -9,7 +9,7 @@ extern "C" {
 
 struct audio_decoder_t
 {
-	void* (*create)(int format, int channels, int samplerate);
+	void* (*create)(int format, int channels, int samplerate, const void* extradata, int extradata_size);
 	void (*destroy)(void* audio);
 
 	/// @return >0-ok, other-error

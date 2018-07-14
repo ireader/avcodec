@@ -107,5 +107,20 @@
     <ClCompile Include="source\avpacket.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\faac-encoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\faac-decoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\faac-encoder-test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\faac-decoder-test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mp2lame-encoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
