@@ -23,6 +23,7 @@ struct h264_encoder_t
 };
 
 struct h264_encoder_t* x264_encoder(void);
+struct h264_encoder_t* x262_encoder(void); // MPEG-2 Video
 struct h264_encoder_t* openh264_encoder(void);
 
 #ifdef __cplusplus
