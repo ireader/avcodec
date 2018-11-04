@@ -96,9 +96,91 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 	return h264_rbsp_trailing_bits(stream);
 }
 
+static int h264_crop_unit(const struct h264_sps_t* sps, int* x, int *y)
+{
+	const int SubWidthC[] = { 0 /*4:0:0*/, 2 /*4:2:0*/, 2 /*4:2:2*/, 1 /*4:4:4*/ };
+	const int SubHeightC[] = { 0 /*4:0:0*/, 2 /*4:2:0*/, 1 /*4:2:2*/, 1 /*4:4:4*/ };
+	int chroma_array_type;
+	int frame_mbs_only_flag;
+
+	frame_mbs_only_flag = sps->frame_mbs_only_flag ? 1 : 0;
+
+	// Depending on the value of separate_colour_plane_flag, the value of the variable ChromaArrayType is assigned as follows:
+	// ¨C If separate_colour_plane_flag is equal to 0, ChromaArrayType is set equal to chroma_format_idc.
+	// ¨C Otherwise (separate_colour_plane_flag is equal to 1), ChromaArrayType is set equal to 0.
+	chroma_array_type = sps->chroma.separate_colour_plane_flag ? 0 : sps->chroma_format_idc;
+	if (chroma_array_type > 3)
+		return -1;
+
+	/*
+	The variables CropUnitX and CropUnitY are derived as follows:
+	¨C If ChromaArrayType is equal to 0, CropUnitX and CropUnitY are derived as:
+		CropUnitX = 1
+		CropUnitY = 2 - frame_mbs_only_flag
+	- Otherwise (ChromaArrayType is equal to 1, 2, or 3), CropUnitX and CropUnitY are derived as:
+		CropUnitX = SubWidthC
+		CropUnitY = SubHeightC * ( 2 - frame_mbs_only_flag )
+	*/
+	if (0 == chroma_array_type)
+	{
+		*x = 1;
+		*y = 2 - frame_mbs_only_flag;
+	}
+	else
+	{
+		*x = SubWidthC[chroma_array_type];
+		*y = SubHeightC[chroma_array_type] * (2 - frame_mbs_only_flag);
+	}
+
+	return 0;
+}
+
+int h264_codec_rect(const struct h264_sps_t* sps, int* x, int *y, int *w, int *h)
+{
+	int dx, dy;
+	int pic_width_in_mbs;
+	int pic_height_in_mbs;
+	int frame_mbs_only_flag;
+	if (0 != h264_crop_unit(sps, &dx, &dy))
+		return -1;
+
+	frame_mbs_only_flag = sps->frame_mbs_only_flag ? 1 : 0;
+	pic_width_in_mbs = sps->pic_width_in_mbs_minus1 + 1;
+	pic_height_in_mbs = (sps->pic_height_in_map_units_minus1 + 1) * (2 - frame_mbs_only_flag);
+
+	*x = 0;
+	*y = 0;
+	*w = pic_width_in_mbs * 16;
+	*h = pic_height_in_mbs * 16;
+	return 0;
+}
+
+int h264_display_rect(const struct h264_sps_t* sps, int* x, int *y, int *w, int *h)
+{
+	int dx, dy;
+	int pic_width_in_mbs;
+	int pic_height_in_mbs;
+	int frame_mbs_only_flag;
+	if (0 != h264_crop_unit(sps, &dx, &dy))
+		return -1;
+
+	frame_mbs_only_flag = sps->frame_mbs_only_flag ? 1 : 0;
+	pic_width_in_mbs = sps->pic_width_in_mbs_minus1 + 1;
+	pic_height_in_mbs = (sps->pic_height_in_map_units_minus1 + 1) * (2 - frame_mbs_only_flag);
+
+	*x = sps->frame_cropping_flag ? sps->frame_cropping.frame_crop_left_offset * dx : 0;
+	*y = sps->frame_cropping_flag ? sps->frame_cropping.frame_crop_top_offset * dy : 0;
+	*w = sps->frame_cropping_flag ? sps->frame_cropping.frame_crop_right_offset * dx : 0;
+	*h = sps->frame_cropping_flag ? sps->frame_cropping.frame_crop_bottom_offset * dy : 0;
+	*w = pic_width_in_mbs * 16 - *w - *x;
+	*h = pic_height_in_mbs * 16 - *h - *y;
+	return 0;
+}
+
 #if defined(DEBUG) || defined(_DEBUG)
 void h264_sps_print(const struct h264_sps_t* sps)
 {
+	int x, y, w, h;
 	printf("H.264 Sequence parameter set:\n");
 	printf(" profile_idc: %hhu\n", sps->profile_idc);
 	printf(" constraint_set_flag: %02hhx\n", sps->constraint_set_flag);
@@ -147,6 +229,11 @@ void h264_sps_print(const struct h264_sps_t* sps)
 		printf("   frame_crop_top_offset: %d\n", sps->frame_cropping.frame_crop_top_offset);
 		printf("   frame_crop_bottom_offset: %d\n", sps->frame_cropping.frame_crop_bottom_offset);
 	}
+	h264_codec_rect(sps, &x, &y, &w, &h);
+	printf(" codec rect: %d/%d/%d/%d", x, y, w, h);
+	h264_display_rect(sps, &x, &y, &w, &h);
+	printf(" display rect: %d/%d/%d/%d\n", x, y, w, h);
+
 	printf(" vui_parameters_present_flag: %s\n", sps->vui_parameters_present_flag ? "true" : "false");
 }
 
@@ -167,6 +254,10 @@ static void h264_sps_parse_test(const uint8_t* nalu, uint32_t bytes, const struc
 void h264_sps_test()
 {
 	const uint8_t rawh264[] = { 0x67, 0x42, 0xa0, 0x1e, 0x97, 0x40, 0x58, 0x09, 0x22 };
+    //const uint8_t rawh264[] = { 0x67, 0x64, 0x00, 0x1f, 0xad, 0x00, 0xce, 0x50, 0x14, 0x01, 0x6e, 0xc0, 0x44, 0x00, 0x00, 0x38, 0x40, 0x00, 0x0a, 0xfc, 0x81, 0x80, 0x00, 0x00, 0x35, 0x67, 0xe0, 0x00, 0x01, 0xab, 0x3f, 0x08, 0xbd, 0xf8, 0xc0, 0x00, 0x00, 0x1a, 0xb3, 0xf0, 0x00, 0x00, 0xd5, 0x9f, 0x84, 0x5e, 0xfc, 0x7b, 0x41, 0x10, 0x89, 0x4b };
+    //const uint8_t rawh264[] = { 0x67, 0x64, 0x00, 0x33, 0xad, 0x84, 0x05, 0x45, 0x62, 0xb8, 0xac, 0x54, 0x74, 0x20, 0x2a, 0x2b, 0x15, 0xc5, 0x62, 0xa3, 0xa1, 0x01, 0x51, 0x58, 0xae, 0x2b, 0x15, 0x1d, 0x08, 0x0a, 0x8a, 0xc5, 0x71, 0x58, 0xa8, 0xe8, 0x40, 0x54, 0x56, 0x2b, 0x8a, 0xc5, 0x47, 0x42, 0x02, 0xa2, 0xb1, 0x5c, 0x56, 0x2a, 0x3a, 0x10, 0x24, 0x99, 0x39, 0x3c, 0x9f, 0x27, 0xe4, 0xfe, 0x4f, 0xc9, 0xf2, 0x79, 0xb9, 0xb3, 0x4d, 0x08, 0x12, 0x4c, 0x9c, 0x9e, 0x4f, 0x93, 0xf2, 0x7f, 0x27, 0xe4, 0xf9, 0x3c, 0xdc, 0xd9, 0xa6, 0xb4, 0x03, 0xc0, 0x11, 0x3f, 0x2a, };
+	//const uint8_t xcrop[] = { 0x67, 0x4d, 0x40, 0x1f, 0xe8, 0x80, 0x6c, 0x1e, 0xf3, 0x78, 0x08, 0x80, 0x00, 0x01, 0xf4, 0x80, 0x00, 0x75, 0x30, 0x07, 0x8c, 0x18, 0x89 };
+	//const uint8_t ycrop[] = { 0x67, 0x42, 0xc0, 0x1e, 0xda, 0x02, 0x80, 0xbf, 0xe5, 0x84, 0x00, 0x00, 0x03, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0xc0, 0x3c, 0x58, 0xba, 0x80 };
 	struct h264_sps_t sps;
 	memset(&sps, 0, sizeof(sps));
 	sps.chroma_format_idc = 1;

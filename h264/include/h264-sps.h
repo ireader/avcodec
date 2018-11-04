@@ -58,4 +58,7 @@ struct h264_sps_t
 
 int h264_sps_parse(const void* data, uint32_t bytes, struct h264_sps_t* sps);
 
+int h264_codec_rect(const struct h264_sps_t* sps, int* x, int *y, int *w, int *h);
+int h264_display_rect(const struct h264_sps_t* sps, int* x, int *y, int *w, int *h);
+
 #endif /* !_h264_sps_h_ */
