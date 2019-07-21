@@ -95,6 +95,10 @@ int h264_parser_input(void* p, const void* nalu, size_t bytes)
 			memcpy(parser->ctx.pps + pps.pic_parameter_set_id, &pps, sizeof(struct h264_pps_t));
 		break;
 
+	case H264_NAL_SEI:
+		//TODO
+		break;
+
 	default:
 		if (nal.nal_unit_type > 0 && nal.nal_unit_type <= H264_NAL_IDR)
 		{
@@ -111,7 +115,6 @@ int h264_parser_input(void* p, const void* nalu, size_t bytes)
 				parser->frame_num = header.frame_num;
 			}
 		}
-		break;
 	}
 	return r;
 }

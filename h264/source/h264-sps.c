@@ -237,6 +237,21 @@ void h264_sps_print(const struct h264_sps_t* sps)
 	printf(" vui_parameters_present_flag: %s\n", sps->vui_parameters_present_flag ? "true" : "false");
 }
 
+static void h264_sps_vui_test()
+{
+	const uint8_t vui264[] = { 0x67, 0x64, 0x00, 0x1f, 0xac, 0x2c, 0x6a, 0x81, 0x40, 0x16, 0xe9, 0xb8, 0x08, 0x08, 0x0a, 0x00, 0x00, 0x07, 0xd0, 0x00, 0x01, 0x86, 0xa1, 0x08 };
+
+	bitstream_t stream;
+	struct h264_nal_t nal;
+	struct h264_sps_t sps;
+	memset(&sps, 0, sizeof(sps));
+	bitstream_init(&stream, vui264, sizeof(vui264));
+
+	assert(0 == h264_nal(&stream, &nal));
+	assert(H264_NAL_SPS == nal.nal_unit_type && nal.nal_ref_idc > 0);
+	assert(0 == h264_sps(&stream, &sps));
+}
+
 static void h264_sps_parse_test(const uint8_t* nalu, uint32_t bytes, const struct h264_sps_t* check)
 {
 	bitstream_t stream;
@@ -260,6 +275,7 @@ void h264_sps_test()
 	//const uint8_t ycrop[] = { 0x67, 0x42, 0xc0, 0x1e, 0xda, 0x02, 0x80, 0xbf, 0xe5, 0x84, 0x00, 0x00, 0x03, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0xc0, 0x3c, 0x58, 0xba, 0x80 };
 	struct h264_sps_t sps;
 	memset(&sps, 0, sizeof(sps));
+	h264_sps_vui_test();
 	sps.chroma_format_idc = 1;
 	sps.profile_idc = 66;
 	sps.constraint_set_flag = 160;
