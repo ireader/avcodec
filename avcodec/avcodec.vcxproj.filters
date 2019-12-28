@@ -54,6 +54,9 @@
     <ClInclude Include="include\avbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avjitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">

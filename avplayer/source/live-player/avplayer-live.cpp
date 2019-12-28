@@ -15,3 +15,8 @@ int avplayer_live_input(void* player, struct avpacket_t* pkt)
 {
 	return ((AVLivePlayer*)player)->Input(pkt);
 }
+
+int avplayer_live_process(void* player, uint64_t clock)
+{
+	return ((AVLivePlayer*)player)->Process(clock);
+}

@@ -50,6 +50,11 @@ AVFilePlayer::~AVFilePlayer()
 	}
 }
 
+int AVFilePlayer::Process(uint64_t clock)
+{
+	return avplayer_process(m_player, clock);
+}
+
 void AVFilePlayer::Play()
 {
 	avplayer_play(m_player);

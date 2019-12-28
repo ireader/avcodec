@@ -1,8 +1,8 @@
 #include "AVLivePlayer.h"
-#include "sys/system.h"
 #include "avdecoder.h"
 #include "avplayer.h"
 #include "VOFilter.h"
+#include "ctypedef.h"
 #include "app-log.h"
 #include <stdlib.h>
 #include <string.h>
@@ -12,12 +12,16 @@
 #define VIDEO_DECODED_FRAMES 2
 #define AUDIO_DECODED_FRAMES 2
 
+#define AV_BUFFER_MIN		0
+#define AV_BUFFER_MAX		20000
+#define AV_BUFFER_DEFAULT	300
+
 AVLivePlayer::AVLivePlayer(void* window)
 	: m_window(window)
 	, m_play_video(NULL)
 	, m_present_video(NULL)
 	, m_running(false)
-	, m_buffering(true), m_delay(100)
+	, m_buffering(true), m_delay(AV_BUFFER_DEFAULT), m_lowlatency(0)
 	, m_videos(0), m_audios(0)
 	, m_h264_idr(NULL)
 	, m_audio_delay("A-delay")
@@ -70,6 +74,12 @@ AVLivePlayer::~AVLivePlayer()
 		avpacket_release(m_videoQ.front());
 		m_videoQ.pop_front();
 	}
+}
+
+int AVLivePlayer::Process(uint64_t clock)
+{
+	m_clock = clock;
+	return avplayer_process(m_player, clock);
 }
 
 int AVLivePlayer::Input(struct avpacket_t* pkt)
@@ -128,7 +138,7 @@ void AVLivePlayer::Present(struct avframe_t* yuv)
 		app_log(LOG_ERROR, "[%s] video_output_write(%ld, %ld) => %d\n", __FUNCTION__, yuv->pts, yuv->dts, r);
 	}
 
-	m_video_delay.Tick((int)(system_time() - yuv->pts));
+	m_video_delay.Tick(m_clock, yuv->pts);
 }
 
 int STDCALL AVLivePlayer::OnThread(void*  param)
@@ -155,7 +165,7 @@ int AVLivePlayer::OnThread()
 			needmoreframe = true;
 		}
 
-		if (m_buffering && ((uint32_t)m_videos * VIDEO_INTERVAL_MS > m_delay || avplayer_get_audio_duration(m_player) >= m_delay))
+		if (m_buffering && (GetAudioBuffering() >= m_delay || GetVideoBuffering() > m_delay))
 		{
 			OnBuffering(false);
 		}
@@ -203,6 +213,8 @@ void AVLivePlayer::DecodeVideo()
 	avframe_t *yuv = NULL;
 	if (m_vdecoder->Decode(pkt, &yuv) >= 0)
 	{
+		if (0 == m_video_delay.m_pts)
+			m_video_delay.m_pts = yuv->pts;
 		avplayer_input_video(m_player, yuv, yuv->pts, 1);
 		atomic_increment32(&m_videos);
 		VideoDiscard();
@@ -212,7 +224,7 @@ void AVLivePlayer::DecodeVideo()
 
 void AVLivePlayer::AudioDiscard()
 {
-	if (m_audios < AUDIO_DECODED_FRAMES || avplayer_get_audio_duration(m_player) < m_delay)
+	if (0 == m_lowlatency || m_audios < AUDIO_DECODED_FRAMES || avplayer_get_audio_duration(m_player) < m_lowlatency)
 		return;
 
 	int n = 0;
@@ -230,7 +242,7 @@ void AVLivePlayer::AudioDiscard()
 
 void AVLivePlayer::VideoDiscard()
 {
-	if (m_videos < VIDEO_DECODED_FRAMES || (m_videos + m_videoQ.size()) * VIDEO_INTERVAL_MS < m_delay)
+	if (0 == m_lowlatency || m_videos < VIDEO_DECODED_FRAMES || ( /*m_videos +*/ m_videoQ.size()) * VIDEO_INTERVAL_MS < m_lowlatency)
 		return;
 
 	int n = 0;
@@ -254,6 +266,30 @@ void AVLivePlayer::VideoDiscard()
 	}
 	
 	if(n > 0) app_log(LOG_WARNING, "Video discard: %d, v: %d(%d), a: %d(%d)\n", n, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
+}
+
+uint64_t AVLivePlayer::GetVideoBuffering() const
+{
+	if (m_videoQ.empty())
+		return 0;
+	
+	const struct avpacket_t* front = m_videoQ.front();
+	if(m_video_delay.m_pts)
+		return front->pts - m_video_delay.m_pts;
+	else
+		return front->pts - m_videoQ.back()->pts;
+}
+
+uint64_t AVLivePlayer::GetAudioBuffering() const
+{
+	int64_t duration = avplayer_get_audio_duration(m_player);
+	if (!m_audioQ.empty())
+	{
+		const struct avpacket_t* front = m_audioQ.front();
+		const struct avpacket_t* back = m_audioQ.back();
+		duration += front->pts - back->pts;
+	}
+	return duration;
 }
 
 uint64_t AVLivePlayer::OnAVRender(void* param, int type, const void* frame, int discard)
@@ -357,7 +393,7 @@ uint64_t AVLivePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 	// calculate audio buffer sample duration (ms)
 	int samples = m_audioout->getframes();
 	int duration = (uint64_t)samples * 1000 / pcm->sample_rate;
-	m_audio_delay.Tick((int)(system_time() - pcm->pts) + duration);
+	m_audio_delay.Tick(m_clock, pcm->pts);
 	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%dms)\n", __FUNCTION__, samples, duration);
 
 	return samples >= 0 ? duration : 0;

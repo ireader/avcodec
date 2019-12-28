@@ -14,6 +14,8 @@ typedef struct avpacket_t* (*avplayer_file_read)(void* param);
 
 void* avplayer_file_create(void* window, avplayer_file_read reader, void* param);
 void avplayer_file_destroy(void* player);
+int avplayer_file_process(void* player, uint64_t clock);
+
 void avplayer_file_play(void* player);
 void avplayer_file_pause(void* player);
 

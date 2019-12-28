@@ -20,6 +20,8 @@ public:
 	~AVFilePlayer();
 
 public:
+	int Process(uint64_t clock);
+
 	void Play();
 	void Pause();
 	void Reset();

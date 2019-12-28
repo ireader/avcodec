@@ -1,3 +1,5 @@
+#include "sys/thread.h"
+#include "sys/system.h"
 #include "avplayer-file.h"
 #include "flv-demuxer.h"
 #include "flv-reader.h"
@@ -5,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+static bool s_running;
 static void* s_reader;
 static flv_demuxer_t* s_demuxer;
 static struct
@@ -65,14 +68,31 @@ int file_player_test_onflv(void* /*param*/, int avtype, const void* data, size_t
 	return 0;
 }
 
+static int STDCALL file_player_thread(void* player)
+{
+	while (s_running)
+	{
+		int r = avplayer_file_process(player, system_clock());
+		if (r > 0)
+			system_sleep(r);
+	}
+	return 0;
+}
+
 int file_player_test(void* window, const char* flv)
 {
+	pthread_t thread;
 	s_reader = flv_reader_create(flv);
 	s_demuxer = flv_demuxer_create(file_player_test_onflv, &s_param);
 
 	void* player = avplayer_file_create(window, file_player_test_read, NULL);
+	s_running = true;
+	thread_create(&thread, file_player_thread, player);
+
 	avplayer_file_play(player);
 
+	//s_running = false;
+	//thread_destroy(thread);
 	//if (s_demuxer)
 	//{
 	//	flv_demuxer_destroy(s_demuxer);

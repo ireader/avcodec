@@ -11,6 +11,11 @@ void avplayer_file_destroy(void* player)
 	delete (AVFilePlayer*)player;
 }
 
+int avplayer_file_process(void* player, uint64_t clock)
+{
+	return ((AVFilePlayer*)player)->Process(clock);
+}
+
 void avplayer_file_play(void* player)
 {
 	((AVFilePlayer*)player)->Play();

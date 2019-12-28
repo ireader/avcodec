@@ -1,5 +1,4 @@
 #include "AVPlayerCore.h"
-#include "sys/system.h"
 #include "ctypedef.h"
 #include "app-log.h"
 #include <errno.h>
@@ -13,35 +12,37 @@ inline int v_min(int x, int y)
 	return x < y ? x : y;
 }
 
-#define TIMEOUT_DEFAULT 20
+#define TIMEOUT_DEFAULT 10
 #define AUDIO_SAMPLE_THRESHOLD 100 // ms
+#define AVSYNC_THRESHOLD 300
 
 AVPlayerCore::AVPlayerCore(avplayer_onrender avrender, void* param)
 	: m_avrender(avrender), m_param(param)
 	, m_status(avplayer_status_close)
-	, m_fps("AVPlayer")
 {
 	memset(&m_video, 0, sizeof(m_video));
 	memset(&m_audio, 0, sizeof(m_audio));
 	memset(&m_vclock, 0, sizeof(m_vclock));
 	memset(&m_aclock, 0, sizeof(m_aclock));
 	memset(&m_system, 0, sizeof(m_system));
-
-	m_running = true;
-	thread_create(&m_thread, OnThread, this);
 }
 
 AVPlayerCore::~AVPlayerCore()
 {
-	m_running = false;
 	m_event.Signal(); // notify to exit
-	thread_destroy(m_thread);
 
 	// clear audio/video frames
 	if (m_video.frame) m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
 	if (m_audio.frame) m_avrender(m_param, avplayer_render_audio, m_audio.frame, 1);
 	while(m_videoQ.Read(m_video)) m_avrender(m_param, avplayer_render_video, m_video.frame, 1);
 	while(m_audioQ.Read(m_audio)) m_avrender(m_param, avplayer_render_audio, m_audio.frame, 1);
+}
+
+int AVPlayerCore::Process(uint64_t clock)
+{
+	if (avplayer_status_play == m_status)
+		return OnPlay(clock);
+	return TIMEOUT_DEFAULT;
 }
 
 void AVPlayerCore::Play()
@@ -82,28 +83,6 @@ void AVPlayerCore::Input(const void* yuv, int64_t pts, int serial)
 	video.serial = serial;
 	video.duration = 0;
 	m_videoQ.Write(video);
-}
-
-int AVPlayerCore::OnThread(void* param)
-{
-	AVPlayerCore* self = (AVPlayerCore*)param;
-	return self->OnThread();
-}
-
-int AVPlayerCore::OnThread()
-{
-	int timeout = 100;
-	while (m_running)
-	{
-		if (WAIT_TIMEOUT == m_event.TimeWait(timeout))
-		{
-			if (avplayer_status_play == m_status)
-			{
-				timeout = OnPlay(system_clock());
-			}
-		}
-	}
-	return 0;
 }
 
 int AVPlayerCore::OnPlay(uint64_t clock)
@@ -153,7 +132,7 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	}
 
 	m_vclock.frame_time += diff;
-	if (clock - m_vclock.frame_time > 100)
+	if (clock - m_vclock.frame_time > AVSYNC_THRESHOLD)
 	{
 		app_log(LOG_WARNING, "video clock reset: v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.frame_time, clock);
 		m_vclock.frame_time = clock;
@@ -168,7 +147,6 @@ int AVPlayerCore::OnVideo(uint64_t clock)
 	m_avrender(m_param, avplayer_render_video, frame, 0);
 
 	//app_log(LOG_DEBUG, "Video: v-pts: %" PRIu64 ", v-clock: %" PRIu64 ", v-diff: %" PRId64 "\n", m_vclock.pts, m_vclock.clock, m_vclock.clock-m_vclock.frame_time);
-	m_fps.Tick(clock);
 	return 0; // draw next frame
 }
 
@@ -215,7 +193,7 @@ int AVPlayerCore::AVSync(uint64_t clock)
 	m_system.clock = clock;
 
 	// adjust video play time if has video stream
-	if (m_system.clock - m_vclock.frame_time > 100 && m_vclock.clock + 1000 > clock)
+	if (m_system.clock - m_vclock.frame_time > AVSYNC_THRESHOLD && m_vclock.clock + 1000 > clock)
 	{
 		app_log(LOG_WARNING, "AVSync: v-pts: %" PRIu64 " -> %" PRIu64 ", v-clock: %" PRIu64 " -> %" PRIu64 "\n", m_vclock.pts, m_system.pts, m_vclock.frame_time, m_system.clock);
 		m_vclock.pts = m_system.pts;

@@ -20,6 +20,8 @@ public:
 	~AVLivePlayer();
 
 public:
+	int Process(uint64_t clock);
+
 	int Input(struct avpacket_t* pkt);
 
 	void Present();
@@ -41,6 +43,8 @@ private:
 	void OnBuffering(bool buffering);
 	void VideoDiscard();
 	void AudioDiscard();
+	uint64_t GetVideoBuffering() const;
+	uint64_t GetAudioBuffering() const;
 
 	void Present(struct avframe_t* video);
 	void DecodeAudio();
@@ -59,11 +63,13 @@ private:
 
 	bool m_buffering;
 	uint32_t m_delay;
+	uint32_t m_lowlatency; // enable/disable low latency mode(discard audio/video frames)
 	int32_t m_videos, m_audios; // frames in avplayer buffer queue
 	typedef std::list<struct avpacket_t*> AVPacketQ;
 	AVPacketQ m_audioQ, m_videoQ;
 	const uint8_t* m_h264_idr;
 
+	uint64_t m_clock;
 	AVInterval m_audio_delay;
 	AVInterval m_video_delay;
 	

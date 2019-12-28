@@ -29,6 +29,8 @@ typedef uint64_t (*avplayer_onrender)(void* param, int type, const void* frame, 
 
 void* avplayer_create(avplayer_onrender avrender, void* param);
 void avplayer_destroy(void* player);
+int avplayer_process(void* player, uint64_t clock);
+
 void avplayer_play(void* player);
 void avplayer_stop(void* player);
 void avplayer_pause(void* player);

@@ -13,6 +13,12 @@ void avplayer_destroy(void* p)
 	delete player;
 }
 
+int avplayer_process(void* p, uint64_t clock)
+{
+	AVPlayerCore *player = (AVPlayerCore *)p;
+	return player->Process(clock);
+}
+
 void avplayer_play(void* p)
 {
 	AVPlayerCore *player = (AVPlayerCore *)p;

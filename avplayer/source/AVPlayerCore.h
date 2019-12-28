@@ -13,6 +13,8 @@ public:
 	~AVPlayerCore();
 
 public:
+	int Process(uint64_t clock);
+
 	void Play();
 	void Stop();
 	void Pause();
@@ -24,9 +26,6 @@ public:
 	void Input(const void* yuv, int64_t pts, int serial);
 
 private:
-	static int STDCALL OnThread(void* param);
-	int OnThread();
-
 	int OnPlay(uint64_t clock);
 	int OnVideo(uint64_t clock);
 	int OnAudio(uint64_t clock);
@@ -38,15 +37,12 @@ private:
 	AVFrameQ m_audioQ;
 	AVFrameQ m_videoQ;
 
-	bool m_running;
-	pthread_t m_thread;
 	ThreadEvent m_event;
 
 	avplayer_onrender m_avrender;
 	void* m_param;
 
 	int m_status; // avplayer_status_xxx
-	AVInterval m_fps;
 
 	struct avclock_t
 	{
@@ -55,7 +51,6 @@ private:
 		uint64_t frame_time; // frame play time(predict)
 		uint64_t duration; // audio only
 	};
-
 	struct avclock_t m_aclock;
 	struct avclock_t m_vclock;
 	struct avclock_t m_system;
