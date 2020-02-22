@@ -186,7 +186,7 @@ static int openh264enc_getpacket(void* h264, avpacket_t* pkt)
 	//}
 
 	pkt->dts = pkt->pts = p->out.uiTimeStamp;
-	pkt->codecid = AVCODEC_VIDEO_H264;
+	//pkt->codecid = AVCODEC_VIDEO_H264;
 	return 1;
 }
 

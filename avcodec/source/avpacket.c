@@ -23,6 +23,9 @@ struct avpacket_t* avpacket_alloc(int size)
 int32_t avpacket_addref(struct avpacket_t* pkt)
 {
 	struct avbuffer_t* buf;
+	if (pkt && pkt->stream)
+		avstream_addref(pkt->stream);
+
 	if (NULL == pkt || NULL == pkt->opaque)
 		return -1;
 
@@ -33,6 +36,9 @@ int32_t avpacket_addref(struct avpacket_t* pkt)
 int32_t avpacket_release(struct avpacket_t* pkt)
 {
 	struct avbuffer_t* buf;
+	if (pkt && pkt->stream)
+		avstream_release(pkt->stream);
+
 	if (NULL == pkt || NULL == pkt->opaque)
 		return -1;
 

@@ -34,7 +34,7 @@ static void* opus_create(const struct audio_parameter_t* param)
 		return NULL;
 
 	memset(enc, 0, sizeof(*enc));
-	enc->pkt.codecid = AVCODEC_AUDIO_OPUS;
+	//enc->pkt.codecid = AVCODEC_AUDIO_OPUS;
 	enc->pkt.data = (uint8_t*)(enc + 1);
 	enc->capacity = r;
 	enc->opus = opus_encoder_create(param->samplerate, param->channels, OPUS_APPLICATION_VOIP, &r);

@@ -41,10 +41,10 @@ void faac_encoder_test(const char* pcm, const char* adts)
 		if (faac_encoder()->encode(faac, &frame) < 0)
 			break;
 
-		avpacket_t pkt;
-		if (faac_encoder()->getpacket(faac, &pkt) >= 0)
+		avpacket_t pkt2;
+		if (faac_encoder()->getpacket(faac, &pkt2) >= 0)
 		{
-			fwrite(pkt.data, 1, pkt.size, fadts);
+			fwrite(pkt2.data, 1, pkt2.size, fadts);
 		}
 	}
 

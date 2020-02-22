@@ -21,10 +21,14 @@ public:
 
 public:
 	int Process(uint64_t clock);
+	uint64_t GetPosition() const;
 
 	void Play();
 	void Pause();
 	void Reset();
+
+	int SetSpeed(int speed);
+	int GetSpeed() const;
 
 public:
 	void SetAudioFilter(std::shared_ptr<IAudioFilter> filter) { m_afilter = filter; }
@@ -55,6 +59,8 @@ private:
 	typedef std::list<struct avpacket_t*> AVPacketQ;
 	AVPacketQ m_audioQ, m_videoQ;
 
+	int m_speed;
+	int64_t m_pts;	
 	avplayer_file_read m_reader;
 	void* m_param;
 

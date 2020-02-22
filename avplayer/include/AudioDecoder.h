@@ -2,6 +2,7 @@
 
 #include "audio-decoder.h"
 #include "avdecoder.h"
+#include "avstream.h"
 
 class AudioDecoder
 {
@@ -33,27 +34,27 @@ public:
 private:
 	bool CreateDecoder(const avpacket_t* pkt)
 	{
-		if (m_codecid != pkt->codecid)
+		if (m_codecid != pkt->stream->codecid)
 			DestroyDecoder();
 
 		if (NULL == m_decoder)
 		{
-			m_codecid = pkt->codecid;
+			m_codecid = pkt->stream->codecid;
 
-			if (AVCODEC_AUDIO_AAC == pkt->codecid)
+			if (AVCODEC_AUDIO_AAC == pkt->stream->codecid)
 			{
 				m_audio_class = aac_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 0, 0, NULL, 0);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, pkt->stream->channels, pkt->stream->sample_rate, pkt->stream->extra, pkt->stream->bytes);
 			}
-			else if (AVCODEC_AUDIO_OPUS == pkt->codecid)
+			else if (AVCODEC_AUDIO_OPUS == pkt->stream->codecid)
 			{
 				m_audio_class = opus_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 1, 8000, NULL, 0);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 1, 8000, pkt->stream->extra, pkt->stream->bytes);
 			}
-			else if (AVCODEC_AUDIO_MP3 == pkt->codecid)
+			else if (AVCODEC_AUDIO_MP3 == pkt->stream->codecid)
 			{
 				m_audio_class = mp3_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 0, 0, NULL, 0);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, pkt->stream->channels, pkt->stream->sample_rate, pkt->stream->extra, pkt->stream->bytes);
 			}
 		}
 

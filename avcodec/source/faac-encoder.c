@@ -85,7 +85,7 @@ static void* faac_create(const struct audio_parameter_t* param)
 	}
 
 	memset(enc, 0, sizeof(*enc));
-	enc->pkt.codecid = AVCODEC_AUDIO_AAC; // mpeg4-aac
+	//enc->pkt.codecid = AVCODEC_AUDIO_AAC; // mpeg4-aac
 	enc->pkt.data = (uint8_t*)(enc + 1);
 	enc->sample = enc->pkt.data + bytes;
 	enc->capacity = bytes;

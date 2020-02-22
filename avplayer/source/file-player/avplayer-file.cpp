@@ -30,3 +30,18 @@ void avplayer_file_reset(void* player)
 {
 	((AVFilePlayer*)player)->Reset();
 }
+
+uint64_t avplayer_file_getpos(void* player)
+{
+	return ((AVFilePlayer*)player)->GetPosition();
+}
+
+int avplayer_file_setspeed(void* player, int speed)
+{
+	return ((AVFilePlayer*)player)->SetSpeed(speed);
+}
+
+int avplayer_file_getspeed(void* player)
+{
+	return ((AVFilePlayer*)player)->GetSpeed();
+}

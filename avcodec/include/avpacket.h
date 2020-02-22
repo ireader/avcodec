@@ -2,7 +2,11 @@
 #define _avpacket_h_
 
 #include <stdint.h>
-#include "avcodecid.h"
+#include "avstream.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define AVPACKET_FLAG_KEY 0x01
 
@@ -14,15 +18,11 @@ struct avpacket_t
 	int64_t pts;
 	int64_t dts;
 
-	enum AVPACKET_CODEC_ID codecid;
+	struct avstream_t* stream;
 	int flags; // AVPACKET_FLAG_XXX
 
 	void* opaque; // internal use only
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 ///@param[in] size alloc packet data size, don't include sizeof(struct avpacket_t)
 ///@return alloc new avpacket_t, use avpacket_release to free memory

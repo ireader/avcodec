@@ -38,7 +38,7 @@ static void* mp2lame_create(const struct audio_parameter_t* param)
 
     memset(enc, 0, sizeof(*enc));
     enc->format = param->format;
-    enc->pkt.codecid = AVCODEC_AUDIO_MP2;
+    //enc->pkt.codecid = AVCODEC_AUDIO_MP2;
     enc->pkt.data = (uint8_t*)(enc + 1);
     enc->capacity = r;
     enc->opts = twolame_init();

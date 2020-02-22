@@ -17,6 +17,7 @@ AVFilePlayer::AVFilePlayer(void* window, avplayer_file_read reader, void* param)
 	, m_vdecoder(new VideoDecoder())
 	, m_vfilter(new VOFilter(window))
 {
+	m_pts = 0;
 	m_player = avplayer_create(OnAVRender, this);
 
 	m_running = true;
@@ -73,6 +74,22 @@ void AVFilePlayer::Reset()
 	// 3. discard video frames(pkt sn)
 }
 
+uint64_t AVFilePlayer::GetPosition() const
+{
+	return m_pts;
+}
+
+int AVFilePlayer::SetSpeed(int speed)
+{
+	m_speed = speed;
+	return 0;
+}
+
+int AVFilePlayer::GetSpeed() const
+{
+	return m_speed;
+}
+
 int STDCALL AVFilePlayer::OnThread(void* param)
 {
 	AVFilePlayer* player = (AVFilePlayer*)param;
@@ -90,7 +107,7 @@ int AVFilePlayer::OnThread()
 			if (NULL == pkt)
 				break;
 
-			if (pkt->codecid < AVCODEC_AUDIO_PCM)
+			if (pkt->stream->codecid < AVCODEC_AUDIO_PCM)
 				m_videoQ.push_back(pkt);
 			else
 				m_audioQ.push_back(pkt);
@@ -193,6 +210,7 @@ uint64_t AVFilePlayer::OnPlayVideo(avframe_t* yuv, int discard)
 {
 	atomic_decrement32(&m_videos);
 	m_event.Signal(); // notify video decode
+	m_pts = yuv->pts;
 
 	if (discard)
 		return 0;
@@ -216,6 +234,8 @@ uint64_t AVFilePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 {
 	atomic_decrement32(&m_audios);
 	m_event.Signal(); // notify audio decode
+	if(pcm->pts - m_pts > 500)
+		m_pts = pcm->pts;
 
 	if (discard)
 		return 0;

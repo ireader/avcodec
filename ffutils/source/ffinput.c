@@ -178,7 +178,7 @@ static struct avpacket_t* ffmpeg_aac_to_adts(const struct mpeg4_aac_t* aac, AVPa
 		p->size = ffmpeg->size + 7;
 		p->pts = ffmpeg->pts;
 		p->dts = ffmpeg->dts;
-		p->codecid = AVCODEC_AUDIO_AAC;
+		//p->codecid = AVCODEC_AUDIO_AAC;
 		p->flags = (ffmpeg->flags & AV_PKT_FLAG_KEY) ? AVPACKET_FLAG_KEY : 0;
 		mpeg4_aac_adts_save(aac, ffmpeg->size, p->data, p->size);
 		memcpy(p->data + 7, ffmpeg->data, ffmpeg->size);
@@ -279,7 +279,7 @@ int ffinput_read(void* p, struct avpacket_t** pkt)
 		}
 
 		if(ret >= 0 && AV_CODEC_ID_NONE != codecid && AV_CODEC_ID_AAC != codecid && AV_CODEC_ID_AAC_LATM != codecid)
-			*pkt = ffmpeg_to_avpacket(&ffmpeg, codecid);
+			*pkt = ffmpeg_to_avpacket(&ffmpeg /*, codecid*/ );
 
 		av_packet_unref(&ffmpeg);
 		return ret >= 0 ? (*pkt ? 1 : -ENOMEM) : ret;

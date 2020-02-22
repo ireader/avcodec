@@ -1,6 +1,7 @@
 #pragma once
 
 #include "avdecoder.h"
+#include "avstream.h"
 #include <assert.h>
 
 class VideoDecoder
@@ -31,9 +32,9 @@ public:
 private:
 	bool CreateDecoder(const avpacket_t* pkt)
 	{
-		assert(pkt->codecid == AVCODEC_VIDEO_H264 || pkt->codecid == AVCODEC_VIDEO_H265);
+		assert(pkt->stream->codecid == AVCODEC_VIDEO_H264 || pkt->stream->codecid == AVCODEC_VIDEO_H265);
 		if(NULL == m_decoder)
-			m_decoder = pkt->codecid == AVCODEC_VIDEO_H264 ? avdecoder_create_h264() : avdecoder_create_h265();
+			m_decoder = pkt->stream->codecid == AVCODEC_VIDEO_H264 ? avdecoder_create_h264(pkt->stream->extra, pkt->stream->bytes) : avdecoder_create_h265(pkt->stream->extra, pkt->stream->bytes);
 		return !!m_decoder;
 	}
 

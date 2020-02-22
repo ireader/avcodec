@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 #include "avframe.h"
+#include "avstream.h"
 #include "avpacket.h"
 #include "avbuffer.h"
 #include <assert.h>
@@ -107,7 +108,7 @@ static inline void avbuffer_free_AVPacket(void* opaque, void* data)
 	av_packet_unref((AVPacket*)opaque);
 }
 
-inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff, enum AVCodecID codecid)
+inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff)
 {
 	AVPacket* ref;
 	struct avbuffer_t* buf;
@@ -123,7 +124,7 @@ inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff, enum AVCodecID codeci
 		pkt->size = ff->size;
 		pkt->pts = ff->pts;
 		pkt->dts = ff->dts;
-		pkt->codecid = ffmpeg_to_avpacket_codecid(codecid);
+		//pkt->codecid = ffmpeg_to_avpacket_codecid(codecid);
 		pkt->flags = (ff->flags & AV_PKT_FLAG_KEY) ? AVPACKET_FLAG_KEY : 0;
 
 		av_packet_move_ref(ref, ff);

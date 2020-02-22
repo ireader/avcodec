@@ -19,7 +19,6 @@ static struct avpacket_t* file_player_test_read(void* p)
 {
 	int tagtype = 0;
 	uint32_t timestamp = 0;
-	static uint8_t s_buffer[512 * 1024];
 
 	s_param.pkt = NULL;
 	do

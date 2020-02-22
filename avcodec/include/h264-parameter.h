@@ -57,6 +57,8 @@ struct h264_parameter_t
 	int gop_size;		// frames per gop
 	int bitrate;		// bits per second
 	int bitrate_mode;	// CBR/VBR/ABR/CQP/CRF
+
+	int stream_mode;	// 0-H.264 AnnexB, 1-H.264 MP4
 };
 
 #endif /* !_h264_parameter_h_ */

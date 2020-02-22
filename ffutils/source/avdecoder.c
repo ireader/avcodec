@@ -12,21 +12,25 @@
 //	return ffdecoder_create(&param);
 //}
 
-void* avdecoder_create_h264()
+void* avdecoder_create_h264(const void* extra, int bytes)
 {
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
 	param.codec_type = AVMEDIA_TYPE_VIDEO;
 	param.codec_id = AV_CODEC_ID_H264;
+	param.extradata = (void*)extra;
+	param.extradata_size = bytes;
 	return ffdecoder_create(&param);
 }
 
-void* avdecoder_create_h265()
+void* avdecoder_create_h265(const void* extra, int bytes)
 {
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
 	param.codec_type = AVMEDIA_TYPE_VIDEO;
 	param.codec_id = AV_CODEC_ID_H265;
+	param.extradata = (void*)extra;
+	param.extradata_size = bytes;
 	return ffdecoder_create(&param);
 }
 

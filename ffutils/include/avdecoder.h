@@ -9,8 +9,8 @@
 extern "C" {
 #endif
 
-void* avdecoder_create_h264();
-void* avdecoder_create_h265();
+void* avdecoder_create_h264(const void* extra, int bytes);
+void* avdecoder_create_h265(const void* extra, int bytes);
 void avdecoder_destroy(void* ff);
 
 /// @return 0-ok, other-error

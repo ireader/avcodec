@@ -87,7 +87,7 @@ int AVLivePlayer::Input(struct avpacket_t* pkt)
 	avpacket_addref(pkt);
 	{
 		AutoThreadLocker locker(m_locker);
-		if (pkt->codecid < AVCODEC_AUDIO_PCM)
+		if (pkt->stream->codecid < AVCODEC_AUDIO_PCM)
 		{
 			if (pkt->flags & AVPACKET_FLAG_KEY)
 				m_h264_idr = pkt->data;
