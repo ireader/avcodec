@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\avbuffer.h" />
+    <ClInclude Include="include\avcodecid.h" />
     <ClInclude Include="include\avframe.h" />
     <ClInclude Include="include\avjitter.h" />
     <ClInclude Include="include\avpacket.h" />
     <ClInclude Include="include\avstatistic.h" />
+    <ClInclude Include="include\avstream.h" />
     <ClInclude Include="include\bitmap.h" />
     <ClInclude Include="include\colorspace.h" />
     <ClInclude Include="include\h264-encoder.h" />
@@ -37,6 +39,7 @@
     <ClCompile Include="source\avbuffer.c" />
     <ClCompile Include="source\avframe.c" />
     <ClCompile Include="source\avpacket.c" />
+    <ClCompile Include="source\avstream.c" />
     <ClCompile Include="source\bitmap.c" />
     <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\faac-decoder.c" />
@@ -61,32 +64,32 @@
     <ProjectGuid>{01E9D416-4A49-416E-8182-22241F07C295}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>avcodec</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

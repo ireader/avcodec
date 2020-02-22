@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include "avcodecid.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct avstream_t
 {
 	int stream; // stream index
@@ -22,6 +26,17 @@ struct avstream_t
 	// stream extra data(codec data)
 	void* extra;
 	int bytes;
+
+	void* opaque; // internal use only
 };
 
+///@param[in] size alloc packet data size, don't include sizeof(struct avpacket_t)
+///@return alloc new avpacket_t, use avpacket_release to free memory
+struct avstream_t* avstream_alloc(int size);
+int32_t avstream_addref(struct avstream_t* stream);
+int32_t avstream_release(struct avstream_t* stream);
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* !_avstream_h_ */
