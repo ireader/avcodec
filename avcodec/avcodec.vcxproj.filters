@@ -134,5 +134,8 @@
     <ClCompile Include="source\avstream.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\avstatistic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
