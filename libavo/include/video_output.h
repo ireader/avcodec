@@ -33,14 +33,14 @@ int video_output_close(void* vo);
 /// Show video
 /// @param[in] vo video output handle
 /// @param[in] pic picture
-/// @param[in] src_x/src_y/src_w/src_h picture rect area
-/// @param[in] tgt_x/tgt_y/tgt_w/tgt_h window rect area
+/// @param[in] src_x src_y/src_w/src_h picture rect area
+/// @param[in] tgt_x tgt_y/tgt_w/tgt_h window rect area
 /// @return 0-success, other-error
 int video_output_write(void* vo, const struct avframe_t* pic, int src_x, int src_y, int src_w, int src_h, int tgt_x, int tgt_y, int tgt_w, int tgt_h);
 
 /// read image
 /// @param[in] vo video output handle
-/// @param[in/out] picture video picture, picture->data malloc/free by caller
+/// @param[in,out] pic video picture, picture->data malloc/free by caller
 /// @return 0-success, other-error
 int video_output_read(void* vo, struct avframe_t* pic);
 

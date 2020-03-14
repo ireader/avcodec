@@ -1,4 +1,5 @@
-#include "rgb-overlay.h"
+#include "avframe.h"
+#include "yuv-overlay.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>

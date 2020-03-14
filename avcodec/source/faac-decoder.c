@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct faad_decoder_t
 {
@@ -117,7 +118,7 @@ static int faad_open(struct faad_decoder_t* dec, const struct avpacket_t* pkt)
 
 	dec->faad = faad;
 	dec->frame.channels = ch;
-	dec->frame.sample_rate = samplerate;
+	dec->frame.sample_rate = (int)samplerate;
 	dec->frame.sample_bits = PCM_SAMPLE_BITS(dec->frame.format);
 	return 0;
 }
@@ -154,7 +155,7 @@ static int faad_input(void* audio, const struct avpacket_t* pkt)
 		return -1;
 
 	dec->samples = NeAACDecDecode(dec->faad, &dec->info, pkt->data, pkt->size);
-	dec->frame.samples = dec->info.samples / dec->info.channels; // convert to per channel samples
+	dec->frame.samples = (int)(dec->info.samples / dec->info.channels); // convert to per channel samples
 	if (dec->frame.samples > 0)
 	{
 		assert(dec->frame.channels == dec->info.channels);

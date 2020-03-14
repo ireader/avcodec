@@ -390,13 +390,13 @@ void yv12_adjust(unsigned char* y, unsigned char* u, unsigned char* v, int strid
 				yuv_adjust(py++, pu, pv, contrast, hue, saturation, brightness);
 				//yuv_adjust(y+(i*stride_y+j*2), u+((i/2)*stride_uv+j), v+((i/2)*stride_uv+j), contrast, hue, saturation, brightness);
 				
-				*py++ = clip(((*py-16) * contrast) + brightness + 16);
+				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
 				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
 			else
 			{
-				*py++ = clip(((*py-16) * contrast) + brightness + 16);
-				*py++ = clip(((*py-16) * contrast) + brightness + 16);
+				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
+				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
 				//y[i*stride_y+j*2] = clip(((y[i*stride_y+j*2]-16) * contrast) + brightness + 16);
 				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
@@ -428,13 +428,13 @@ void nv12_adjust(unsigned char* y, unsigned char* v, int stride_y, int stride_uv
 				yuv_adjust(py++, pv, pv+1, contrast, hue, saturation, brightness);
 				//yuv_adjust(y+(i*stride_y+j*2), u+((i/2)*stride_uv+j), v+((i/2)*stride_uv+j), contrast, hue, saturation, brightness);
 
-				*py++ = clip(((*py-16) * contrast) + brightness + 16);
+				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
 				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
 			else
 			{
-				*py++ = clip(((*py-16) * contrast) + brightness + 16);
-				*py++ = clip(((*py-16) * contrast) + brightness + 16);
+				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
+				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
 				//y[i*stride_y+j*2] = clip(((y[i*stride_y+j*2]-16) * contrast) + brightness + 16);
 				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}

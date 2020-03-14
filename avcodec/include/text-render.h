@@ -31,8 +31,8 @@ struct text_render_t
 	int (*config)(void* render, const struct text_parameter_t* param);
 };
 
-struct text_render_t* text_render_gdi();
-struct text_render_t* text_render_freetype();
+struct text_render_t* text_render_gdi(void);
+struct text_render_t* text_render_freetype(void);
 
 #ifdef __cplusplus
 }

@@ -195,7 +195,7 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 		{
 			FT_Vector delta;
 			FT_Get_Kerning(render->face, previous, glyph_index, FT_KERNING_DEFAULT, &delta);
-			vec[j].x = delta.x >> 6; // 1/64
+			vec[j].x = (int)(delta.x >> 6); // 1/64
 		}
 
 		/* load glyph image into the slot (erase previous one) */
@@ -228,14 +228,14 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 
 		/* increment pen position */
 		vec[j].x += render->width;
-		render->width = vec[j].x + (render->face->glyph->advance.x >> 6); // 1/64
+		render->width = (int)(vec[j].x + (render->face->glyph->advance.x >> 6)); // 1/64
 		++j;
 
 		/* record current glyph index */
 		previous = glyph_index;
 	}
 
-	render->height = bbox.yMax - bbox.yMin;
+	render->height = (int)(bbox.yMax - bbox.yMin);
 	render->height = ALIGN(render->height, 2);
 	render->pitch = ALIGN(render->width, 4);
 	render->bitmap = malloc(render->pitch * render->height * BYTES);
@@ -275,7 +275,7 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 	return render->bitmap;
 }
 
-struct text_render_t* text_render_freetype()
+struct text_render_t* text_render_freetype(void)
 {
 	static struct text_render_t render = {
 		text_render_create,

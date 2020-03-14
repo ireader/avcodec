@@ -1,0 +1,322 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		46F3019B24023F52005EF41A /* avdecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019324023F52005EF41A /* avdecoder.c */; };
+		46F3019C24023F52005EF41A /* ffencoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019424023F52005EF41A /* ffencoder.c */; };
+		46F3019D24023F52005EF41A /* ffoutput.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019524023F52005EF41A /* ffoutput.c */; };
+		46F3019E24023F52005EF41A /* ffinit.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019624023F52005EF41A /* ffinit.c */; };
+		46F3019F24023F52005EF41A /* ffdecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019724023F52005EF41A /* ffdecoder.c */; };
+		46F301A024023F52005EF41A /* fffilter.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019824023F52005EF41A /* fffilter.c */; };
+		46F301A124023F52005EF41A /* ffinput.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019924023F52005EF41A /* ffinput.c */; };
+		46F301A224023F52005EF41A /* ffscale.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3019A24023F52005EF41A /* ffscale.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		46F3014424023E32005EF41A /* libffutils.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libffutils.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		46F3014E24023ECE005EF41A /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
+		46F3019324023F52005EF41A /* avdecoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = avdecoder.c; sourceTree = "<group>"; };
+		46F3019424023F52005EF41A /* ffencoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffencoder.c; sourceTree = "<group>"; };
+		46F3019524023F52005EF41A /* ffoutput.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffoutput.c; sourceTree = "<group>"; };
+		46F3019624023F52005EF41A /* ffinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffinit.c; sourceTree = "<group>"; };
+		46F3019724023F52005EF41A /* ffdecoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffdecoder.c; sourceTree = "<group>"; };
+		46F3019824023F52005EF41A /* fffilter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fffilter.c; sourceTree = "<group>"; };
+		46F3019924023F52005EF41A /* ffinput.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffinput.c; sourceTree = "<group>"; };
+		46F3019A24023F52005EF41A /* ffscale.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffscale.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		46F3014224023E32005EF41A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		46F3013B24023E32005EF41A = {
+			isa = PBXGroup;
+			children = (
+				46F3014E24023ECE005EF41A /* include */,
+				46F3019224023F52005EF41A /* source */,
+				46F3014524023E32005EF41A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		46F3014524023E32005EF41A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				46F3014424023E32005EF41A /* libffutils.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		46F3019224023F52005EF41A /* source */ = {
+			isa = PBXGroup;
+			children = (
+				46F3019324023F52005EF41A /* avdecoder.c */,
+				46F3019424023F52005EF41A /* ffencoder.c */,
+				46F3019524023F52005EF41A /* ffoutput.c */,
+				46F3019624023F52005EF41A /* ffinit.c */,
+				46F3019724023F52005EF41A /* ffdecoder.c */,
+				46F3019824023F52005EF41A /* fffilter.c */,
+				46F3019924023F52005EF41A /* ffinput.c */,
+				46F3019A24023F52005EF41A /* ffscale.c */,
+			);
+			path = source;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		46F3014024023E32005EF41A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		46F3014324023E32005EF41A /* ffutils */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46F3014824023E32005EF41A /* Build configuration list for PBXNativeTarget "ffutils" */;
+			buildPhases = (
+				46F3014024023E32005EF41A /* Headers */,
+				46F3014124023E32005EF41A /* Sources */,
+				46F3014224023E32005EF41A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ffutils;
+			productName = ffutils;
+			productReference = 46F3014424023E32005EF41A /* libffutils.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F3013C24023E32005EF41A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = ireader;
+				TargetAttributes = {
+					46F3014324023E32005EF41A = {
+						CreatedOnToolsVersion = 11.3;
+					};
+				};
+			};
+			buildConfigurationList = 46F3013F24023E32005EF41A /* Build configuration list for PBXProject "ffutils" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 46F3013B24023E32005EF41A;
+			productRefGroup = 46F3014524023E32005EF41A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				46F3014324023E32005EF41A /* ffutils */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		46F3014124023E32005EF41A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				46F3019C24023F52005EF41A /* ffencoder.c in Sources */,
+				46F3019E24023F52005EF41A /* ffinit.c in Sources */,
+				46F3019B24023F52005EF41A /* avdecoder.c in Sources */,
+				46F301A024023F52005EF41A /* fffilter.c in Sources */,
+				46F3019D24023F52005EF41A /* ffoutput.c in Sources */,
+				46F3019F24023F52005EF41A /* ffdecoder.c in Sources */,
+				46F301A224023F52005EF41A /* ffscale.c in Sources */,
+				46F301A124023F52005EF41A /* ffinput.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		46F3014624023E32005EF41A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = (
+					.,
+					include,
+					../avcodec/include,
+					../../3rd/ffmepg/,
+				);
+			};
+			name = Debug;
+		};
+		46F3014724023E32005EF41A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = (
+					.,
+					include,
+					../avcodec/include,
+					../../3rd/ffmepg/,
+				);
+			};
+			name = Release;
+		};
+		46F3014924023E32005EF41A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		46F3014A24023E32005EF41A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		46F3013F24023E32005EF41A /* Build configuration list for PBXProject "ffutils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46F3014624023E32005EF41A /* Debug */,
+				46F3014724023E32005EF41A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		46F3014824023E32005EF41A /* Build configuration list for PBXNativeTarget "ffutils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46F3014924023E32005EF41A /* Debug */,
+				46F3014A24023E32005EF41A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 46F3013C24023E32005EF41A /* Project object */;
+}

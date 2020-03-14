@@ -1,13 +1,14 @@
 #ifndef _AVFilePlayer_h_
 #define _AVFilePlayer_h_
 
+#include <list>
+#include <atomic>
+#include "cpm/shared_ptr.h"
+#include "sys/sync.hpp"
 #include "avplayer-file.h"
 #include "sys/event.h"
 #include "sys/atomic.h"
 #include "sys/thread.h"
-#include "sys/sync.hpp"
-#include "cpm/shared_ptr.h"
-#include <list>
 #include "audio_output.h"
 #include "AudioDecoder.h"
 #include "VideoDecoder.h"

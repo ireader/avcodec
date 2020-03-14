@@ -392,7 +392,7 @@ uint64_t AVLivePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 
 	// calculate audio buffer sample duration (ms)
 	int samples = m_audioout->getframes();
-	int duration = (uint64_t)samples * 1000 / pcm->sample_rate;
+	int duration = (int)((uint64_t)samples * 1000 / pcm->sample_rate);
 	m_audio_delay.Tick(m_clock, pcm->pts);
 	//app_log(LOG_DEBUG, "[%s] audio_output_getavailablesamples(%d/%dms)\n", __FUNCTION__, samples, duration);
 

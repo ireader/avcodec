@@ -89,7 +89,7 @@ static int opus_getframe(void* audio, struct avframe_t** frame)
 	return -1;
 }
 
-struct audio_decoder_t* opus_decoder()
+struct audio_decoder_t* opus_decoder(void)
 {
 	static struct audio_decoder_t s_decoder = {
 		opus_create,

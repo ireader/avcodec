@@ -98,7 +98,7 @@ struct avframe_t
 extern "C" {
 #endif
 
-///@param[in] bytes alloc frame data size, don't include sizeof(struct avframe_t), data[0] pointer to memory
+///@param[in] size alloc frame data size, don't include sizeof(struct avframe_t), data[0] pointer to memory
 ///@return alloc new avframe_t, use avframe_release to free memory
 struct avframe_t* avframe_alloc(int size);
 int32_t avframe_addref(struct avframe_t* frame);

@@ -70,16 +70,16 @@ static int mp2lame_input(void* audio, const struct avframe_t* pic)
     switch (enc->format)
     {
     case PCM_SAMPLE_FMT_S16:
-        enc->pkt.size = twolame_encode_buffer_interleaved(enc->opts, (const short int*)pic->data[0], pic->samples, enc->pkt.data, enc->capacity);
+        enc->pkt.size = twolame_encode_buffer_interleaved(enc->opts, (const short int*)pic->data[0], pic->samples, enc->pkt.data, (int)enc->capacity);
         break;
     case PCM_SAMPLE_FMT_S16P:
-        enc->pkt.size = twolame_encode_buffer(enc->opts, (const short int*)pic->data[0], (const short int*)pic->data[1], pic->samples, enc->pkt.data, enc->capacity);
+        enc->pkt.size = twolame_encode_buffer(enc->opts, (const short int*)pic->data[0], (const short int*)pic->data[1], pic->samples, enc->pkt.data, (int)enc->capacity);
         break;
     case PCM_SAMPLE_FMT_FLOAT:
-        enc->pkt.size = twolame_encode_buffer_float32_interleaved(enc->opts, (const float*)pic->data[0], pic->samples, enc->pkt.data, enc->capacity);
+        enc->pkt.size = twolame_encode_buffer_float32_interleaved(enc->opts, (const float*)pic->data[0], pic->samples, enc->pkt.data, (int)enc->capacity);
         break;
     case PCM_SAMPLE_FMT_FLTP:
-        enc->pkt.size = twolame_encode_buffer_float32(enc->opts, (const float*)pic->data[0], (const float*)pic->data[1], pic->samples, enc->pkt.data, enc->capacity);
+        enc->pkt.size = twolame_encode_buffer_float32(enc->opts, (const float*)pic->data[0], (const float*)pic->data[1], pic->samples, enc->pkt.data, (int)enc->capacity);
         break;
     default:
         assert(0);
@@ -108,7 +108,7 @@ static int mp2lame_getpacket(void* audio, struct avpacket_t* pkt)
     return -1;
 }
 
-struct audio_encoder_t* mp2lame_encoder()
+struct audio_encoder_t* mp2lame_encoder(void)
 {
     static struct audio_encoder_t s_encoder = {
         mp2lame_create,

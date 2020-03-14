@@ -21,7 +21,7 @@ struct audio_decoder_t
 	int (*getframe)(void* audio, struct avframe_t** frame);
 };
 
-struct audio_decoder_t* opus_decoder();
+struct audio_decoder_t* opus_decoder(void);
 
 #ifdef __cplusplus
 }

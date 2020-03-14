@@ -97,7 +97,7 @@ static int faac_input(void* audio, const struct avframe_t* pic)
 {
 	struct faac_encoder_t* enc;
 	enc = (struct faac_encoder_t*)audio;
-	enc->pkt.size = faacEncEncode(enc->faac, (int32_t*)pic->data[0], pic->samples * pic->channels, enc->pkt.data, enc->capacity);
+	enc->pkt.size = faacEncEncode(enc->faac, (int32_t*)pic->data[0], pic->samples * pic->channels, enc->pkt.data, (int)enc->capacity);
 	if (enc->pkt.size > 0)
 	{
 		enc->pkt.flags = 0;

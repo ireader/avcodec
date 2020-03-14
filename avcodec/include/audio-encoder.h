@@ -42,8 +42,8 @@ struct audio_encoder_t
 	int (*getpacket)(void* audio, struct avpacket_t* pkt);
 };
 
-struct audio_encoder_t* opus_encoder();
-struct audio_encoder_t* mp2lame_encoder();
+struct audio_encoder_t* opus_encoder(void);
+struct audio_encoder_t* mp2lame_encoder(void);
 
 #ifdef __cplusplus
 }

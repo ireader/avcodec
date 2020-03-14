@@ -1,12 +1,13 @@
 #ifndef _AVLivePlayer_h_
 #define _AVLivePlayer_h_
 
+#include <list>
+#include <atomic>
 #include "sys/event.h"
 #include "sys/atomic.h"
 #include "sys/thread.h"
 #include "sys/sync.hpp"
 #include "cpm/shared_ptr.h"
-#include <list>
 #include "../AVInterval.h"
 #include "audio_output.h"
 #include "AudioDecoder.h"

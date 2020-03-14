@@ -50,7 +50,7 @@ static int opus_input(void* audio, const struct avframe_t* pic)
 {
 	struct opus_encoder_t* enc;
 	enc = (struct opus_encoder_t*)audio;
-	enc->pkt.size = opus_encode(enc->opus, (const opus_int16*)pic->data[0], pic->samples, enc->pkt.data, enc->capacity);
+	enc->pkt.size = opus_encode(enc->opus, (const opus_int16*)pic->data[0], pic->samples, enc->pkt.data, (int)enc->capacity);
 	if (enc->pkt.size > 0)
 	{
 		enc->pkt.flags = 0;
@@ -73,7 +73,7 @@ static int opus_getpacket(void* audio, struct avpacket_t* pkt)
 	return -1;
 }
 
-struct audio_encoder_t* opus_encoder()
+struct audio_encoder_t* opus_encoder(void)
 {
 	static struct audio_encoder_t s_encoder = {
 		opus_create,
