@@ -4,21 +4,14 @@
 
 #define PI	3.1415926535897932384626433832795
 
-static unsigned char clip(double v)
+static inline unsigned char CLIP(double v)
 {
 	if(v < 0)	return 0;
 	if(v > 255) return 255;
 	return (unsigned char)v;
 }
 
-static unsigned char clip2(double v)
-{
-	if(v < 0)	return 0;
-	if(v > 255) return 255;
-	return (unsigned char)v;
-}
-
-static void hue_lookup(int hue/*-180,180*/, double* sine, double* cosine)
+static inline void hue_lookup(int hue/*-180,180*/, double* sine, double* cosine)
 {
 	int i = 0;
 	static int s_init = 0;
@@ -61,8 +54,8 @@ static void yuv2rgb_lookup(unsigned char y, unsigned char u, unsigned char v, un
 
 			for(j=0; j<256; j++)
 			{
-				rtable[i][j] = clip((ytable[i] + 409*(j-128) + 128) >> 8);
-				btable[i][j] = clip((ytable[i] + 516*(j-128) + 128) >> 8);
+				rtable[i][j] = CLIP((ytable[i] + 409*(j-128) + 128) >> 8);
+				btable[i][j] = CLIP((ytable[i] + 516*(j-128) + 128) >> 8);
 			}
 		}
 		init = 1;
@@ -70,12 +63,12 @@ static void yuv2rgb_lookup(unsigned char y, unsigned char u, unsigned char v, un
 
 	*r = rtable[y][v];
 	*b = btable[y][u];
-	//*r = clip((ytable[y] + yvtable[v] + 128) >> 8);
-	//*b = clip((ytable[y] + yutable[u] + 128) >> 8);
-	*g = clip((ytable[y] - utable[u] - vtable[v] + 128) >> 8);
+	//*r = CLIP((ytable[y] + yvtable[v] + 128) >> 8);
+	//*b = CLIP((ytable[y] + yutable[u] + 128) >> 8);
+	*g = CLIP((ytable[y] - utable[u] - vtable[v] + 128) >> 8);
 }
 
-static void ccir601_rgb2yuv(double r, double g, double b, double* y, double* u, double* v)
+static inline void ccir601_rgb2yuv(double r, double g, double b, double* y, double* u, double* v)
 {
 	/*
 		CCIR 601 defined the relationship between YCbCr and RGB Values:
@@ -92,7 +85,7 @@ static void ccir601_rgb2yuv(double r, double g, double b, double* y, double* u, 
 	*u = (b-*y)*0.564;
 }
 
-static void rec601_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, char* u, char* v)
+static inline void rec601_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, char* u, char* v)
 {
 	/*
 	CCIR Rec. 601-1 spec used by TIFF & JPEG (from David):
@@ -111,7 +104,7 @@ static void rec601_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, un
 	*u =			(char)(-0.1687*r - 0.3312*g + 0.5000*b);
 }
 
-static void rec601_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
+static inline void rec601_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
 {
 	char u2 = u - 128;
 	char v2 = v - 128;
@@ -120,7 +113,7 @@ static void rec601_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, un
 	*b = (unsigned char)(y + 1.7710*u2 + 0.0000*v2);
 }
 
-static void jfif601_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
+static inline void jfif601_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
 {
 	/*
 	JFIF-Y'CbCr (601) from "digital 8-bit R'G'B'"
@@ -136,7 +129,7 @@ static void jfif601_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, u
 	*u = (unsigned char)(128 + 0.5*r - 0.418688*g + 0.081312*b);
 }
 
-static void fourcc_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
+static inline void fourcc_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
 {
 	/*
 		http://www.fourcc.org/fccyvrgb.php
@@ -146,14 +139,14 @@ static void fourcc_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, un
 	*u = (unsigned char)(-(0.148* r) - (0.291 * g) + (0.439 * b) + 128);
 }
 
-static void fourcc_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
+static inline void fourcc_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
 {
-	*b = clip2(1.164*(y-16)				    + 2.018*(u-128));
-	*g = clip2(1.164*(y-16) - 0.813*(v-128) - 0.391*(u-128));
-	*r = clip2(1.164*(y-16) + 1.596*(v-128));
+	*b = CLIP(1.164*(y-16)				    + 2.018*(u-128));
+	*g = CLIP(1.164*(y-16) - 0.813*(v-128) - 0.391*(u-128));
+	*r = CLIP(1.164*(y-16) + 1.596*(v-128));
 }
 
-static void microsoft_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
+static inline void microsoft_rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
 {
 	/*
 		msdn: Convert Between YUV and RGB
@@ -166,26 +159,58 @@ static void microsoft_rgb2yuv(unsigned char r, unsigned char g, unsigned char b,
 	*v = ( (112*r -  94*g -  18*b + 128) >> 8) + 128;
 }
 
-static void microsoft_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
+static inline void microsoft_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
 {
-	*r = clip((298*(y-16)               + 409*(v-128) + 128) >> 8);
-	*g = clip((298*(y-16) - 100*(u-128) - 208*(v-128) + 128) >> 8);
-	*b = clip((298*(y-16) + 516*(u-128)               + 128) >> 8);
+	*r = CLIP((298*(y-16)               + 409*(v-128) + 128) >> 8);
+	*g = CLIP((298*(y-16) - 100*(u-128) - 208*(v-128) + 128) >> 8);
+	*b = CLIP((298*(y-16) + 516*(u-128)               + 128) >> 8);
 }
 
-static void ppm_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
+static inline void ppm_yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
 {
 	/*
 		http://www.fourcc.org/yuv2ppm.c
 	*/
-	*r = clip2(y + 1.370705*(v-128));
-	*g = clip2(y - 0.698001*(v-128) - 0.337633*(u-128));
-	*b = clip2(y + 1.732446*(u-128));
+	*r = CLIP(y + 1.370705*(v-128));
+	*g = CLIP(y - 0.698001*(v-128) - 0.337633*(u-128));
+	*b = CLIP(y + 1.732446*(u-128));
 }
 
-#define yuv2rgb yuv2rgb_lookup
-//#define yuv2rgb	microsoft_yuv2rgb
-#define rgb2yuv	microsoft_rgb2yuv
+#define yuv2rgb_imp yuv2rgb_lookup
+//#define yuv2rgb_imp	microsoft_yuv2rgb
+#define rgb2yuv_imp	microsoft_rgb2yuv
+
+void rgb2yuv(unsigned char r, unsigned char g, unsigned char b, unsigned char* y, unsigned char* u, unsigned char* v)
+{
+#if COLORSPACE == MICROSOFT
+	microsoft_rgb2yuv(r, g, b, y, u, v);
+#elif COLORSPACE == FOURCC
+	fourcc_rgb2yuv(r, g, b, y, u, v);
+#elif COLORSPACE == JFIF601
+	jfif601_rgb2yuv(r, g, b, y, u, v);
+#elif COLORSPACE == REC601
+	rec601_rgb2yuv(r, g, b, y, u, v);;
+#elif COLORSPACE == CCIR601
+	ccir601_rgb2yuv(r, g, b, y, u, v);
+#else
+	fourcc_rgb2yuv(r, g, b, y, u, v);
+#endif
+}
+
+void yuv2rgb(unsigned char y, unsigned char u, unsigned char v, unsigned char* r, unsigned char* g, unsigned char* b)
+{
+#if COLORSPACE == MICROSOFT
+	microsoft_yuv2rgb(y, u, v, r, g, b);
+#elif COLORSPACE == FOURCEE
+	fourcc_yuv2rgb(y, u, v, r, g, b);
+#elif COLORSPACE == REC601
+	rec601_yuv2rgb(y, u, v, r, g, b);
+#elif COLORSPACE == PPM
+	ppm_yuv2rgb(y, u, v, r, g, b);
+#else
+	yuv2rgb_lookup(y, u, v, r, g, b);
+#endif
+}
 
 /*
 RGB888 -> YV12
@@ -360,9 +385,9 @@ void yuv_adjust(unsigned char* y, unsigned char* u, unsigned char* v, double con
 	double sine, cosine;
 	hue_lookup((int)hue, &sine, &cosine);
 
-	*y = clip(((*y-16) * contrast) + brightness + 16);
-	*u = clip2((((*u-128) * cosine + (*v-128) * sine) * contrast * saturation) + 128);
-	*v = clip2((((*v-128) * cosine - (*u-128) * sine) * contrast * saturation) + 128);
+	*y = CLIP(((*y-16) * contrast) + brightness + 16);
+	*u = CLIP((((*u-128) * cosine + (*v-128) * sine) * contrast * saturation) + 128);
+	*v = CLIP((((*v-128) * cosine - (*u-128) * sine) * contrast * saturation) + 128);
 }
 
 void yv12_adjust(unsigned char* y, unsigned char* u, unsigned char* v, int stride_y, int stride_uv, int w, int h, double contrast, double hue, double saturation, double brightness)
@@ -389,16 +414,16 @@ void yv12_adjust(unsigned char* y, unsigned char* u, unsigned char* v, int strid
 				// even horizontal, even vertical				
 				yuv_adjust(py++, pu, pv, contrast, hue, saturation, brightness);
 				//yuv_adjust(y+(i*stride_y+j*2), u+((i/2)*stride_uv+j), v+((i/2)*stride_uv+j), contrast, hue, saturation, brightness);
-				
-				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
-				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
+		
+				*py = CLIP(((*py-16) * contrast) + brightness + 16); py++;
+				//y[i*stride_y+j*2+1] = CLIP(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
 			else
 			{
-				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
-				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
-				//y[i*stride_y+j*2] = clip(((y[i*stride_y+j*2]-16) * contrast) + brightness + 16);
-				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
+				*py = CLIP(((*py-16) * contrast) + brightness + 16); py++;
+				*py = CLIP(((*py-16) * contrast) + brightness + 16); py++;
+				//y[i*stride_y+j*2] = CLIP(((y[i*stride_y+j*2]-16) * contrast) + brightness + 16);
+				//y[i*stride_y+j*2+1] = CLIP(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
 		}
 	}
@@ -428,15 +453,15 @@ void nv12_adjust(unsigned char* y, unsigned char* v, int stride_y, int stride_uv
 				yuv_adjust(py++, pv, pv+1, contrast, hue, saturation, brightness);
 				//yuv_adjust(y+(i*stride_y+j*2), u+((i/2)*stride_uv+j), v+((i/2)*stride_uv+j), contrast, hue, saturation, brightness);
 
-				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
-				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
+				*py = CLIP(((*py-16) * contrast) + brightness + 16); py++;
+				//y[i*stride_y+j*2+1] = CLIP(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
 			else
 			{
-				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
-				*py = clip(((*py-16) * contrast) + brightness + 16); py++;
-				//y[i*stride_y+j*2] = clip(((y[i*stride_y+j*2]-16) * contrast) + brightness + 16);
-				//y[i*stride_y+j*2+1] = clip(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
+				*py = CLIP(((*py-16) * contrast) + brightness + 16); py++;
+				*py = CLIP(((*py-16) * contrast) + brightness + 16); py++;
+				//y[i*stride_y+j*2] = CLIP(((y[i*stride_y+j*2]-16) * contrast) + brightness + 16);
+				//y[i*stride_y+j*2+1] = CLIP(((y[i*stride_y+j*2+1]-16) * contrast) + brightness + 16);
 			}
 		}
 	}
