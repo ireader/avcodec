@@ -213,7 +213,7 @@
 					.,
 					include,
 					../avcodec/include,
-					../../3rd/ffmepg/,
+					"../../3rd/ffmpeg-4.2.2/",
 				);
 			};
 			name = Debug;
@@ -270,7 +270,7 @@
 					.,
 					include,
 					../avcodec/include,
-					../../3rd/ffmepg/,
+					"../../3rd/ffmpeg-4.2.2/",
 				);
 			};
 			name = Release;

@@ -17,7 +17,7 @@ extern "C" {
 #include "avbuffer.h"
 #include <assert.h>
 
-inline enum AVCodecID avpacket_to_ffmpeg_codecid(enum AVPACKET_CODEC_ID id)
+static inline enum AVCodecID avpacket_to_ffmpeg_codecid(enum AVPACKET_CODEC_ID id)
 {
 	switch (id)
 	{
@@ -42,7 +42,7 @@ inline enum AVCodecID avpacket_to_ffmpeg_codecid(enum AVPACKET_CODEC_ID id)
 	}
 }
 
-inline enum AVPACKET_CODEC_ID ffmpeg_to_avpacket_codecid(enum AVCodecID id)
+static inline enum AVPACKET_CODEC_ID ffmpeg_to_avpacket_codecid(enum AVCodecID id)
 {
 	switch (id)
 	{
@@ -68,7 +68,7 @@ inline enum AVPACKET_CODEC_ID ffmpeg_to_avpacket_codecid(enum AVCodecID id)
 	}
 }
 
-inline enum AVSampleFormat avpacket_to_ffmpeg_audio_format(int format)
+static inline enum AVSampleFormat avpacket_to_ffmpeg_audio_format(int format)
 {
 	switch (format)
 	{
@@ -85,7 +85,7 @@ inline enum AVSampleFormat avpacket_to_ffmpeg_audio_format(int format)
 	}
 }
 
-inline enum pcm_sample_format ffmpeg_to_avpacket_audio_format(int format)
+static inline enum pcm_sample_format ffmpeg_to_avpacket_audio_format(int format)
 {
 	switch (format)
 	{
@@ -108,7 +108,7 @@ static inline void avbuffer_free_AVPacket(void* opaque, void* data)
 	av_packet_unref((AVPacket*)opaque);
 }
 
-inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff)
+static inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff)
 {
 	AVPacket* ref;
 	struct avbuffer_t* buf;
@@ -133,7 +133,7 @@ inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff)
 	return pkt;
 }
 
-inline int avpacket_to_ffmpeg(const struct avpacket_t* pkt, int stream_index, AVPacket* ff)
+static inline int avpacket_to_ffmpeg(const struct avpacket_t* pkt, int stream_index, AVPacket* ff)
 {
 	av_init_packet(ff);
 	ff->data = pkt->data;
@@ -151,7 +151,7 @@ static inline void avbuffer_free_AVFrame(void* opaque, void* data)
 	av_frame_unref((AVFrame*)opaque);
 }
 
-inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
+static inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
 {
 	size_t i;
 	AVFrame* ref;
@@ -188,7 +188,7 @@ inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
 	return frame;
 }
 
-inline void avframe_to_ffmpeg(struct avframe_t* frame, AVFrame* ff)
+static inline void avframe_to_ffmpeg(struct avframe_t* frame, AVFrame* ff)
 {
 	size_t i;
 	memset(ff, 0, sizeof(AVFrame));

@@ -34,7 +34,7 @@ int ffoutput_add_video_stream(void* p, enum AVCodecID codecId)
 	st->time_base.num = 0;
 
 	if (ff->oc->oformat->flags & AVFMT_GLOBALHEADER) {
-		st->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+		st->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 	}
 	return st->index;
 }
@@ -53,7 +53,7 @@ int ffoutput_add_audio_stream(void* p, enum AVCodecID codecId, int channel, int 
 	st->codecpar->frame_size = 0;
 
 	if (ff->oc->oformat->flags & AVFMT_GLOBALHEADER) {
-		st->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+		st->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 	}
 	return st->index;
 }
