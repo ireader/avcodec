@@ -10,9 +10,12 @@ extern "C" int gles2_render_register(void);
 extern "C" int opensles_player_register(void);
 extern "C" int opensles_recorder_register(void);
 #elif defined(OS_LINUX)
+extern "C" int glx_render_register(void);
 extern "C" int alsa_player_register(void);
 extern "C" int alsa_recorder_register(void);
 #elif defined(OS_MAC)
+extern "C" int cgl_render_register(void);
+extern "C" int metal_render_register(void);
 extern "C" int audio_queue_player_register(void);
 extern "C" int audio_queue_recorder_register(void);
 #endif
@@ -33,6 +36,8 @@ static int avo_register_all()
 	alsa_player_register();
 	alsa_recorder_register();
 #elif defined(OS_MAC)
+    //cgl_render_register();
+    metal_render_register();
     audio_queue_player_register();
     audio_queue_recorder_register();
 #endif

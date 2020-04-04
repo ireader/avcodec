@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46368096242F4AE300EF6B8F /* opengl_render.c in Sources */ = {isa = PBXBuildFile; fileRef = 46368095242F4AE300EF6B8F /* opengl_render.c */; };
+		4636809A2430569F00EF6B8F /* opengl_context_cgl.c in Sources */ = {isa = PBXBuildFile; fileRef = 463680992430569F00EF6B8F /* opengl_context_cgl.c */; };
+		463680A024317AD800EF6B8F /* opengl_render.h in Headers */ = {isa = PBXBuildFile; fileRef = 4636809F24317AD800EF6B8F /* opengl_render.h */; };
+		46AEF4D4242BA5FF00BE6A13 /* metal_render.c in Sources */ = {isa = PBXBuildFile; fileRef = 46AEF4D3242BA5FF00BE6A13 /* metal_render.c */; };
 		46CA25AE24151A2300AF5BAF /* audio_queue_play.c in Sources */ = {isa = PBXBuildFile; fileRef = 46CA25AD24151A2300AF5BAF /* audio_queue_play.c */; };
 		46CA25BE241CE0FA00AF5BAF /* audio_queue_record.c in Sources */ = {isa = PBXBuildFile; fileRef = 46CA25BD241CE0FA00AF5BAF /* audio_queue_record.c */; };
 		46F301F424023F62005EF41A /* audio_output.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F301B524023F62005EF41A /* audio_output.c */; };
@@ -23,6 +27,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		46368095242F4AE300EF6B8F /* opengl_render.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = opengl_render.c; sourceTree = "<group>"; };
+		46368097242F522800EF6B8F /* opengl_vertex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = opengl_vertex.h; sourceTree = "<group>"; };
+		46368098242F526700EF6B8F /* opengl_texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = opengl_texture.h; sourceTree = "<group>"; };
+		463680992430569F00EF6B8F /* opengl_context_cgl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = opengl_context_cgl.c; sourceTree = "<group>"; };
+		4636809B24306D9700EF6B8F /* opengl_context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = opengl_context.h; sourceTree = "<group>"; };
+		4636809F24317AD800EF6B8F /* opengl_render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opengl_render.h; sourceTree = "<group>"; };
+		46AEF4D3242BA5FF00BE6A13 /* metal_render.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = metal_render.c; sourceTree = "<group>"; };
+		46AEF4D5242BA63400BE6A13 /* metal_render.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metal_render.h; sourceTree = "<group>"; };
 		46CA25AD24151A2300AF5BAF /* audio_queue_play.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = audio_queue_play.c; path = audio_queue/audio_queue_play.c; sourceTree = "<group>"; };
 		46CA25BD241CE0FA00AF5BAF /* audio_queue_record.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = audio_queue_record.c; path = audio_queue/audio_queue_record.c; sourceTree = "<group>"; };
 		46F3013424023E1E005EF41A /* liblibavo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibavo.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,6 +129,8 @@
 		46F3021D24028261005EF41A /* metal */ = {
 			isa = PBXGroup;
 			children = (
+				46AEF4D3242BA5FF00BE6A13 /* metal_render.c */,
+				46AEF4D5242BA63400BE6A13 /* metal_render.h */,
 			);
 			path = metal;
 			sourceTree = "<group>";
@@ -124,6 +138,12 @@
 		46F3021E2402827C005EF41A /* opengl */ = {
 			isa = PBXGroup;
 			children = (
+				4636809F24317AD800EF6B8F /* opengl_render.h */,
+				46368095242F4AE300EF6B8F /* opengl_render.c */,
+				46368097242F522800EF6B8F /* opengl_vertex.h */,
+				46368098242F526700EF6B8F /* opengl_texture.h */,
+				463680992430569F00EF6B8F /* opengl_context_cgl.c */,
+				4636809B24306D9700EF6B8F /* opengl_context.h */,
 			);
 			path = opengl;
 			sourceTree = "<group>";
@@ -135,6 +155,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				463680A024317AD800EF6B8F /* opengl_render.h in Headers */,
 				46F3020424023F62005EF41A /* video_read.h in Headers */,
 				46F3020724023F62005EF41A /* opengl_matrix.h in Headers */,
 				46F3020924023F62005EF41A /* opengl_shader.h in Headers */,
@@ -200,14 +221,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				46F3020524023F62005EF41A /* video_output.c in Sources */,
+				46368096242F4AE300EF6B8F /* opengl_render.c in Sources */,
 				46CA25BE241CE0FA00AF5BAF /* audio_queue_record.c in Sources */,
 				46F3020824023F62005EF41A /* video_read.c in Sources */,
 				46F3021724023F62005EF41A /* audio_input.c in Sources */,
 				46F301F424023F62005EF41A /* audio_output.c in Sources */,
+				46AEF4D4242BA5FF00BE6A13 /* metal_render.c in Sources */,
 				46CA25AE24151A2300AF5BAF /* audio_queue_play.c in Sources */,
 				46F3021C24023F62005EF41A /* av_register.c in Sources */,
 				46F3020624023F62005EF41A /* video_write.c in Sources */,
 				46F3021B24023F62005EF41A /* av_register_all.cpp in Sources */,
+				4636809A2430569F00EF6B8F /* opengl_context_cgl.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
