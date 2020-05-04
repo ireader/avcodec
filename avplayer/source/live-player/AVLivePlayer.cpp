@@ -141,7 +141,7 @@ void AVLivePlayer::Present(struct avframe_t* yuv)
 	m_video_delay.Tick(m_clock, yuv->pts);
 }
 
-int STDCALL AVLivePlayer::OnThread(void*  param)
+int STDCALL AVLivePlayer::OnThread(void* param)
 {
 	AVLivePlayer* player = (AVLivePlayer*)param;
 	return player->OnThread();
@@ -273,6 +273,7 @@ uint64_t AVLivePlayer::GetVideoBuffering() const
 	if (m_videoQ.empty())
 		return 0;
 	
+	AutoThreadLocker locker(m_locker);
 	const struct avpacket_t* front = m_videoQ.front();
 	if(m_video_delay.m_pts)
 		return front->pts - m_video_delay.m_pts;
@@ -285,6 +286,7 @@ uint64_t AVLivePlayer::GetAudioBuffering() const
 	int64_t duration = avplayer_get_audio_duration(m_player);
 	if (!m_audioQ.empty())
 	{
+		AutoThreadLocker locker(m_locker);
 		const struct avpacket_t* front = m_audioQ.front();
 		const struct avpacket_t* back = m_audioQ.back();
 		duration += front->pts - back->pts;

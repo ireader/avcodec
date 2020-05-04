@@ -60,7 +60,7 @@ private:
 	bool m_running;
 	pthread_t m_thread;
 	ThreadEvent m_event;
-	ThreadLocker m_locker; // audio/video Queue locker
+	mutable ThreadLocker m_locker; // audio/video Queue locker
 
 	bool m_buffering;
 	uint32_t m_delay;
