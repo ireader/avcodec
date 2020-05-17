@@ -8,6 +8,14 @@
 extern "C" {
 #endif
 
+typedef enum AVSTREAM_TYPE {
+	AVSTREAM_UNKNOWN,
+	AVSTREAM_AUDIO,
+	AVSTREAM_VIDEO,
+	AVSTREAM_SUBTITLE,
+	AVSTREAM_DATA,
+} AVSTREAM_TYPE;
+
 struct avstream_t
 {
 	int stream; // stream index
@@ -35,6 +43,8 @@ struct avstream_t
 struct avstream_t* avstream_alloc(int size);
 int32_t avstream_addref(struct avstream_t* stream);
 int32_t avstream_release(struct avstream_t* stream);
+
+AVSTREAM_TYPE avstream_type(const struct avstream_t* stream);
 
 #ifdef __cplusplus
 }

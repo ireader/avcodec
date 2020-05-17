@@ -39,3 +39,15 @@ int32_t avstream_release(struct avstream_t* stream)
 	buf = (struct avbuffer_t*)stream->opaque;
 	return avbuffer_release(buf);
 }
+
+AVSTREAM_TYPE avstream_type(const struct avstream_t* stream)
+{
+	if (stream->codecid > 0 && stream->codecid < 0x10000)
+		return AVSTREAM_VIDEO;
+	else if (stream->codecid >= 0x10000 && stream->codecid < 0x20000)
+		return AVSTREAM_AUDIO;
+	else if (stream->codecid >= 0x20000 && stream->codecid < 0x30000)
+		return AVSTREAM_SUBTITLE;
+	else
+		return AVSTREAM_UNKNOWN;
+}
