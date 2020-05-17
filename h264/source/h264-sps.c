@@ -106,15 +106,15 @@ static int h264_crop_unit(const struct h264_sps_t* sps, int* x, int *y)
 	frame_mbs_only_flag = sps->frame_mbs_only_flag ? 1 : 0;
 
 	// Depending on the value of separate_colour_plane_flag, the value of the variable ChromaArrayType is assigned as follows:
-	// ¨C If separate_colour_plane_flag is equal to 0, ChromaArrayType is set equal to chroma_format_idc.
-	// ¨C Otherwise (separate_colour_plane_flag is equal to 1), ChromaArrayType is set equal to 0.
+	// - If separate_colour_plane_flag is equal to 0, ChromaArrayType is set equal to chroma_format_idc.
+	// - Otherwise (separate_colour_plane_flag is equal to 1), ChromaArrayType is set equal to 0.
 	chroma_array_type = sps->chroma.separate_colour_plane_flag ? 0 : sps->chroma_format_idc;
 	if (chroma_array_type > 3)
 		return -1;
 
 	/*
 	The variables CropUnitX and CropUnitY are derived as follows:
-	¨C If ChromaArrayType is equal to 0, CropUnitX and CropUnitY are derived as:
+	- If ChromaArrayType is equal to 0, CropUnitX and CropUnitY are derived as:
 		CropUnitX = 1
 		CropUnitY = 2 - frame_mbs_only_flag
 	- Otherwise (ChromaArrayType is equal to 1, 2, or 3), CropUnitX and CropUnitY are derived as:

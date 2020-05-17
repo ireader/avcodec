@@ -2,7 +2,7 @@
 #define _h265_nal_h_
 
 // Rec. ITU-T H.265 v4 (12/2016)
-// Table 7-1 ¨C NAL unit type codes and NAL unit type classes
+// Table 7-1 - NAL unit type codes and NAL unit type classes
 #define H265_BLA_W_LP				16 // Coded slice segment of a BLA picture
 #define H265_RSV_IRAP_VCL23			23 // Reserved IRAP VCL NAL unit types
 #define H265_NAL_VPS				32 // Video parameter set

@@ -57,7 +57,7 @@ typedef void(*h264_nalu_handler)(void* param, const void* nalu, size_t bytes);
 void h264_stream(const void* h264, size_t bytes, h264_nalu_handler handler, void* param);
 
 
-// Table 6-1 ¨C SubWidthC, and SubHeightC values derived from chroma_format_idc and separate_colour_plane_flag (p43)
+// Table 6-1 - SubWidthC, and SubHeightC values derived from chroma_format_idc and separate_colour_plane_flag (p43)
 ///@param[in] chroma_format_idc 0-monochrome, 1-4:2:0, 2-4:2:2, 3-4:4:4
 ///@param[out] width SubWidthC
 ///@param[out] height SubHeightC

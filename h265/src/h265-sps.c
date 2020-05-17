@@ -44,7 +44,7 @@ int h265_display_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int*
 
 int h265_codec_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int* h)
 {
-	// ITU H.265 Table 6-1 ¨C SubWidthC, and SubHeightC values derived from chroma_format_idc and separate_colour_plane_flag
+	// ITU H.265 Table 6-1 - SubWidthC, and SubHeightC values derived from chroma_format_idc and separate_colour_plane_flag
 	const int SubWidthC[] = { 1 /*4:0:0*/, 2 /*4:2:0*/, 2 /*4:2:2*/, 1 /*4:4:4*/ };
 	const int SubHeightC[] = { 1 /*4:0:0*/, 2 /*4:2:0*/, 1 /*4:2:2*/, 1 /*4:4:4*/ };
 

@@ -2,7 +2,7 @@
 #define _h264_nal_h_
 
 // Rec. ITU-T H.264 (02/2014)
-// Table 7-1 ¨C NAL unit type codes, syntax element categories, and NAL unit type classes
+// Table 7-1 - NAL unit type codes, syntax element categories, and NAL unit type classes
 #define H264_NAL_IDR				5 // Coded slice of an IDR picture
 #define H264_NAL_SEI				6 // Supplemental enhancement information
 #define H264_NAL_SPS				7 // Sequence parameter set
