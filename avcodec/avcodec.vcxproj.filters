@@ -63,6 +63,12 @@
     <ClInclude Include="include\avcodecid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avtimeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio-mixer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">
@@ -135,6 +141,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\avstatistic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\avtimeline.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\audio-mixer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
