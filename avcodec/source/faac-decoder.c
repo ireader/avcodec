@@ -194,7 +194,7 @@ static int faad_getframe(void* audio, struct avframe_t** frame)
 	return -1;
 }
 
-struct audio_decoder_t* faac_decoder()
+struct audio_decoder_t* faac_decoder(void)
 {
 	static struct audio_decoder_t s_decoder = {
 		faad_create,

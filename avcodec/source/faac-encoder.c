@@ -120,7 +120,7 @@ static int faac_getpacket(void* audio, struct avpacket_t* pkt)
 	return -1;
 }
 
-struct audio_encoder_t* faac_encoder()
+struct audio_encoder_t* faac_encoder(void)
 {
 	static struct audio_encoder_t s_encoder = {
 		faac_create,
