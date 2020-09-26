@@ -4,8 +4,6 @@
 #include <string.h>
 #include <assert.h>
 
-extern "C" struct audio_decoder_t* faac_decoder();
-
 static uint8_t buffer[2 * 1024 * 1024];
 static int adts_file_reader(FILE* fp, uint8_t* adts, int size)
 {

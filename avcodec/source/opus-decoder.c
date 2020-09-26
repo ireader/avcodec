@@ -76,6 +76,7 @@ static int opus_getframe(void* audio, struct avframe_t** frame)
 			return -ENOMEM;
 		memcpy((*frame)->data[0], dec->pic.data[0], dec->pic.linesize[0]);
 		(*frame)->linesize[0] = dec->pic.linesize[0];
+		(*frame)->samples = dec->pic.samples;
 		(*frame)->pts = dec->pic.pts;
 		(*frame)->dts = dec->pic.dts;
 		(*frame)->format = dec->pic.format;
@@ -84,9 +85,9 @@ static int opus_getframe(void* audio, struct avframe_t** frame)
 		(*frame)->sample_rate = dec->pic.sample_rate;
 
 		dec->pic.samples = 0; // clear
-		return 0;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
 struct audio_decoder_t* opus_decoder(void)

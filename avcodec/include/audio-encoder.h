@@ -35,10 +35,10 @@ struct audio_encoder_t
 	void (*destroy)(void* audio);
 
 	/// pic->flags & AVPACKET_FLAG_KEY => force IDR
-	/// @return >0-ok, other-error
+	/// @return >0-got a packet, 0-need more data, <0-error
 	int (*encode)(void* audio, const struct avframe_t* frame);
 
-	/// @return >=0-got packet, <0-error
+	/// @return >0-got a packet, 0-no packet, <0-error
 	int (*getpacket)(void* audio, struct avpacket_t* pkt);
 };
 

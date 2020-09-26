@@ -28,6 +28,9 @@ static void* opus_create(const struct audio_parameter_t* param)
 	int r = OPUS_OK;
 	struct opus_encoder_t* enc;
 
+	if (PCM_SAMPLE_FMT_S16 != param->format)
+		return NULL;
+
 	r = param->samplerate / 2 * param->channels * PCM_SAMPLE_BITS(param->format) / 8; // 500ms
 	enc = (struct opus_encoder_t*)malloc(sizeof(*enc) + r);
 	if (NULL == enc)
@@ -68,9 +71,9 @@ static int opus_getpacket(void* audio, struct avpacket_t* pkt)
 	{
 		memcpy(pkt, &enc->pkt, sizeof(*pkt));
 		enc->pkt.size = 0; // clear
-		return 0;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
 struct audio_encoder_t* opus_encoder(void)

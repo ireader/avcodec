@@ -115,9 +115,9 @@ static int faac_getpacket(void* audio, struct avpacket_t* pkt)
 	{
 		memcpy(pkt, &enc->pkt, sizeof(*pkt));
 		enc->pkt.size = 0; // clear
-		return 0;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
 struct audio_encoder_t* faac_encoder(void)

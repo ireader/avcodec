@@ -169,7 +169,7 @@ static int x262enc_getpacket(void* h264, struct avpacket_t* pkt)
 {
     struct x262_encoder_t* p;
     p = (struct x262_encoder_t*)h264;
-    pkt->codecid = AVCODEC_VIDEO_H264;
+    //pkt->codecid = AVCODEC_VIDEO_H264;
     pkt->size = p->bytes;
     pkt->data = p->nal->p_payload; // the payloads of all output NALs are guaranteed to be sequential in memory.
     pkt->pts = p->out.i_pts;

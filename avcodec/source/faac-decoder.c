@@ -189,9 +189,9 @@ static int faad_getframe(void* audio, struct avframe_t** frame)
 		(*frame)->sample_rate = dec->frame.sample_rate;
 
 		dec->frame.samples = 0; // clear
-		return 0;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
 struct audio_decoder_t* faac_decoder(void)
