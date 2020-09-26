@@ -12,8 +12,10 @@
 #include <unistd.h>
 #endif
 
-static int TestAudioOut(const char* filename, int channel, int frequency, int format)
+extern "C" int avo_register_all_dump(void);
+extern "C" int TestAudioOut(const char* filename, int channel, int frequency, int format)
 {
+    avo_register_all_dump();
 	FILE* fp = fopen(filename, "rb");
 	if(NULL == fp)
 	{
@@ -22,20 +24,21 @@ static int TestAudioOut(const char* filename, int channel, int frequency, int fo
 	}
 
 	audio_output ao;
-	if (!ao.open(channel, frequency, format, frequency))
+	if (!ao.open(channel, frequency, format, frequency/5))
 	{
 		printf("audio open(%d, %d, %d) failed: %d\n", channel, frequency, format, errno);
 		return 0;
 	}
 
-	ao.play();
-
-	int samples = frequency / 10;
+    ao.play();
+    int running = 0;
+    int remain = 0;
+	int samples = frequency / 20;
 	int bytes_per_sample = channel * PCM_SAMPLE_BITS(format) / 8;
 	char *pcm = (char*)malloc(samples * bytes_per_sample);
 	while(1)
 	{
-		if(ao.getsamples() > frequency / 2)
+		if(ao.getframes() > frequency / 10)
 		{
 #ifdef WIN32
 			Sleep(20);
@@ -45,15 +48,26 @@ static int TestAudioOut(const char* filename, int channel, int frequency, int fo
 			continue;
 		}
 
-		int n = fread(pcm, bytes_per_sample, samples, fp);
-		if(n <= 0)
-			break;
+        if(remain < samples)
+        {
+            int n = (int)fread(pcm + bytes_per_sample * remain , bytes_per_sample, samples - remain, fp);
+            if(n <= 0)
+                break;
+            remain += n;
+        }
 
-		ao.write(pcm, n);
+		int n = ao.write(pcm, remain);
+        remain -= n;
+        
+        if(0 == running)
+        {
+            
+            running = 1;
+        }
 	}
 	free(pcm);
 
-	while(ao.getsamples() > 0)
+	while(ao.getframes() > 0)
 	{
 #ifdef WIN32
 		Sleep(10);
@@ -66,6 +80,7 @@ static int TestAudioOut(const char* filename, int channel, int frequency, int fo
 	return 0;
 }
 
+#if 0
 int main(int argc, char* argv[])
 {
 	int channels = 1;
@@ -88,3 +103,4 @@ int main(int argc, char* argv[])
 	format = atoi(argv[4]);
 	return TestAudioOut(filename, channels, frequency, format);
 }
+#endif

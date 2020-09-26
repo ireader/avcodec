@@ -1,4 +1,5 @@
 #include "avplayer-file.h"
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -54,9 +55,15 @@ static inline const uint8_t* h264_frame(const uint8_t *data, ptrdiff_t bytes)
 
 struct avpacket_t* h264_packet(uint8_t* data, size_t bytes, int64_t pts, int64_t dts)
 {
+    static avstream_t* stream;
+    if(!stream)
+        stream = avstream_alloc(0);
+    avstream_addref(stream);
+    
 	struct avpacket_t* pkt = avpacket_alloc(bytes);
 	memcpy(pkt->data, data, bytes);
-	pkt->codecid = AVCODEC_VIDEO_H264;
+    pkt->stream = stream;
+	pkt->stream->codecid = AVCODEC_VIDEO_H264;
 	pkt->size = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;

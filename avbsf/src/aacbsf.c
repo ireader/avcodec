@@ -36,7 +36,7 @@ static void* aacbsf_create(const uint8_t* extra, int bytes, avbsf_onpacket onpac
 	cbuffer_init(&bsf->ptr);
 	if (mpeg4_aac_audio_specific_config_load(extra, bytes, &bsf->aac) < 0)
 	{
-		aacbsf_destroy(&bsf);
+		aacbsf_destroy((void**)&bsf);
 		return NULL;
 	}
 
@@ -60,7 +60,7 @@ static int aacbsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* da
 	if (r < 0)
 		return r;
 
-	return bsf->onpacket(bsf->param, pts, dts, bsf->ptr.ptr, bsf->ptr.len, 0);
+	return bsf->onpacket(bsf->param, pts, dts, bsf->ptr.ptr, (int)bsf->ptr.len, 0);
 }
 
 struct avbsf_t* avbsf_aac(void)

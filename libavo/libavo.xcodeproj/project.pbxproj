@@ -37,7 +37,7 @@
 		46AEF4D5242BA63400BE6A13 /* metal_render.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metal_render.h; sourceTree = "<group>"; };
 		46CA25AD24151A2300AF5BAF /* audio_queue_play.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = audio_queue_play.c; path = audio_queue/audio_queue_play.c; sourceTree = "<group>"; };
 		46CA25BD241CE0FA00AF5BAF /* audio_queue_record.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = audio_queue_record.c; path = audio_queue/audio_queue_record.c; sourceTree = "<group>"; };
-		46F3013424023E1E005EF41A /* liblibavo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibavo.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		46F3013424023E1E005EF41A /* libavo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libavo.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		46F3014F24023ED4005EF41A /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
 		46F301B524023F62005EF41A /* audio_output.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audio_output.c; sourceTree = "<group>"; };
 		46F301C824023F62005EF41A /* yuv_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yuv_color.h; sourceTree = "<group>"; };
@@ -75,7 +75,7 @@
 		46F3013524023E1E005EF41A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				46F3013424023E1E005EF41A /* liblibavo.a */,
+				46F3013424023E1E005EF41A /* libavo.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,7 +180,7 @@
 			);
 			name = libavo;
 			productName = libavo;
-			productReference = 46F3013424023E1E005EF41A /* liblibavo.a */;
+			productReference = 46F3013424023E1E005EF41A /* libavo.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -363,7 +363,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_PREFIX = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -373,7 +374,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_PREFIX = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

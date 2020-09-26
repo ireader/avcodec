@@ -79,7 +79,7 @@ static int h265bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 
 	if (bsf->vcl && (dts != bsf->dts || 0 == bytes || h265_is_new_access_unit(nalu, bytes)))
 	{
-		r = bsf->onpacket(bsf->param, bsf->pts, bsf->dts, bsf->ptr.ptr, bsf->ptr.len, 1 == bsf->vcl ? 0x01 : 0);
+		r = bsf->onpacket(bsf->param, bsf->pts, bsf->dts, bsf->ptr.ptr, (int)bsf->ptr.len, 1 == bsf->vcl ? 0x01 : 0);
 		bsf->ptr.len = 0;
 		bsf->vps_sps_pps_flag = 0;
 		bsf->vcl = 0;
@@ -127,16 +127,6 @@ static int h265bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 	if (nalt < H265_NAL_VPS)
 		bsf->vcl = 16 <= nalt && nalt <= 23 ? 1 : 2;
 	return 0;
-}
-
-static const void* h265bsf_get(void* param)
-{
-	struct h265bsf_t* bsf;
-	bsf = (struct h265bsf_t*)param;
-
-	bsf->ptr.len = 0;
-//	bsf->vps_sps_pps_flag = 0;
-	return bsf->ptr.ptr;
 }
 
 struct avbsf_t* avbsf_h265(void)

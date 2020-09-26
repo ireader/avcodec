@@ -13,13 +13,13 @@
 #endif
 
 static int bytes_per_sample = 1;
-static void AudioInCallback(void* param, const void* samples, int bytes)
+static void AudioInCallback(void* param, const void* samples, int frames)
 {
 	FILE* fp = (FILE*)param;
-	fwrite(samples, bytes_per_sample, bytes, fp);
+	fwrite(samples, bytes_per_sample, frames, fp);
 }
 
-static int TestAudioIn(const char* filename, int channel, int frequency, int format)
+extern "C" int TestAudioIn(const char* filename, int channel, int frequency, int format)
 {
 	FILE* fp = fopen(filename, "wb");
 	if(NULL == fp)
@@ -30,7 +30,7 @@ static int TestAudioIn(const char* filename, int channel, int frequency, int for
 
 	audio_input ai;
 	bytes_per_sample = channel * PCM_SAMPLE_BITS(format) / 8;
-	if (!ai.open(channel, frequency, format, frequency / 50, AudioInCallback, fp))
+	if (!ai.open(channel, frequency, format, frequency / 10, AudioInCallback, fp))
 	{
 		printf("audio open(%d, %d, %d) failed: %d\n", channel, frequency, format, errno);
 		return 0;
@@ -48,6 +48,7 @@ static int TestAudioIn(const char* filename, int channel, int frequency, int for
 	return 0;
 }
 
+#if 0
 int main(int argc, char* argv[])
 {
 	int channels = 1;
@@ -70,3 +71,4 @@ int main(int argc, char* argv[])
 	format = atoi(argv[4]);
 	return TestAudioIn(filename, channels, frequency, format);
 }
+#endif

@@ -57,9 +57,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\render\GDIText2Bitmap.c">
-      <Filter>Source Files\render</Filter>
-    </ClCompile>
     <ClCompile Include="src\render\video_read.c">
       <Filter>Source Files\render</Filter>
     </ClCompile>
