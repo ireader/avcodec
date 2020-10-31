@@ -60,6 +60,7 @@ static void avtimeline_rebuild(struct avtimeline_t* t, int stream, int64_t dts)
 uint32_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int *discontinuity)
 {
 	int init;
+	int32_t diff;
 	uint32_t last;
 	int64_t timestamp;
 
@@ -75,58 +76,50 @@ uint32_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, in
 	}
 
 	*discontinuity = 0;
+	timestamp = t->streams[stream].t;
 	last = (uint32_t)(t->streams[stream].dts);
+	
+	diff = (int32_t)(dts - last);
+	if ( diff > (int32_t)t->gap /*gap*/ || (diff < 0 && last - dts > t->gap /*rewind*/ ) )
+	{
+		// reset timestamp
+		avtimeline_rebuild(t, stream, dts);
+		*discontinuity = 1;
 
-	if (last > dts)
-	{
-		if (last + t->gap < last /*overflow*/ && last + t->gap > dts)
-		{
-			// time round: 0xFFFFFFF0 + 0x1F --> 0x10
-			// nothing to do
-		}
-		else
-		{
-			// rewind, reset timestamp
-			avtimeline_rebuild(t, stream, dts);
-			*discontinuity = 1;
-		}
+		timestamp = avtimeline_map32(t, stream, dts);
 	}
-	else if (last < dts)
+	else if (diff > 0)
 	{
-		if (dts - last > t->gap)
-		{
-			// gap, reset timestamp
-			avtimeline_rebuild(t, stream, dts);
-			*discontinuity = 1;
-		}
+		timestamp = avtimeline_map32(t, stream, dts);
+
+		t->streams[stream].dts = dts; // update last dts
 	}
 	else
 	{
-		// dts == v.last
 		if (init)
-			dts += 1; // monotone increasing timestamp
+			timestamp = t->streams[stream].t + 1; // monotone increasing timestamp
 	}
 
-	timestamp = avtimeline_map32(t, stream, dts);
 	if (t->max < timestamp)
 	{
 		t->max = timestamp;
 	}
 	else if (timestamp + t->gap < t->max)
 	{
+		// a/v timeline diff > gap
 		t->streams[stream].t = avtimeline_max(t);
 		t->streams[stream].dts = dts;
 		timestamp = avtimeline_map32(t, stream, dts);
 	}
 
 	t->streams[stream].t = timestamp;
-	t->streams[stream].dts = dts;
 	return (uint32_t)timestamp;
 }
 
 int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int* discontinuity)
 {
 	int init;
+	int64_t diff;
 	int64_t last;
 	int64_t timestamp;
 
@@ -142,28 +135,28 @@ int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int*
 	}
 
 	last = t->streams[stream].dts;
-	if (last > dts)
+	timestamp = t->streams[stream].t;
+
+	diff = dts - last;
+	if (diff > t->gap /*gap*/ || (diff < 0 && last - dts > t->gap /*rewind*/ ))
 	{
 		avtimeline_rebuild(t, stream, dts);
 		*discontinuity = 1;
+
+		timestamp = avtimeline_map64(t, stream, dts);
 	}
-	else if(last < dts)
+	else if (diff > 0)
 	{
-		if (last + t->gap < dts)
-		{
-			// gap, reset timestamp
-			avtimeline_rebuild(t, stream, dts);
-			*discontinuity = 1;
-		}
+		timestamp = avtimeline_map64(t, stream, dts);
+
+		t->streams[stream].dts = dts; // update last dts
 	}
 	else
 	{
-		// dts == stream.dts
-		if (init)
-			dts += 1; // monotone increasing timestamp
+		if(init)
+			timestamp = t->streams[stream].t + 1; // monotone increasing timestamp
 	}
 
-	timestamp = avtimeline_map64(t, stream, dts);
 	if (t->max < timestamp)
 	{
 		t->max = timestamp;
@@ -176,7 +169,6 @@ int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int*
 	}
 
 	t->streams[stream].t = timestamp;
-	t->streams[stream].dts = dts;
 	return timestamp;
 }
 
