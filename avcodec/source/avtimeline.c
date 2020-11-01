@@ -50,7 +50,7 @@ static void avtimeline_rebuild(struct avtimeline_t* t, int stream, int64_t dts)
 {
 	int64_t timestamp;
 	timestamp = avtimeline_max(t);
-	avtimeline_reset(t);
+	//avtimeline_reset(t);
 
 	t->streams[stream].t = timestamp + 1; // monotone increasing timestamp
 	t->streams[stream].dts = dts;
