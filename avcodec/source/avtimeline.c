@@ -227,7 +227,7 @@ static void avtimeline_gap_test(void)
 	uint32_t adts, vdts;
 	uint32_t at[10], vt[10];
 	struct avtimeline_t line;
-	
+
 	adts = rand();
 	vdts = rand();
 	avtimeline_init(&line, 5000, adts);
@@ -254,7 +254,7 @@ static void avtimeline_gap_test(void)
 	vt[3] = avtimeline_input32(&line, 1, vdts, &vd);
 	assert(!ad && vd && at[3] - at[2] == 3 * 1000 && vt[3] - at[3] == 1);
 
-	adts += 100;
+	adts += 1;
 	vdts += 500;
 	at[4] = avtimeline_input32(&line, 0, adts, &ad); //rebuild
 	vt[4] = avtimeline_input32(&line, 1, vdts, &vd);
@@ -266,7 +266,7 @@ static void avtimeline_gap_test(void)
 	vt[5] = avtimeline_input32(&line, 1, vdts, &vd);
 	assert(!ad && vd && at[5] - at[4] == 3 * 1000 && vt[5] - at[5] == 1);
 
-	adts += 100;
+	adts += 1;
 	vdts += 500;
 	at[6] = avtimeline_input32(&line, 0, adts, &ad);
 	vt[6] = avtimeline_input32(&line, 1, vdts, &vd);
@@ -276,7 +276,7 @@ static void avtimeline_gap_test(void)
 	vdts += 6 * 1000;
 	at[7] = avtimeline_input32(&line, 0, adts, &ad);
 	vt[7] = avtimeline_input32(&line, 1, vdts, &vd); // init
-	assert(ad && !vd && at[7] - vt[6] == 1 && vt[7] == at[7]);
+	assert(ad && vd && at[7] - vt[6] == 1 && vt[7] == at[7]+1);
 
 	adts += 100;
 	vdts += 500;

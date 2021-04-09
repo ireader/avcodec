@@ -14,7 +14,7 @@ static int ffoutput_interrupt(void* p)
 {
 	struct ffoutput_t* ff;
 	ff = (struct ffoutput_t*)p;
-	printf("ffoutput_interrupt: %s\n", ff->oc->url);
+	printf("ffoutput_interrupt: %s\n", ff->oc->filename);
 	return 0;
 }
 

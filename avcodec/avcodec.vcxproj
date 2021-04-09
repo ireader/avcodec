@@ -23,7 +23,6 @@
     <ClInclude Include="include\avbuffer.h" />
     <ClInclude Include="include\avcodecid.h" />
     <ClInclude Include="include\avframe.h" />
-    <ClInclude Include="include\avjitter.h" />
     <ClInclude Include="include\avpacket.h" />
     <ClInclude Include="include\avstatistic.h" />
     <ClInclude Include="include\avstream.h" />

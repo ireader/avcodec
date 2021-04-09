@@ -7,6 +7,13 @@
 extern "C" {
 #endif
 
+struct avjitter_t {
+	int duration;
+	int count;
+	int max;
+	int min;
+};
+
 struct avbitrate_t
 {
 	uint32_t i; // internal use only
@@ -26,12 +33,28 @@ struct avstatistic_t
 		int64_t pts; // last packet pts
 		int64_t dts; // last packet dts
 		uint64_t packets;
+		struct avjitter_t jitter;
 		struct avbitrate_t bitrate;
+
+		int64_t first_recv; // rtmp handshake
+		int64_t first_packet; // first audio/video/data chunk/packet
+		int64_t first_audio_frame;
+		int64_t first_video_frame;
 	} streams[8];
 
 //#define s_audio streams[0]
 //#define s_video streams[1]
 };
+
+/// avjitter_clear clear all data
+void avjitter_clear(struct avjitter_t* jitter);
+
+/// avjitter_input update jitter min/max
+void avjitter_input(struct avjitter_t* jitter, int value);
+
+/// avjitter_format output format jitter string
+int avjitter_format(const struct avjitter_t* jitter, char* buf, int len);
+
 
 /// avbitrate_clear clear all data
 void avbitrate_clear(struct avbitrate_t* rate);
