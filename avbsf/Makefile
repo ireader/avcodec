@@ -4,7 +4,7 @@ ROOT:=../../sdk
 # OUTTYPE: 0-exe, 1-dll, 2-static
 #--------------------------------------------------------------------
 OUTTYPE = 2
-OUTFILE = libh265.a
+OUTFILE = libavbsf.a
 
 #-------------------------------Include------------------------------
 #
@@ -12,7 +12,11 @@ OUTFILE = libh265.a
 #--------------------------------------------------------------------
 INCLUDES = . \
 					./include \
-					../h264/include
+					../avcodec/include \
+					../h264/include \
+					../h265/include \
+					../../media-server/libflv/include \
+					$(ROOT)/include
 
 #-------------------------------Source-------------------------------
 #
@@ -21,11 +25,14 @@ SOURCE_PATHS = src
 SOURCE_FILES = $(foreach dir,$(SOURCE_PATHS),$(wildcard $(dir)/*.cpp))
 SOURCE_FILES += $(foreach dir,$(SOURCE_PATHS),$(wildcard $(dir)/*.c))
 
+_SOURCE_FILES = 
+SOURCE_FILES := $(filter-out $(_SOURCE_FILES),$(SOURCE_FILES))
+
 #-----------------------------Library--------------------------------
 #
 # LIBPATHS = $(addprefix -L,$(LIBPATHS)) # add -L prefix
 #--------------------------------------------------------------------
-LIBPATHS =
+LIBPATHS = 
 ifdef RELEASE
 # relase library path
 LIBPATHS += 
@@ -33,7 +40,7 @@ else
 LIBPATHS +=
 endif
 
-LIBS =
+LIBS = 
 
 STATIC_LIBS =
 
@@ -41,7 +48,7 @@ STATIC_LIBS =
 #
 # DEFINES := $(addprefix -D,$(DEFINES)) # add -L prefix
 #--------------------------------------------------------------------
-DEFINES =
+DEFINES = NO_CRYPTO
 
 include $(ROOT)/gcc.mk
 
