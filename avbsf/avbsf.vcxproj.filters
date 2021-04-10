@@ -18,15 +18,45 @@
     <ClInclude Include="include\avbsf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avpbs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\h264bsf.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\aacbsf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-h264.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\h265bsf.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\aacbsf.c">
+    <ClCompile Include="src\avpbs-h265.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-aac.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-mp3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-opus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-av1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-g7xx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-vpx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

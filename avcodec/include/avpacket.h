@@ -8,7 +8,9 @@
 extern "C" {
 #endif
 
-#define AVPACKET_FLAG_KEY 0x01
+#define AVPACKET_FLAG_KEY		0x0001
+#define AVPACKET_FLAG_LOST		0x0100 // some packets lost before the packet
+#define AVPACKET_FLAG_CORRUPT	0x0200 // the packet data is corrupt
 
 struct avpacket_t
 {
