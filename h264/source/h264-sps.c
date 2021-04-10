@@ -10,6 +10,20 @@
 #include <assert.h>
 #include <string.h>
 
+int h264_sps_parse(const void* h264, uint32_t bytes, struct h264_sps_t* sps)
+{
+	bitstream_t stream;
+	struct h264_nal_t nal;
+	bitstream_init(&stream, (const unsigned char*)h264, bytes);
+
+	h264_nal(&stream, &nal);
+	if (H264_NAL_SPS != nal.nal_unit_type || nal.nal_ref_idc < 1)
+		return -1; // invalid NALU
+
+	h264_sps(&stream, sps);
+	return 0;
+}
+
 int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 {
 	int i;
@@ -293,17 +307,3 @@ void h264_sps_test()
 	h264_sps_parse_test(vuisar, sizeof(vuisar), &sps);
 }
 #endif
-
-int h264_sps_parse(const void* h264, uint32_t bytes, struct h264_sps_t* sps)
-{
-	bitstream_t stream;
-	struct h264_nal_t nal;
-	bitstream_init(&stream, (const unsigned char*)h264, bytes);
-
-	h264_nal(&stream, &nal);
-	if (H264_NAL_SPS != nal.nal_unit_type || nal.nal_ref_idc < 1)
-		return -1; // invalid NALU
-
-	h264_sps(&stream, sps);
-	return 0;
-}

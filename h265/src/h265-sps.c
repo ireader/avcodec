@@ -2,6 +2,20 @@
 #include "h265-parser.h"
 #include <assert.h>
 
+int h265_sps_parse(const void* h265, uint32_t bytes, struct h265_sps_t* sps)
+{
+	bitstream_t stream;
+	struct h265_nal_t nal;
+	bitstream_init(&stream, (const unsigned char*)h265, bytes);
+
+	h265_nal(&stream, &nal);
+	if (H265_NAL_SPS != nal.nal_unit_type)
+		return -1; // invalid NALU
+
+	h265_sps(&stream, sps);
+	return 0;
+}
+
 int h265_sps(bitstream_t* stream, struct h265_sps_t* sps)
 {
 	sps->sps_video_parameter_set_id = bitstream_read_bits(stream, 4);

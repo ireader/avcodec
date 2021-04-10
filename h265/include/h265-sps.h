@@ -28,6 +28,8 @@ struct h265_sps_t
 	uint8_t sps_sub_layer_ordering_info_present_flag; // u(1)
 };
 
+int h265_sps_parse(const void* h265, uint32_t bytes, struct h265_sps_t* sps);
+
 int h265_codec_rect(const struct h265_sps_t* sps, int* x, int *y, int *w, int *h);
 int h265_display_rect(const struct h265_sps_t* sps, int* x, int *y, int *w, int *h);
 
