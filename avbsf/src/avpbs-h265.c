@@ -1,5 +1,6 @@
 #include "avpbs.h"
 #include "h265-sps.h"
+#include "mpeg4-avc.h"
 #include "mpeg4-hevc.h"
 #include <stdlib.h>
 #include <string.h>
@@ -33,12 +34,17 @@ static int avpbs_h265_destroy(void** pp)
 
 static void* avpbs_h265_create(int stream, AVPACKET_CODEC_ID codec, const uint8_t* extra, int bytes, avpbs_onpacket onpacket, void* param)
 {
+	int n;
 	struct avpbs_h265_t* bs;
 	bs = calloc(1, sizeof(*bs));
 	if (!bs) return NULL;
 
 	// can be failure
-	mpeg4_hevc_decoder_configuration_record_load(extra, bytes, &bs->hevc);
+	n = mpeg4_h264_bitstream_format(extra, bytes);
+	if (n > 0)
+		mpeg4_hevc_decoder_configuration_record_load(extra, bytes, &bs->hevc);
+	else if (bytes > 4)
+		h265_annexbtomp4(&bs->hevc, extra, bytes, NULL, 0, NULL, NULL);
 	assert(AVCODEC_VIDEO_H265 == codec);
 	bs->onpacket = onpacket;
 	bs->param = param;
