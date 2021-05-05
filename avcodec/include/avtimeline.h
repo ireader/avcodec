@@ -26,7 +26,7 @@ void avtimeline_init(struct avtimeline_t* t, uint32_t gap, int64_t t0);
 
 void avtimeline_reset(struct avtimeline_t* t);
 
-uint32_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int* discontinuity);
+int64_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int* discontinuity);
 
 int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int* discontinuity);
 

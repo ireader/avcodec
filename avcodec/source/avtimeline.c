@@ -57,7 +57,7 @@ static void avtimeline_rebuild(struct avtimeline_t* t, int stream, int64_t dts)
 	t->streams[stream].init = 1;
 }
 
-uint32_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int *discontinuity)
+int64_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int *discontinuity)
 {
 	int init;
 	int32_t diff;
@@ -113,7 +113,7 @@ uint32_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, in
 	}
 
 	t->streams[stream].t = timestamp;
-	return (uint32_t)timestamp;
+	return timestamp;
 }
 
 int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int* discontinuity)
