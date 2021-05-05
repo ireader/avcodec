@@ -3,6 +3,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+void avstatistic_init(struct avstatistic_t* stats, int64_t clock, int interval)
+{
+	int i;
+	memset(stats, 0, sizeof(*stats));
+	stats->clock = clock;
+
+	for (i = 0; i < sizeof(stats->streams) / sizeof(stats->streams[0]); i++)
+	{
+		avbitrate_clear(&stats->streams[i].bitrate);
+		stats->streams[i].bitrate.interval = interval;
+	}
+}
+
 void avbitrate_clear(struct avbitrate_t* rate)
 {
 	rate->i = 0;
@@ -16,6 +29,9 @@ void avbitrate_input(struct avbitrate_t* rate, uint64_t clock, uint64_t bytes)
 {
 	uint32_t N;
 	uint32_t i, j;
+
+	if(0 == rate->interval)
+		avbitrate_clear(rate);
 
 	N = sizeof(rate->buckets) / sizeof(rate->buckets[0]);
 	i = (clock / rate->interval) % N;

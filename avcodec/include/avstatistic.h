@@ -46,6 +46,8 @@ struct avstatistic_t
 //#define s_video streams[1]
 };
 
+void avstatistic_init(struct avstatistic_t* stats, int64_t clock, int interval);
+
 /// avjitter_clear clear all data
 void avjitter_clear(struct avjitter_t* jitter);
 
