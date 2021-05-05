@@ -48,6 +48,8 @@ AVSTREAM_TYPE avstream_type(const struct avstream_t* stream)
 		return AVSTREAM_AUDIO;
 	else if (stream->codecid >= 0x20000 && stream->codecid < 0x30000)
 		return AVSTREAM_SUBTITLE;
+	else if (stream->codecid >= 0x30000 && stream->codecid < 0x40000)
+		return AVSTREAM_DATA;
 	else
 		return AVSTREAM_UNKNOWN;
 }
