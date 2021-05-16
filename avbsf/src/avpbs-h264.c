@@ -80,8 +80,9 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	if (!pkt) return -1;
 
 	pkt->size = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
-	if ((!bs->stream || update) && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0)
-		avpbs_h264_create_stream(bs);
+	if ((!bs->stream || update) && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 
+		&& 0 != avpbs_h264_create_stream(bs))
+		return -1;
 
 	pkt->pts = pts;
 	pkt->dts = dts;

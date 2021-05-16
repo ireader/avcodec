@@ -41,10 +41,10 @@ static void* avpbs_aac_create(int stream, AVPACKET_CODEC_ID codec, const uint8_t
 	return bs;
 }
 
-static int avpbs_aac_create_stream(struct avpbs_aac_t* bs, int n)
+static int avpbs_aac_create_stream(struct avpbs_aac_t* bs)
 {
 	avstream_release(bs->stream);
-	bs->stream = avstream_alloc(n);
+	bs->stream = avstream_alloc(2 + bs->aac.npce);
 	if (!bs->stream)
 		return -1;
 
@@ -72,14 +72,15 @@ static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 	{
 		r = mpeg4_aac_adts_load(data, bytes, &bs->aac);
 		if (r < 0) return r;
-
-		if (!bs->stream || bs->stream->channels != bs->aac.channels
-			|| bs->stream->sample_rate != (int)bs->aac.sampling_frequency)
-		{
-			avpbs_aac_create_stream(bs, r);
-		}
 	}
 	
+	if (!bs->stream || bs->stream->channels != bs->aac.channels
+		|| bs->stream->sample_rate != (int)bs->aac.sampling_frequency)
+	{
+		if (0 != avpbs_aac_create_stream(bs))
+			return -1;
+	}
+
 	memcpy(pkt->data, data + r, bytes - r);
 	pkt->size = bytes - r;
 	pkt->pts = pts;
