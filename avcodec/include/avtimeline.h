@@ -17,6 +17,7 @@ struct avtimeline_t
 	struct
 	{
 		int init;
+		int repeat; // same dts repeat times
 		int64_t t; // last mapped timestamp
 		int64_t dts; // last dts
 	} streams[8];
