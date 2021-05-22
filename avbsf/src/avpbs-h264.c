@@ -55,7 +55,7 @@ static int avpbs_h264_create_stream(struct avpbs_h264_t* bs)
 	struct h264_sps_t sps;
 
 	avstream_release(bs->stream);
-	bs->stream = avstream_alloc(bs->avc.off + 2 * H264_STARTCODE_PADDING);
+	bs->stream = avstream_alloc(bs->avc.off + 8 * H264_STARTCODE_PADDING);
 	if (!bs->stream)
 		return -1;
 		
@@ -80,8 +80,10 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	if (!pkt) return -1;
 
 	pkt->size = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
-	if ((!bs->stream || update) && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 
-		&& 0 != avpbs_h264_create_stream(bs))
+	if (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs))
+		return -1;
+
+	if (!bs->stream)
 		return -1;
 
 	pkt->pts = pts;

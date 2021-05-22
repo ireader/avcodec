@@ -58,7 +58,7 @@ static int avpbs_h265_create_stream(struct avpbs_h265_t* bs)
 	struct h265_sps_t sps;
 
 	avstream_release(bs->stream);
-	bs->stream = avstream_alloc(bs->hevc.off + 2 * h265_STARTCODE_PADDING);
+	bs->stream = avstream_alloc(bs->hevc.off + 8 * h265_STARTCODE_PADDING);
 	if (!bs->stream)
 		return -1;
 
@@ -90,8 +90,10 @@ static int avpbs_h265_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	if (!pkt) return -1;
 
 	pkt->size = h265_annexbtomp4(&bs->hevc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
-	if ((!bs->stream || update) && bs->hevc.numOfArrays >= 3
-		&& 0 != avpbs_h265_create_stream(bs))
+	if (update && bs->hevc.numOfArrays >= 3 && 0 != avpbs_h265_create_stream(bs))
+		return -1;
+
+	if (!bs->stream)
 		return -1;
 
 	pkt->pts = pts;

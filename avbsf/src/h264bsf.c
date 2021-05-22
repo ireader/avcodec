@@ -20,6 +20,15 @@ struct h264bsf_t
 	int vcl;
 	int64_t pts;
 	int64_t dts;
+	int64_t max_dts; // last I/P frame dts
+
+	// TODO: move average window
+	struct
+	{
+		int interval; // 1/fps
+		int64_t first;
+		int count;
+	} fps;
 
 	uint8_t extra[4 * 1024];
 	int extra_bytes;
@@ -49,6 +58,7 @@ static void* h264bsf_create(const uint8_t* extra, int bytes, avbsf_onpacket onpa
 
 	cbuffer_init(&bsf->ptr);
 	bsf->sps_pps_flag = 0;
+	bsf->fps.interval = 40;
 	
 	if (bytes > 5 && bytes <= sizeof(bsf->extra) && 0x00 == extra[0] && 0x00 == extra[1] && (0x01 == extra[2] || (0x00 == extra[2] && 0x01 == extra[3])))
 	{
@@ -76,6 +86,22 @@ static int h264bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 
 	if (bsf->vcl && (dts != bsf->dts || 0 == bytes || h264_is_new_access_unit(nalu, bytes)))
 	{
+		// update fps
+		if (0 == bsf->fps.count)
+		{
+			bsf->fps.first = bsf->dts;
+		}
+		else if (++bsf->fps.count > 100 && bsf->dts > bsf->max_dts)
+		{
+			bsf->fps.interval = bsf->fps.interval * 3 / 4 + (bsf->dts - bsf->fps.first) / (4 * bsf->fps.count);
+			bsf->fps.count = 0;
+		}
+
+		// RTP B-frame(s)
+		if (bsf->dts < bsf->max_dts)
+			bsf->dts = bsf->max_dts + bsf->fps.interval;
+		bsf->max_dts = bsf->dts;
+
 		r = bsf->onpacket(bsf->param, bsf->pts, bsf->dts, bsf->ptr.ptr, (int)bsf->ptr.len, 1==bsf->vcl ? 0x01 : 0);
 		bsf->ptr.len = 0;
 		bsf->sps_pps_flag = 0;

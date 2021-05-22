@@ -66,6 +66,9 @@
     <ClInclude Include="include\audio-mixer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avsegment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">
@@ -144,6 +147,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\audio-mixer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\avsegment.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

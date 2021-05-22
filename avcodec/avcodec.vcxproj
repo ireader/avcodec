@@ -24,6 +24,7 @@
     <ClInclude Include="include\avcodecid.h" />
     <ClInclude Include="include\avframe.h" />
     <ClInclude Include="include\avpacket.h" />
+    <ClInclude Include="include\avsegment.h" />
     <ClInclude Include="include\avstatistic.h" />
     <ClInclude Include="include\avstream.h" />
     <ClInclude Include="include\avtimeline.h" />
@@ -41,6 +42,7 @@
     <ClCompile Include="source\avbuffer.c" />
     <ClCompile Include="source\avframe.c" />
     <ClCompile Include="source\avpacket.c" />
+    <ClCompile Include="source\avsegment.c" />
     <ClCompile Include="source\avstatistic.c" />
     <ClCompile Include="source\avstream.c" />
     <ClCompile Include="source\avtimeline.c" />

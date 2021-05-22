@@ -7,6 +7,7 @@
 struct avpbs_aac_t
 {
 	int avs;
+	int64_t pts, dts; // last frame pts/dts
 	struct mpeg4_aac_t aac;
 	struct avstream_t* stream;
 	avpbs_onpacket onpacket;
@@ -57,23 +58,13 @@ static int avpbs_aac_create_stream(struct avpbs_aac_t* bs)
 	return bs->stream->bytes > 0 ? 0 : -1;
 }
 
-static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t* data, int bytes, int flags)
+static int avpbs_aac_input_one_frame(struct avpbs_aac_t* bs, int64_t pts, int64_t dts, const uint8_t* data, int bytes, int flags)
 {
 	int r;
 	struct avpacket_t* pkt;
-	struct avpbs_aac_t* bs;
-
-	bs = (struct avpbs_aac_t*)param;
 	pkt = avpacket_alloc(bytes);
 	if (!pkt) return -1;
 
-	r = 0;
-	if (bytes >= 7 && 0xFF == data[0] && 0xF0 == (data[1] & 0xF0))
-	{
-		r = mpeg4_aac_adts_load(data, bytes, &bs->aac);
-		if (r < 0) return r;
-	}
-	
 	if (!bs->stream || bs->stream->channels != bs->aac.channels
 		|| bs->stream->sample_rate != (int)bs->aac.sampling_frequency)
 	{
@@ -81,17 +72,61 @@ static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 			return -1;
 	}
 
-	memcpy(pkt->data, data + r, bytes - r);
-	pkt->size = bytes - r;
+	memcpy(pkt->data, data, bytes);
+	pkt->size = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
 	pkt->flags = flags;
 	pkt->stream = bs->stream;
 	avstream_addref(bs->stream);
 
+	bs->dts = dts;
+	bs->pts = pts;
 	r = bs->onpacket(bs->param, bs->stream ? pkt : NULL);
 	avpacket_release(pkt);
 	return r;
+}
+
+static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t* data, int bytes, int flags)
+{
+	int r, adts, len;
+	struct avpbs_aac_t* bs;
+
+	bs = (struct avpbs_aac_t*)param;
+	if (dts <= bs->dts)
+		dts = bs->dts + 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
+	if (pts <= bs->pts)
+		pts = bs->dts + 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
+
+	if (bytes >= 7 && 0xFF == data[0] && 0xF0 == (data[1] & 0xF0))
+	{
+		adts = mpeg4_aac_adts_load(data, bytes, &bs->aac);
+		if (adts < 0) return adts;
+		assert(adts >= 7);
+
+		len = mpeg4_aac_adts_frame_length((const uint8_t*)data, bytes);
+		while (bs->aac.sampling_frequency > 0 && len > adts && len <= bytes)
+		{
+			r = avpbs_aac_input_one_frame(bs, pts, dts, (const uint8_t*)data + adts, len - adts, flags);
+			if (0 != r)
+				return r;
+
+			pts += 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
+			dts += 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
+			bytes -= len;
+			data = (const uint8_t*)data + len;
+			len = mpeg4_aac_adts_frame_length((const uint8_t*)data, bytes);
+
+			adts = mpeg4_aac_adts_load(data, bytes, &bs->aac);
+			if (adts < 0) return adts;
+		}
+
+		return 0;
+	}
+	else
+	{
+		return avpbs_aac_input_one_frame(bs, pts, dts, data, bytes, flags);
+	}
 }
 
 struct avpbs_t* avpbs_aac(void)
