@@ -19,39 +19,6 @@ struct avpbs_h265_t
 	void* param;
 };
 
-static int avpbs_h265_destroy(void** pp)
-{
-	struct avpbs_h265_t* bs;
-	if (pp && *pp)
-	{
-		bs = (struct avpbs_h265_t*)*pp;
-		avstream_release(bs->stream);
-		free(bs);
-		*pp = NULL;
-	}
-	return 0;
-}
-
-static void* avpbs_h265_create(int stream, AVPACKET_CODEC_ID codec, const uint8_t* extra, int bytes, avpbs_onpacket onpacket, void* param)
-{
-	int n;
-	struct avpbs_h265_t* bs;
-	bs = calloc(1, sizeof(*bs));
-	if (!bs) return NULL;
-
-	// can be failure
-	n = mpeg4_h264_bitstream_format(extra, bytes);
-	if (n > 0)
-		mpeg4_hevc_decoder_configuration_record_load(extra, bytes, &bs->hevc);
-	else if (bytes > 4)
-		h265_annexbtomp4(&bs->hevc, extra, bytes, NULL, 0, NULL, NULL);
-	assert(AVCODEC_VIDEO_H265 == codec);
-	bs->onpacket = onpacket;
-	bs->param = param;
-	bs->avs = stream;
-	return bs;
-}
-
 static int avpbs_h265_create_stream(struct avpbs_h265_t* bs)
 {
 	int x, y;
@@ -77,6 +44,42 @@ static int avpbs_h265_create_stream(struct avpbs_h265_t* bs)
 	bs->stream->codecid = AVCODEC_VIDEO_H265;
 	bs->stream->bytes = mpeg4_hevc_decoder_configuration_record_save(&bs->hevc, bs->stream->extra, bs->stream->bytes);
 	return bs->stream->bytes > 0 ? 0 : -1;
+}
+
+static int avpbs_h265_destroy(void** pp)
+{
+	struct avpbs_h265_t* bs;
+	if (pp && *pp)
+	{
+		bs = (struct avpbs_h265_t*)*pp;
+		avstream_release(bs->stream);
+		free(bs);
+		*pp = NULL;
+	}
+	return 0;
+}
+
+static void* avpbs_h265_create(int stream, AVPACKET_CODEC_ID codec, const uint8_t* extra, int bytes, avpbs_onpacket onpacket, void* param)
+{
+	int n;
+	struct avpbs_h265_t* bs;
+	bs = calloc(1, sizeof(*bs));
+	if (!bs) return NULL;
+
+	// can be failure
+	assert(AVCODEC_VIDEO_H265 == codec);
+	n = mpeg4_h264_bitstream_format(extra, bytes);
+	if (n > 0)
+		mpeg4_hevc_decoder_configuration_record_load(extra, bytes, &bs->hevc);
+	else if (bytes > 4)
+		h265_annexbtomp4(&bs->hevc, extra, bytes, NULL, 0, NULL, NULL);
+
+	if (bs->hevc.numOfArrays >= 3)
+		avpbs_h265_create_stream(bs);
+	bs->onpacket = onpacket;
+	bs->param = param;
+	bs->avs = stream;
+	return bs;
 }
 
 static int avpbs_h265_input(void* param, int64_t pts, int64_t dts, const uint8_t* nalu, int bytes, int flags)

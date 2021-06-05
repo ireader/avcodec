@@ -93,9 +93,9 @@ static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 	struct avpbs_aac_t* bs;
 
 	bs = (struct avpbs_aac_t*)param;
-	if (dts <= bs->dts)
+	if (dts <= bs->dts && bs->aac.sampling_frequency > 0)
 		dts = bs->dts + 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
-	if (pts <= bs->pts)
+	if (pts <= bs->pts && bs->aac.sampling_frequency > 0)
 		pts = bs->dts + 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
 
 	if (bytes >= 7 && 0xFF == data[0] && 0xF0 == (data[1] & 0xF0))

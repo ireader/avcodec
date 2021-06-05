@@ -16,6 +16,26 @@ struct avpbs_h264_t
 	void* param;
 };
 
+static int avpbs_h264_create_stream(struct avpbs_h264_t* bs)
+{
+	int x, y;
+	struct h264_sps_t sps;
+
+	avstream_release(bs->stream);
+	bs->stream = avstream_alloc(bs->avc.off + 8 * H264_STARTCODE_PADDING);
+	if (!bs->stream)
+		return -1;
+
+	memset(&sps, 0, sizeof(sps));
+	h264_sps_parse(bs->avc.sps[0].data, bs->avc.sps[0].bytes, &sps);
+	h264_display_rect(&sps, &x, &y, &bs->stream->width, &bs->stream->height);
+
+	bs->stream->stream = bs->avs;
+	bs->stream->codecid = AVCODEC_VIDEO_H264;
+	bs->stream->bytes = mpeg4_avc_decoder_configuration_record_save(&bs->avc, bs->stream->extra, bs->stream->bytes);
+	return bs->stream->bytes > 0 ? 0 : -1;
+}
+
 static int avpbs_h264_destroy(void** pp)
 {
 	struct avpbs_h264_t* bs;
@@ -37,36 +57,19 @@ static void* avpbs_h264_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 	if (!bs) return NULL;
 
 	// can be failure
+	assert(AVCODEC_VIDEO_H264 == codec);
 	n = mpeg4_h264_bitstream_format(extra, bytes);
 	if (n > 0)
 		mpeg4_avc_decoder_configuration_record_load(extra, bytes, &bs->avc);
 	else if (bytes > 4)
 		h264_annexbtomp4(&bs->avc, extra, bytes, NULL, 0, NULL, NULL);
-	assert(AVCODEC_VIDEO_H264 == codec);
+
+	if (bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0)
+		avpbs_h264_create_stream(bs);
 	bs->onpacket = onpacket;
 	bs->param = param;
 	bs->avs = stream;
 	return bs;
-}
-
-static int avpbs_h264_create_stream(struct avpbs_h264_t* bs)
-{
-	int x, y;
-	struct h264_sps_t sps;
-
-	avstream_release(bs->stream);
-	bs->stream = avstream_alloc(bs->avc.off + 8 * H264_STARTCODE_PADDING);
-	if (!bs->stream)
-		return -1;
-		
-	memset(&sps, 0, sizeof(sps));
-	h264_sps_parse(bs->avc.sps[0].data, bs->avc.sps[0].bytes, &sps);
-	h264_display_rect(&sps, &x, &y, &bs->stream->width, &bs->stream->height);
-
-	bs->stream->stream = bs->avs;
-	bs->stream->codecid = AVCODEC_VIDEO_H264;
-	bs->stream->bytes = mpeg4_avc_decoder_configuration_record_save(&bs->avc, bs->stream->extra, bs->stream->bytes);
-	return bs->stream->bytes > 0 ? 0 : -1;
 }
 
 static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t* nalu, int bytes, int flags)

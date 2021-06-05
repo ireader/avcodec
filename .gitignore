@@ -1,2 +1,7 @@
-Debug
+*.o
 *.user
+.vs
+debug.linux
+release.linux
+Debug
+Release
