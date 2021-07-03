@@ -59,10 +59,11 @@ static void* avpbs_h264_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 	// can be failure
 	assert(AVCODEC_VIDEO_H264 == codec);
 	n = mpeg4_h264_bitstream_format(extra, bytes);
-	if (n > 0)
-		mpeg4_avc_decoder_configuration_record_load(extra, bytes, &bs->avc);
-	else if (bytes > 4)
+	if (n >= 0) {
 		h264_annexbtomp4(&bs->avc, extra, bytes, NULL, 0, NULL, NULL);
+	} else if (bytes >= 7 && 0x01 == extra[0]) {
+		mpeg4_avc_decoder_configuration_record_load(extra, bytes, &bs->avc);
+	}
 
 	if (bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0)
 		avpbs_h264_create_stream(bs);
@@ -84,10 +85,16 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 
 	pkt->size = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
 	if (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs))
+	{
+		avpacket_release(pkt);
 		return -1;
+	}
 
 	if (!bs->stream)
+	{
+		avpacket_release(pkt);
 		return -1;
+	}
 
 	pkt->pts = pts;
 	pkt->dts = dts;

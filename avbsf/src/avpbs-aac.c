@@ -69,7 +69,10 @@ static int avpbs_aac_input_one_frame(struct avpbs_aac_t* bs, int64_t pts, int64_
 		|| bs->stream->sample_rate != (int)bs->aac.sampling_frequency)
 	{
 		if (0 != avpbs_aac_create_stream(bs))
+		{
+			avpacket_release(pkt);
 			return -1;
+		}
 	}
 
 	memcpy(pkt->data, data, bytes);

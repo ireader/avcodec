@@ -69,10 +69,11 @@ static void* avpbs_h265_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 	// can be failure
 	assert(AVCODEC_VIDEO_H265 == codec);
 	n = mpeg4_h264_bitstream_format(extra, bytes);
-	if (n > 0)
-		mpeg4_hevc_decoder_configuration_record_load(extra, bytes, &bs->hevc);
-	else if (bytes > 4)
+	if (n >= 0) {
 		h265_annexbtomp4(&bs->hevc, extra, bytes, NULL, 0, NULL, NULL);
+	} else if (bytes >= 23 && 0x01 == extra[0]) {
+		mpeg4_hevc_decoder_configuration_record_load(extra, bytes, &bs->hevc);
+	}
 
 	if (bs->hevc.numOfArrays >= 3)
 		avpbs_h265_create_stream(bs);
@@ -94,10 +95,16 @@ static int avpbs_h265_input(void* param, int64_t pts, int64_t dts, const uint8_t
 
 	pkt->size = h265_annexbtomp4(&bs->hevc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
 	if (update && bs->hevc.numOfArrays >= 3 && 0 != avpbs_h265_create_stream(bs))
+	{
+		avpacket_release(pkt);
 		return -1;
+	}
 
 	if (!bs->stream)
+	{
+		avpacket_release(pkt);
 		return -1;
+	}
 
 	pkt->pts = pts;
 	pkt->dts = dts;
