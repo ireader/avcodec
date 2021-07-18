@@ -13,7 +13,7 @@ struct h264_parser_t
 	int flags;
 };
 
-void* h264_parser_create()
+void* h264_parser_create(void)
 {
 	struct h264_parser_t* parser;
 	parser = (struct h264_parser_t*)malloc(sizeof(*parser));

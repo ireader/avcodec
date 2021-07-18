@@ -20,7 +20,7 @@ struct avbitrate_t
 	uint32_t interval; // bucket interval(ms)
 	uint64_t buckets[6]; // N + 1
 	
-	uint64_t clock; // last clock
+	int64_t clock; // last clock
 	uint64_t total; // total bytes
 };
 
@@ -36,10 +36,8 @@ struct avstatistic_t
 		struct avjitter_t jitter;
 		struct avbitrate_t bitrate;
 
-		int64_t first_recv; // rtmp handshake
+		int64_t first_recv; // first data byte
 		int64_t first_packet; // first audio/video/data chunk/packet
-		int64_t first_audio_frame;
-		int64_t first_video_frame;
 	} streams[8];
 
 //#define s_audio streams[0]
@@ -47,6 +45,10 @@ struct avstatistic_t
 };
 
 void avstatistic_init(struct avstatistic_t* stats, int64_t clock, int interval);
+
+/// update stream stats, include bitrate/jitter
+/// @return 0-ok, other-error
+int avstatistic_input(struct avstatistic_t* stats, int64_t clock, int stream, int64_t pts, int64_t dts, uint64_t bytes);
 
 /// avjitter_clear clear all data
 void avjitter_clear(struct avjitter_t* jitter);
@@ -62,7 +64,7 @@ int avjitter_format(const struct avjitter_t* jitter, char* buf, int len);
 void avbitrate_clear(struct avbitrate_t* rate);
 
 /// avbitrate_input [10 | 10 | 10 | 10 | 10 | 10] bytes bucket
-void avbitrate_input(struct avbitrate_t* rate, uint64_t clock, uint64_t bytes);
+void avbitrate_input(struct avbitrate_t* rate, int64_t clock, uint64_t bytes);
 
 /// avbitrate_get bytes per second
 uint64_t avbitrate_get(const struct avbitrate_t* rate);

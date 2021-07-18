@@ -191,7 +191,7 @@ static void avtimeline_test1(void)
 	struct avtimeline_t line;
 	uint64_t atotal, vtotal;
 	uint32_t adts, vdts;
-	uint32_t t, at, vt;
+	int64_t t, at, vt;
 	uint64_t i;
 	int discontinuity;
 	
@@ -230,7 +230,7 @@ static void avtimeline_gap_test(void)
 {
 	int ad, vd;
 	uint32_t adts, vdts;
-	uint32_t at[10], vt[10];
+	int64_t at[10], vt[10];
 	struct avtimeline_t line;
 
 	adts = rand();
@@ -299,7 +299,7 @@ static void avtimeline_gap_test(void)
 static void avtimeline_monotone_increment_test(void)
 {
 	uint32_t dts;
-	uint32_t timestamp;
+	int64_t timestamp;
 	int discontinuity;
 	struct avtimeline_t line;
 	

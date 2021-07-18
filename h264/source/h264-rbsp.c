@@ -29,6 +29,6 @@ int h264_more_rbsp_data(bitstream_t* stream)
 		return 0; // no more data
 
 	n = bits < 8 ? 8 - bits : 8;
-	rbsp_next_bits = bitstream_next_bits(stream, n);
+	rbsp_next_bits = bitstream_next_bits(stream, (int)n);
 	return rbsp_next_bits != (1 << (n - 1));
 }

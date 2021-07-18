@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-void* h264_parser_create();
+void* h264_parser_create(void);
 void h264_parser_destroy(void* parser);
 
 int h264_parser_input(void* parser, const void* nalu, size_t bytes);

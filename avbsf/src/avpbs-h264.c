@@ -22,7 +22,7 @@ static int avpbs_h264_create_stream(struct avpbs_h264_t* bs)
 	struct h264_sps_t sps;
 
 	avstream_release(bs->stream);
-	bs->stream = avstream_alloc(bs->avc.off + 8 * H264_STARTCODE_PADDING);
+	bs->stream = avstream_alloc((int)(bs->avc.off + 8 * H264_STARTCODE_PADDING));
 	if (!bs->stream)
 		return -1;
 

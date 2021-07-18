@@ -25,7 +25,7 @@ static int avpbs_h265_create_stream(struct avpbs_h265_t* bs)
 	struct h265_sps_t sps;
 
 	avstream_release(bs->stream);
-	bs->stream = avstream_alloc(bs->hevc.off + 8 * h265_STARTCODE_PADDING);
+	bs->stream = avstream_alloc((int)(bs->hevc.off + 8 * h265_STARTCODE_PADDING));
 	if (!bs->stream)
 		return -1;
 

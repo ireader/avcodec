@@ -16,6 +16,28 @@ void avstatistic_init(struct avstatistic_t* stats, int64_t clock, int interval)
 	}
 }
 
+int avstatistic_input(struct avstatistic_t* stats, int64_t clock, int stream, int64_t pts, int64_t dts, uint64_t bytes)
+{
+    if(stream < 0 || stream >= sizeof(stats->streams)/sizeof(stats->streams[0]))
+        return -1;
+    
+    if(0 == stats->streams[stream].packets)
+    {
+        stats->streams[stream].first_recv = clock;
+        stats->streams[stream].first_packet = clock;
+    }
+    else
+    {
+        avjitter_input(&stats->streams[stream].jitter, (int)(clock - stats->streams[stream].bitrate.clock));
+    }
+    
+    stats->streams[stream].pts = pts;
+    stats->streams[stream].dts = dts;
+    stats->streams[stream].packets += 1;
+    avbitrate_input(&stats->streams[stream].bitrate, clock, bytes);
+    return 0;
+}
+
 void avbitrate_clear(struct avbitrate_t* rate)
 {
 	rate->i = 0;
@@ -25,7 +47,7 @@ void avbitrate_clear(struct avbitrate_t* rate)
 	memset(rate->buckets, 0, sizeof(rate->buckets));
 }
 
-void avbitrate_input(struct avbitrate_t* rate, uint64_t clock, uint64_t bytes)
+void avbitrate_input(struct avbitrate_t* rate, int64_t clock, uint64_t bytes)
 {
 	uint32_t N;
 	uint32_t i, j;

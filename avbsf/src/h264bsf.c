@@ -93,7 +93,7 @@ static int h264bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 		}
 		else if (++bsf->fps.count > 100 && bsf->dts > bsf->max_dts)
 		{
-			bsf->fps.interval = bsf->fps.interval * 3 / 4 + (bsf->dts - bsf->fps.first) / (4 * bsf->fps.count);
+			bsf->fps.interval = bsf->fps.interval * 3 / 4 + (int)((bsf->dts - bsf->fps.first) / (4 * bsf->fps.count));
 			bsf->fps.count = 0;
 		}
 
