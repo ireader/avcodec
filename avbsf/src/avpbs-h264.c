@@ -93,7 +93,7 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	if (!bs->stream)
 	{
 		avpacket_release(pkt);
-		return -1;
+		return 0; // discard
 	}
 
 	pkt->pts = pts;
