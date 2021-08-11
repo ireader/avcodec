@@ -1,0 +1,336 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		46A379A024455BB80015479F /* h264-stream.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799424455BB70015479F /* h264-stream.c */; };
+		46A379A124455BB80015479F /* h264-parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799524455BB70015479F /* h264-parser.c */; };
+		46A379A224455BB80015479F /* bitstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799624455BB70015479F /* bitstream.c */; };
+		46A379A324455BB80015479F /* h264-slice-header.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799724455BB70015479F /* h264-slice-header.c */; };
+		46A379A424455BB80015479F /* h264-pps.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799824455BB70015479F /* h264-pps.c */; };
+		46A379A524455BB80015479F /* h264-hrd.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799924455BB70015479F /* h264-hrd.c */; };
+		46A379A624455BB80015479F /* h264-rbsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799A24455BB70015479F /* h264-rbsp.c */; };
+		46A379A724455BB80015479F /* h264-nal.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799B24455BB70015479F /* h264-nal.c */; };
+		46A379A824455BB80015479F /* h264-profile.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799C24455BB80015479F /* h264-profile.c */; };
+		46A379A924455BB80015479F /* h264-scaling.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799D24455BB80015479F /* h264-scaling.c */; };
+		46A379AA24455BB80015479F /* h264-sps.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799E24455BB80015479F /* h264-sps.c */; };
+		46A379AB24455BB80015479F /* h264-vui.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799F24455BB80015479F /* h264-vui.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		46A3798B24455B690015479F /* libh264.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libh264.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		46A3799224455B990015479F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
+		46A3799424455BB70015479F /* h264-stream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-stream.c"; path = "source/h264-stream.c"; sourceTree = "<group>"; };
+		46A3799524455BB70015479F /* h264-parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-parser.c"; path = "source/h264-parser.c"; sourceTree = "<group>"; };
+		46A3799624455BB70015479F /* bitstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bitstream.c; path = source/bitstream.c; sourceTree = "<group>"; };
+		46A3799724455BB70015479F /* h264-slice-header.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-slice-header.c"; path = "source/h264-slice-header.c"; sourceTree = "<group>"; };
+		46A3799824455BB70015479F /* h264-pps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-pps.c"; path = "source/h264-pps.c"; sourceTree = "<group>"; };
+		46A3799924455BB70015479F /* h264-hrd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-hrd.c"; path = "source/h264-hrd.c"; sourceTree = "<group>"; };
+		46A3799A24455BB70015479F /* h264-rbsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-rbsp.c"; path = "source/h264-rbsp.c"; sourceTree = "<group>"; };
+		46A3799B24455BB70015479F /* h264-nal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-nal.c"; path = "source/h264-nal.c"; sourceTree = "<group>"; };
+		46A3799C24455BB80015479F /* h264-profile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-profile.c"; path = "source/h264-profile.c"; sourceTree = "<group>"; };
+		46A3799D24455BB80015479F /* h264-scaling.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-scaling.c"; path = "source/h264-scaling.c"; sourceTree = "<group>"; };
+		46A3799E24455BB80015479F /* h264-sps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-sps.c"; path = "source/h264-sps.c"; sourceTree = "<group>"; };
+		46A3799F24455BB80015479F /* h264-vui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-vui.c"; path = "source/h264-vui.c"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		46A3798924455B690015479F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		46A3798224455B690015479F = {
+			isa = PBXGroup;
+			children = (
+				46A3799324455BAD0015479F /* source */,
+				46A3799224455B990015479F /* include */,
+				46A3798C24455B690015479F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		46A3798C24455B690015479F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				46A3798B24455B690015479F /* libh264.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		46A3799324455BAD0015479F /* source */ = {
+			isa = PBXGroup;
+			children = (
+				46A3799624455BB70015479F /* bitstream.c */,
+				46A3799924455BB70015479F /* h264-hrd.c */,
+				46A3799B24455BB70015479F /* h264-nal.c */,
+				46A3799524455BB70015479F /* h264-parser.c */,
+				46A3799824455BB70015479F /* h264-pps.c */,
+				46A3799C24455BB80015479F /* h264-profile.c */,
+				46A3799A24455BB70015479F /* h264-rbsp.c */,
+				46A3799D24455BB80015479F /* h264-scaling.c */,
+				46A3799724455BB70015479F /* h264-slice-header.c */,
+				46A3799E24455BB80015479F /* h264-sps.c */,
+				46A3799424455BB70015479F /* h264-stream.c */,
+				46A3799F24455BB80015479F /* h264-vui.c */,
+			);
+			name = source;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		46A3798724455B690015479F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		46A3798A24455B690015479F /* h264 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46A3798F24455B690015479F /* Build configuration list for PBXNativeTarget "h264" */;
+			buildPhases = (
+				46A3798724455B690015479F /* Headers */,
+				46A3798824455B690015479F /* Sources */,
+				46A3798924455B690015479F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = h264;
+			productName = h264;
+			productReference = 46A3798B24455B690015479F /* libh264.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46A3798324455B690015479F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = ireader;
+				TargetAttributes = {
+					46A3798A24455B690015479F = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 46A3798624455B690015479F /* Build configuration list for PBXProject "h264" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 46A3798224455B690015479F;
+			productRefGroup = 46A3798C24455B690015479F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				46A3798A24455B690015479F /* h264 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		46A3798824455B690015479F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				46A379AB24455BB80015479F /* h264-vui.c in Sources */,
+				46A379A624455BB80015479F /* h264-rbsp.c in Sources */,
+				46A379A424455BB80015479F /* h264-pps.c in Sources */,
+				46A379A124455BB80015479F /* h264-parser.c in Sources */,
+				46A379A824455BB80015479F /* h264-profile.c in Sources */,
+				46A379A224455BB80015479F /* bitstream.c in Sources */,
+				46A379A024455BB80015479F /* h264-stream.c in Sources */,
+				46A379A524455BB80015479F /* h264-hrd.c in Sources */,
+				46A379AA24455BB80015479F /* h264-sps.c in Sources */,
+				46A379A324455BB80015479F /* h264-slice-header.c in Sources */,
+				46A379A724455BB80015479F /* h264-nal.c in Sources */,
+				46A379A924455BB80015479F /* h264-scaling.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		46A3798D24455B690015479F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = (
+					.,
+					include,
+				);
+			};
+			name = Debug;
+		};
+		46A3798E24455B690015479F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = (
+					.,
+					include,
+				);
+			};
+			name = Release;
+		};
+		46A3799024455B690015479F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		46A3799124455B690015479F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		46A3798624455B690015479F /* Build configuration list for PBXProject "h264" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46A3798D24455B690015479F /* Debug */,
+				46A3798E24455B690015479F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		46A3798F24455B690015479F /* Build configuration list for PBXNativeTarget "h264" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46A3799024455B690015479F /* Debug */,
+				46A3799124455B690015479F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 46A3798324455B690015479F /* Project object */;
+}

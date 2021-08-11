@@ -15,7 +15,7 @@ struct avpktutil_t
 static inline struct avstream_t* avpktutil_addvideo(struct avpktutil_t* s, int stream, AVPACKET_CODEC_ID codec, int width, int height, const void* extra, size_t bytes)
 {
     struct avstream_t* video;
-    if(s->count >= sizeof(s->streams)/sizeof(s->streams[0]))
+    if((size_t)s->count >= sizeof(s->streams)/sizeof(s->streams[0]))
         return NULL;
     
     video = avstream_alloc((int)bytes);
@@ -32,7 +32,7 @@ static inline struct avstream_t* avpktutil_addvideo(struct avpktutil_t* s, int s
 static inline struct avstream_t* avpktutil_addaudio(struct avpktutil_t* s, int stream, AVPACKET_CODEC_ID codec, int channel_count, int bit_per_sample, int sample_rate, const void* extra, size_t bytes)
 {
     struct avstream_t* audio;
-    if(s->count >= sizeof(s->streams)/sizeof(s->streams[0]))
+    if((size_t)s->count >= sizeof(s->streams)/sizeof(s->streams[0]))
         return NULL;
     
     audio = avstream_alloc((int)bytes);
@@ -50,7 +50,7 @@ static inline struct avstream_t* avpktutil_addaudio(struct avpktutil_t* s, int s
 static inline struct avstream_t* avpktutil_addsubtitle(struct avpktutil_t* s, int stream, AVPACKET_CODEC_ID codec, const void* extra, size_t bytes)
 {
     struct avstream_t* subtitle;
-    if(s->count >= sizeof(s->streams)/sizeof(s->streams[0]))
+    if((size_t)s->count >= sizeof(s->streams)/sizeof(s->streams[0]))
         return NULL;
     
     subtitle = avstream_alloc((int)bytes);
