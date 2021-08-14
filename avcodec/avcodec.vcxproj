@@ -169,8 +169,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>libx264.dll.lib;opus.lib;libfaac-1.28.lib;libfaad-2.27.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>openh264;x264;..\..\3rd\freetype;..\..\3rd\opus\release;..\..\3rd\faac\release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264-148.lib;freetype.lib;opus.lib;libfaac-1.28.lib;libfaad-2.27.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\3rd\openh264;..\..\3rd\x264;..\..\3rd\freetype;..\..\3rd\opus\release;..\..\3rd\faac\release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

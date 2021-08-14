@@ -93,9 +93,9 @@ static int avpbs_vpx_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 struct avpbs_t* avpbs_vpx(void)
 {
 	static struct avpbs_t bs = {
-		.destroy = avpbs_vpx_destroy,
-		.create = avpbs_vpx_create,
-		.input = avpbs_vpx_input,
+		avpbs_vpx_create,
+		avpbs_vpx_destroy,
+		avpbs_vpx_input,
 	};
 	return &bs;
 }

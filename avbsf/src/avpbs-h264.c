@@ -110,9 +110,9 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 struct avpbs_t* avpbs_h264(void)
 {
 	static struct avpbs_t bs = {
-		.destroy = avpbs_h264_destroy,
-		.create = avpbs_h264_create,
-		.input = avpbs_h264_input,
+		avpbs_h264_create,
+		avpbs_h264_destroy,
+		avpbs_h264_input,
 	};
 	return &bs;
 }

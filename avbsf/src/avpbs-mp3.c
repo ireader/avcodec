@@ -95,9 +95,9 @@ static int avpbs_mp3_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 struct avpbs_t* avpbs_mp3(void)
 {
 	static struct avpbs_t bs = {
-		.destroy = avpbs_mp3_destroy,
-		.create = avpbs_mp3_create,
-		.input = avpbs_mp3_input,
+		avpbs_mp3_create,
+		avpbs_mp3_destroy,
+		avpbs_mp3_input,
 	};
 	return &bs;
 }

@@ -132,9 +132,9 @@ static int h265bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 struct avbsf_t* avbsf_h265(void)
 {
 	static struct avbsf_t bsf = {
-		.create = h265bsf_create,
-		.destroy = h265bsf_destroy,
-		.input = h265bsf_input,
+		h265bsf_create,
+		h265bsf_destroy,
+		h265bsf_input,
 	};
 	return &bsf;
 }

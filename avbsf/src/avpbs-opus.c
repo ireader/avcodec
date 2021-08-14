@@ -95,9 +95,9 @@ static int avpbs_opus_input(void* param, int64_t pts, int64_t dts, const uint8_t
 struct avpbs_t* avpbs_opus(void)
 {
 	static struct avpbs_t bs = {
-		.destroy = avpbs_opus_destroy,
-		.create = avpbs_opus_create,
-		.input = avpbs_opus_input,
+		avpbs_opus_create,
+		avpbs_opus_destroy,
+		avpbs_opus_input,
 	};
 	return &bs;
 }

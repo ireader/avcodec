@@ -112,9 +112,9 @@ static int avpbs_common_input(void* param, int64_t pts, int64_t dts, const uint8
 static struct avpbs_t* avpbs_common(void)
 {
 	static struct avpbs_t bs = {
-		   .destroy = avpbs_common_destroy,
-		   .create = avpbs_common_create,
-		   .input = avpbs_common_input,
+		   avpbs_common_create,
+		   avpbs_common_destroy,
+		   avpbs_common_input,
 	};
 	return &bs;
 }

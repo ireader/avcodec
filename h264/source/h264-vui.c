@@ -27,8 +27,8 @@ int h264_vui(bitstream_t* stream, struct h264_vui_t* vui)
 	vui->video_signal_type_present_flag = bitstream_read_bit(stream);
 	if (vui->video_signal_type_present_flag)
 	{
-		/*int video_format =*/ bitstream_read_bits(stream, 3);
-		/*int video_full_range_flag =*/ bitstream_read_bit(stream);
+		int video_format = bitstream_read_bits(stream, 3);
+		int video_full_range_flag = bitstream_read_bit(stream);
 		int colour_description_present_flag = bitstream_read_bit(stream);
 		if (colour_description_present_flag)
 		{

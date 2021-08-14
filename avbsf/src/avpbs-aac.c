@@ -135,9 +135,9 @@ static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 struct avpbs_t* avpbs_aac(void)
 {
 	static struct avpbs_t bs = {
-		.destroy = avpbs_aac_destroy,
-		.create = avpbs_aac_create,
-		.input = avpbs_aac_input,
+		avpbs_aac_create,
+		avpbs_aac_destroy,
+		avpbs_aac_input,
 	};
 	return &bs;
 }

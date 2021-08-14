@@ -2,6 +2,7 @@
 #define _bitstream_h_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

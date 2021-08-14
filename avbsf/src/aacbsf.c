@@ -66,9 +66,9 @@ static int aacbsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* da
 struct avbsf_t* avbsf_aac(void)
 {
 	static struct avbsf_t bsf = {
-		.create = aacbsf_create,
-		.destroy = aacbsf_destroy,
-		.input = aacbsf_input,
+		aacbsf_create,
+		aacbsf_destroy,
+		aacbsf_input,
 	};
 	return &bsf;
 }

@@ -7,19 +7,19 @@ int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_
 	int i;
 	if(profilePresentFlag)
 	{
-		profile->general_profile_idc = bitstream_read_bits(stream, 2);
-		profile->general_tier_flag = bitstream_read_bit(stream);
-		profile->general_profile_idc = bitstream_read_bits(stream, 5);
+		profile->general_profile_idc = (uint8_t)bitstream_read_bits(stream, 2);
+		profile->general_tier_flag = (uint8_t)bitstream_read_bit(stream);
+		profile->general_profile_idc = (uint8_t)bitstream_read_bits(stream, 5);
 		profile->general_profile_compatibility_flag = bitstream_read_bits(stream, 32);
 		profile->general_constraint_flags = (((uint64_t)bitstream_read_bits(stream, 32)) << 16) | bitstream_read_bits(stream, 16);
 	}
 	
-	profile->general_level_idc = bitstream_read_bits(stream, 8);
+	profile->general_level_idc = (uint8_t)bitstream_read_bits(stream, 8);
 
 	for(i = 0; i < maxNumSubLayersMinus1; i++)
 	{
-		profile->sub_layer[i].sub_layer_profile_present_flag = bitstream_read_bit(stream);
-		profile->sub_layer[i].sub_layer_level_present_flag = bitstream_read_bit(stream);
+		profile->sub_layer[i].sub_layer_profile_present_flag = (uint8_t)bitstream_read_bit(stream);
+		profile->sub_layer[i].sub_layer_level_present_flag = (uint8_t)bitstream_read_bit(stream);
 	}
 
 	// align to byte
@@ -33,15 +33,15 @@ int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_
 	{
 		if(profile->sub_layer[i].sub_layer_profile_present_flag)
 		{
-			profile->sub_layer[i].sub_layer_profile_space = bitstream_read_bits(stream, 2);
-			profile->sub_layer[i].sub_layer_tier_flag = bitstream_read_bit(stream);
-			profile->sub_layer[i].sub_layer_profile_idc = bitstream_read_bits(stream, 5);
+			profile->sub_layer[i].sub_layer_profile_space = (uint8_t)bitstream_read_bits(stream, 2);
+			profile->sub_layer[i].sub_layer_tier_flag = (uint8_t)bitstream_read_bit(stream);
+			profile->sub_layer[i].sub_layer_profile_idc = (uint8_t)bitstream_read_bits(stream, 5);
 			profile->sub_layer[i].sub_layer_profile_compatibility_flag = bitstream_read_bits(stream, 32);
 			profile->sub_layer[i].sub_layer_constraint_flags = (((uint64_t)bitstream_read_bits(stream, 32)) << 16) | bitstream_read_bits(stream, 16);
 		}
 
 		if(profile->sub_layer[i].sub_layer_level_present_flag)
-			profile->sub_layer[i].sub_layer_level_idc = bitstream_read_bits(stream, 8);
+			profile->sub_layer[i].sub_layer_level_idc = (uint8_t)bitstream_read_bits(stream, 8);
 	}
 
 	return 0;
@@ -49,12 +49,12 @@ int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_
 
 int h265_vps(bitstream_t* stream, struct h265_vps_t* vps)
 {
-	vps->vps_video_parameter_set_id = bitstream_read_bits(stream, 4);
-	vps->vps_base_layer_internal_flag = bitstream_read_bit(stream);
-	vps->vps_base_layer_available_flag = bitstream_read_bit(stream);
-	vps->vps_max_layers_minus1 = bitstream_read_bits(stream, 6);
-	vps->vps_max_sub_layers_minus1 = bitstream_read_bits(stream, 3);
-	vps->vps_temporal_id_nesting_flag = bitstream_read_bit(stream);
+	vps->vps_video_parameter_set_id = (uint8_t)bitstream_read_bits(stream, 4);
+	vps->vps_base_layer_internal_flag = (uint8_t)bitstream_read_bit(stream);
+	vps->vps_base_layer_available_flag = (uint8_t)bitstream_read_bit(stream);
+	vps->vps_max_layers_minus1 = (uint8_t)bitstream_read_bits(stream, 6);
+	vps->vps_max_sub_layers_minus1 = (uint8_t)bitstream_read_bits(stream, 3);
+	vps->vps_temporal_id_nesting_flag = (uint8_t)bitstream_read_bit(stream);
 	bitstream_read_bits(stream, 16); //vps_reserved_0xffff_16bits
 
 	h265_profile_tier_level(stream, &vps->profile, 1, vps->vps_max_sub_layers_minus1);

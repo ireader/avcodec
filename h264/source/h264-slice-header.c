@@ -29,9 +29,9 @@ int h264_slice_header(bitstream_t* stream, struct h264_context_t* h264, struct h
 	
 	if (!sps->frame_mbs_only_flag)
 	{
-		header->field_pic_flag = bitstream_read_bit(stream);
+		header->field_pic_flag = (uint8_t)bitstream_read_bit(stream);
 		if (header->field_pic_flag)
-			header->bottom_field_flag = bitstream_read_bit(stream);
+			header->bottom_field_flag = (uint8_t)bitstream_read_bit(stream);
 	}
 
 	if (H264_NAL_IDR == nal->nal_unit_type)
@@ -55,11 +55,11 @@ int h264_slice_header(bitstream_t* stream, struct h264_context_t* h264, struct h
 		header->redundant_pic_cnt = bitstream_read_ue(stream);
 
 	if (H264_SLICE_B == header->slice_type)
-		header->direct_spatial_mv_pred_flag = bitstream_read_bit(stream);
+		header->direct_spatial_mv_pred_flag = (uint8_t)bitstream_read_bit(stream);
 
 	if (H264_SLICE_P == header->slice_type || H264_SLICE_SP == header->slice_type || H264_SLICE_B == header->slice_type)
 	{
-		header->num_ref_idx_active_override_flag = bitstream_read_bit(stream);
+		header->num_ref_idx_active_override_flag = (uint8_t)bitstream_read_bit(stream);
 		if (header->num_ref_idx_active_override_flag)
 		{
 			header->num_ref_idx_l0_active_minus1 = bitstream_read_ue(stream);

@@ -84,9 +84,9 @@ static int avpbs_av1_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 struct avpbs_t* avpbs_av1(void)
 {
 	static struct avpbs_t bs = {
-		.destroy = avpbs_av1_destroy,
-		.create = avpbs_av1_create,
-		.input = avpbs_av1_input,
+		avpbs_av1_create,
+		avpbs_av1_destroy,
+		avpbs_av1_input,
 	};
 	return &bs;
 }

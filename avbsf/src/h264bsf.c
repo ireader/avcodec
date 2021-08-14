@@ -155,9 +155,9 @@ static int h264bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 struct avbsf_t* avbsf_h264(void)
 {
 	static struct avbsf_t bsf = {
-		.create = h264bsf_create,
-		.destroy = h264bsf_destroy,
-		.input = h264bsf_input,
+		h264bsf_create,
+		h264bsf_destroy,
+		h264bsf_input,
 	};
 	return &bsf;
 }

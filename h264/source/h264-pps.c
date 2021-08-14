@@ -14,8 +14,8 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 	memset(pps, 0, sizeof(struct h264_pps_t));
 	pps->pic_parameter_set_id = bitstream_read_ue(stream);
 	pps->seq_parameter_set_id = bitstream_read_ue(stream);
-	pps->entropy_coding_mode_flag = bitstream_read_bit(stream);
-	pps->bottom_field_pic_order_in_frame_present_flag = bitstream_read_bit(stream);
+	pps->entropy_coding_mode_flag = (uint8_t)bitstream_read_bit(stream);
+	pps->bottom_field_pic_order_in_frame_present_flag = (uint8_t)bitstream_read_bit(stream);
 	pps->num_slice_groups_minus1 = bitstream_read_ue(stream);
 	if (pps->num_slice_groups_minus1 > 0)
 	{
@@ -39,7 +39,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 		}
 		else if (3 == pps->slice_group_map_type || 4 == pps->slice_group_map_type || 5 == pps->slice_group_map_type)
 		{
-			pps->group.direction.slice_group_change_direction_flag = bitstream_read_bit(stream);
+			pps->group.direction.slice_group_change_direction_flag = (uint8_t)bitstream_read_bit(stream);
 			pps->group.direction.slice_group_change_rate_minus1 = bitstream_read_ue(stream);
 		}
 		else if (6 == pps->slice_group_map_type)
@@ -55,19 +55,19 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 
 	pps->num_ref_idx_l0_default_active_minus1 = bitstream_read_ue(stream);
 	pps->num_ref_idx_l1_default_active_minus1 = bitstream_read_ue(stream);
-	pps->weighted_pred_flag = bitstream_read_bit(stream);
+	pps->weighted_pred_flag = (uint8_t)bitstream_read_bit(stream);
 	pps->weighted_bipred_idc = bitstream_read_bits(stream, 2);
 	pps->pic_init_qp_minus26 = bitstream_read_se(stream);
 	pps->pic_init_qs_minus26 = bitstream_read_se(stream);
 	pps->chroma_qp_index_offset = bitstream_read_se(stream);
-	pps->deblocking_filter_control_present_flag = bitstream_read_bit(stream);
-	pps->constrained_intra_pred_flag = bitstream_read_bit(stream);
-	pps->redundant_pic_cnt_present_flag = bitstream_read_bit(stream);
+	pps->deblocking_filter_control_present_flag = (uint8_t)bitstream_read_bit(stream);
+	pps->constrained_intra_pred_flag = (uint8_t)bitstream_read_bit(stream);
+	pps->redundant_pic_cnt_present_flag = (uint8_t)bitstream_read_bit(stream);
 
 	if (h264_more_rbsp_data(stream))
 	{
-		pps->transform_8x8_mode_flag = bitstream_read_bit(stream);
-		pps->pic_scaling_matrix_present_flag = bitstream_read_bit(stream);
+		pps->transform_8x8_mode_flag = (uint8_t)bitstream_read_bit(stream);
+		pps->pic_scaling_matrix_present_flag = (uint8_t)bitstream_read_bit(stream);
 		if (pps->pic_scaling_matrix_present_flag)
 		{
 			int i;
@@ -77,7 +77,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 			sps = h264->sps + pps->seq_parameter_set_id;
 			for (i = 0; i < 6 + ((sps->chroma_format_idc != 3) ? 2 : 6) * pps->transform_8x8_mode_flag; i++)
 			{
-				pps->pic_scaling_list_present_flag[i] = bitstream_read_bit(stream);
+				pps->pic_scaling_list_present_flag[i] = (uint8_t)bitstream_read_bit(stream);
 				if (pps->pic_scaling_list_present_flag[i])
 				{
 					if (i < 6)

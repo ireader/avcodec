@@ -18,18 +18,18 @@ int h265_sps_parse(const void* h265, uint32_t bytes, struct h265_sps_t* sps)
 
 int h265_sps(bitstream_t* stream, struct h265_sps_t* sps)
 {
-	sps->sps_video_parameter_set_id = bitstream_read_bits(stream, 4);
-	sps->sps_max_sub_layers_minus1 = bitstream_read_bits(stream, 3);
-	sps->sps_temporal_id_nesting_flag = bitstream_read_bit(stream);
+	sps->sps_video_parameter_set_id = (uint8_t)bitstream_read_bits(stream, 4);
+	sps->sps_max_sub_layers_minus1 = (uint8_t)bitstream_read_bits(stream, 3);
+	sps->sps_temporal_id_nesting_flag = (uint8_t)bitstream_read_bit(stream);
 	h265_profile_tier_level(stream, &sps->profile, 1, sps->sps_max_sub_layers_minus1);
 	sps->sps_seq_parameter_set_id = bitstream_read_ue(stream);
-	sps->chroma_format_id = bitstream_read_ue(stream);
+	sps->chroma_format_id = (uint8_t)bitstream_read_ue(stream);
 	if(3 == sps->chroma_format_id)
-		sps->separate_colour_plane_flag = bitstream_read_bit(stream);
+		sps->separate_colour_plane_flag = (uint8_t)bitstream_read_bit(stream);
 
 	sps->pic_width_in_luma_samples = bitstream_read_ue(stream);
 	sps->pic_height_in_luma_samples = bitstream_read_ue(stream);
-	sps->conformance_window_flag = bitstream_read_bit(stream);
+	sps->conformance_window_flag = (uint8_t)bitstream_read_bit(stream);
 	if(sps->conformance_window_flag)
 	{
 		sps->conf_win_left_offset = bitstream_read_ue(stream);
@@ -38,10 +38,10 @@ int h265_sps(bitstream_t* stream, struct h265_sps_t* sps)
 		sps->conf_win_bottom_offset = bitstream_read_ue(stream);
 	}
 
-	sps->bit_depth_luma_minus8 = bitstream_read_ue(stream);
-	sps->bit_depth_chroma_minus8 = bitstream_read_ue(stream);
+	sps->bit_depth_luma_minus8 = (uint8_t)bitstream_read_ue(stream);
+	sps->bit_depth_chroma_minus8 = (uint8_t)bitstream_read_ue(stream);
 	sps->log2_max_pic_order_cnt_lsb_minus4 = bitstream_read_ue(stream);
-	sps->sps_sub_layer_ordering_info_present_flag = bitstream_read_bit(stream);
+	sps->sps_sub_layer_ordering_info_present_flag = (uint8_t)bitstream_read_bit(stream);
 
 	// TODO: parse more
 	return 0;
