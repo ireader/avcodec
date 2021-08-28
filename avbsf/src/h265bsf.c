@@ -125,7 +125,7 @@ static int h265bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 	bsf->pts = pts;
 	bsf->dts = dts;
 	if (nalt < H265_NAL_VPS)
-		bsf->vcl = 16 <= nalt && nalt <= 23 ? 1 : 2;
+		bsf->vcl = (16 <= nalt && nalt <= 23) ? 1 : 2;
 	return 0;
 }
 
