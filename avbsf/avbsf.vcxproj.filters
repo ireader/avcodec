@@ -21,6 +21,9 @@
     <ClInclude Include="include\avpbs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avpkt2bs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\h264bsf.c">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\avpbs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpkt2bs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

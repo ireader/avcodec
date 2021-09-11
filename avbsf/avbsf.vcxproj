@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\avpbs.h" />
     <ClInclude Include="include\avbsf.h" />
+    <ClInclude Include="include\avpkt2bs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\aacbsf.c" />
@@ -31,6 +32,7 @@
     <ClCompile Include="src\avpbs-opus.c" />
     <ClCompile Include="src\avpbs-vpx.c" />
     <ClCompile Include="src\avpbs.c" />
+    <ClCompile Include="src\avpkt2bs.c" />
     <ClCompile Include="src\h264bsf.c" />
     <ClCompile Include="src\avpbs-h264.c" />
     <ClCompile Include="src\h265bsf.c" />
