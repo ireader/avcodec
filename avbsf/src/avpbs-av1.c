@@ -44,7 +44,7 @@ static void* avpbs_av1_create(int stream, AVPACKET_CODEC_ID codec, const uint8_t
 	bs = calloc(1, sizeof(*bs));
 	if (!bs) return NULL;
 
-	if (aom_av1_codec_configuration_record_load(extra, bytes, &bs->av1) < 0)
+	if (bytes > 0 && aom_av1_codec_configuration_record_load(extra, bytes, &bs->av1) < 0)
 	{
 		avpbs_av1_destroy((void**)&bs);
 		return NULL;
