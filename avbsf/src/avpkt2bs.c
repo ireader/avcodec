@@ -48,7 +48,7 @@ static int avpkt2bs_aac_input(struct avpkt2bs_t* bs, const struct avpacket_t* pk
 	if (0 != r)
 		return r;
 
-	r = mpeg4_aac_adts_save(&bs->a.aac, pkt->size, bs->ptr, pkt->size);
+	r = mpeg4_aac_adts_save(&bs->a.aac, pkt->size, bs->ptr, bs->cap);
 	if (r < 0 || r + pkt->size > bs->cap)
 		return -1;
 
