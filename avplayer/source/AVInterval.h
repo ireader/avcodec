@@ -1,7 +1,7 @@
 #ifndef _AVInterval_h_
 #define _AVInterval_h_
 
-#include "avjitter.h"
+#include "avstatistic.h"
 #include "app-log.h"
 #include <stdint.h>
 #include <string>
@@ -23,8 +23,8 @@ public:
 	void Tick(uint64_t clock, int64_t pts)
 	{
 		if (0 != m_clock) {
-			av_jitter_input(&m_fps, (int)(clock - m_clock));
-			av_jitter_input(&m_jitter, (int)((clock - m_clock) - (pts - m_pts)));
+			avjitter_input(&m_fps, (int)(clock - m_clock));
+			avjitter_input(&m_jitter, (int)((clock - m_clock) - (pts - m_pts)));
 		}
 		m_pts = pts;
 		m_clock = clock;
@@ -34,8 +34,8 @@ public:
 private:
 	void Reset()
 	{
-		av_jitter_reset(&m_fps);
-		av_jitter_reset(&m_jitter);
+		avjitter_clear(&m_fps);
+		avjitter_clear(&m_jitter);
 	}
 
 	void Print()
@@ -47,8 +47,8 @@ private:
 		{
 			char fps[64];
 			char jitter[64];
-			av_jitter_format(&m_fps, fps, sizeof(fps));
-			av_jitter_format(&m_jitter, jitter, sizeof(jitter));
+			avjitter_format(&m_fps, fps, sizeof(fps));
+			avjitter_format(&m_jitter, jitter, sizeof(jitter));
 			app_log(LOG_DEBUG, "%s|fps: %s, jitter: %s\n", m_tag.c_str(), fps, jitter);
 
 			m_last = m_clock;

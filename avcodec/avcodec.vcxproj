@@ -132,8 +132,8 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>..\..\3rd\openh264;..\..\3rd\x264;..\..\3rd\freetype;..\..\3rd\opus\debug;..\..\3rd\faac\debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264-148.lib;freetype.lib;opus.lib;libfaac-1.28.lib;libfaad-2.27.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\3rd\openh264;..\..\3rd\x264\win32;..\..\3rd\freetype;..\..\3rd\opus\debug;..\..\3rd\faac\win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264-164.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -169,8 +169,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>libx264-148.lib;freetype.lib;opus.lib;libfaac-1.28.lib;libfaad-2.27.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\3rd\openh264;..\..\3rd\x264;..\..\3rd\freetype;..\..\3rd\opus\release;..\..\3rd\faac\release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libx264-164.lib;freetype.lib;opus.lib;libfaac-1.28.lib;libfaad-2.27.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\3rd\openh264;..\..\3rd\x264\win32;..\..\3rd\freetype;..\..\3rd\opus\release;..\..\3rd\faac\release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
