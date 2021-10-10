@@ -45,6 +45,8 @@ struct audio_encoder_t
 struct audio_encoder_t* faac_encoder(void);
 struct audio_encoder_t* opus_encoder(void);
 struct audio_encoder_t* mp2lame_encoder(void);
+struct audio_encoder_t* g711a_encoder(void);
+struct audio_encoder_t* g711u_encoder(void);
 
 #ifdef __cplusplus
 }

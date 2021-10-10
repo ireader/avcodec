@@ -23,6 +23,8 @@ struct audio_decoder_t
 
 struct audio_decoder_t* opus_decoder(void);
 struct audio_decoder_t* faac_decoder(void);
+struct audio_decoder_t* g711a_decoder(void);
+struct audio_decoder_t* g711u_decoder(void);
 
 #ifdef __cplusplus
 }

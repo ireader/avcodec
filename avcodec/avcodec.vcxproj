@@ -50,6 +50,8 @@
     <ClCompile Include="source\colorspace.c" />
     <ClCompile Include="source\faac-decoder.c" />
     <ClCompile Include="source\faac-encoder.c" />
+    <ClCompile Include="source\g711-decoder.c" />
+    <ClCompile Include="source\g711-encoder.c" />
     <ClCompile Include="source\interpolation-bilinear.c" />
     <ClCompile Include="source\mp2lame-encoder.c" />
     <ClCompile Include="source\openh264enc.cpp" />
@@ -61,6 +63,8 @@
     <ClCompile Include="source\yuv-overlay.c" />
     <ClCompile Include="test\faac-decoder-test.cpp" />
     <ClCompile Include="test\faac-encoder-test.cpp" />
+    <ClCompile Include="test\g711-decoder-test.cpp" />
+    <ClCompile Include="test\g711-encoder-test.cpp" />
     <ClCompile Include="test\interpolation-test.cpp" />
     <ClCompile Include="test\text-render-test.cpp" />
     <ClCompile Include="test\x264-encode-test.cpp" />

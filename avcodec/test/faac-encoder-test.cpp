@@ -34,8 +34,8 @@ void faac_encoder_test(const char* pcm, const char* adts)
 	avpacket_t pkt;
 	while (fadts && fpcm)
 	{
-		int r = fread(buffer, param.channels * PCM_SAMPLE_BITS(param.format) / 8, FRAME_LEN, fpcm);
-		if (r < FRAME_LEN)
+		int r = fread(buffer, param.channels * PCM_SAMPLE_BITS(param.format) / 8, frame.samples, fpcm);
+		if (r < frame.samples)
 			break;
 
 		if (faac_encoder()->encode(faac, &frame) < 0)

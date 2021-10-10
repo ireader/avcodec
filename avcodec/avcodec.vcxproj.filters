@@ -152,5 +152,17 @@
     <ClCompile Include="source\avsegment.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\g711-decoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\g711-encoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\g711-decoder-test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\g711-encoder-test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
