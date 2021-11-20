@@ -22,6 +22,7 @@
     <ClInclude Include="include\audio-mixer.h" />
     <ClInclude Include="include\avbuffer.h" />
     <ClInclude Include="include\avcodecid.h" />
+    <ClInclude Include="include\avdtsinfer.h" />
     <ClInclude Include="include\avframe.h" />
     <ClInclude Include="include\avpacket.h" />
     <ClInclude Include="include\avsegment.h" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClCompile Include="source\audio-mixer.c" />
     <ClCompile Include="source\avbuffer.c" />
+    <ClCompile Include="source\avdtsinfer.c" />
     <ClCompile Include="source\avframe.c" />
     <ClCompile Include="source\avpacket.c" />
     <ClCompile Include="source\avsegment.c" />

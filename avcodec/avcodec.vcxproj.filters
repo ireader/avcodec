@@ -69,6 +69,9 @@
     <ClInclude Include="include\avsegment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avdtsinfer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="test\g711-encoder-test.cpp">
       <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="source\avdtsinfer.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

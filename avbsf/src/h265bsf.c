@@ -1,6 +1,7 @@
 #include "avbsf.h"
 #include "cbuffer.h"
 #include "mpeg4-hevc.h"
+#include "avdtsinfer.h"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -22,6 +23,7 @@ struct h265bsf_t
 	int vcl;
 	int64_t pts;
 	int64_t dts;
+	struct avdtsinfer_t infer;
 
 	uint8_t extra[4 * 1024];
 	int extra_bytes;
@@ -49,6 +51,7 @@ static void* h265bsf_create(const uint8_t* extra, int bytes, avbsf_onpacket onpa
 	bsf = calloc(1, sizeof(*bsf));
 	if (!bsf) return NULL;
 
+	avdtsinfer_reset(&bsf->infer);
 	cbuffer_init(&bsf->ptr);
 	bsf->vps_sps_pps_flag = 0;
 
@@ -79,6 +82,8 @@ static int h265bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 
 	if (bsf->vcl && (dts != bsf->dts || 0 == bytes || h265_is_new_access_unit(nalu, bytes)))
 	{
+		bsf->dts = avdtsinfer_update(&bsf->infer, 1 == bsf->vcl ? 1 : 0, bsf->pts, pts);
+
 		r = bsf->onpacket(bsf->param, bsf->pts, bsf->dts, bsf->ptr.ptr, (int)bsf->ptr.len, 1 == bsf->vcl ? 0x01 : 0);
 		bsf->ptr.len = 0;
 		bsf->vps_sps_pps_flag = 0;
