@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 //#define ULAW_ZEROTRAP       /* turn on the trap as per the MIL-STD */
 #define ULAW_BIAS       0x84  /* Bias for linear code. */
