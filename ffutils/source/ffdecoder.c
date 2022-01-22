@@ -38,9 +38,7 @@ void* ffdecoder_create(const AVCodecParameters* codecpar)
 	av_dict_free(&opts);
 	if (r < 0)
 	{
-		char errmsg[128] = { 0 };
-		av_strerror(r, errmsg, sizeof(errmsg));
-		printf("[%s] avcodec_open2(%d) => %d, %s.\n", __FUNCTION__, codec->id, r, errmsg);
+		printf("[%s] avcodec_open2(%d) => %d, %s.\n", __FUNCTION__, codec->id, r, av_err2str(r));
 		avcodec_free_context(&avctx);
 		return NULL;
 	}
@@ -68,9 +66,7 @@ int ffdecoder_input(void* p, const AVPacket* pkt)
 	ret = avcodec_send_packet(avctx, pkt);
 	if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
 	{
-		char errmsg[128] = { 0 };
-		av_strerror(ret, errmsg, sizeof(errmsg));
-		printf("[%s] avcodec_send_packet(%d) => %d, %s\n", __FUNCTION__, pkt?pkt->size:0, ret, errmsg);
+		printf("[%s] avcodec_send_packet(%d) => %d, %s\n", __FUNCTION__, pkt?pkt->size:0, ret, av_err2str(ret));
 		return ret;
 	}
 	//if (ret >= 0)

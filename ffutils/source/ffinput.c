@@ -46,7 +46,7 @@ static int ffinput_open(struct ffinput_t* ff, const char* url)
 	r = avformat_open_input(&ff->ic, url, NULL, &opt);
 	if (0 != r)
 	{
-		printf("%s: avformat_open_input(%s) => %d\n", __FUNCTION__, url, r);
+		printf("%s: avformat_open_input(%s) => %s\n", __FUNCTION__, url, av_err2str(r));
 		return r;
 	}
 
@@ -60,7 +60,7 @@ static int ffinput_open(struct ffinput_t* ff, const char* url)
 	first frames to get it. (used in mpeg case for example) */
 	r = avformat_find_stream_info(ff->ic, NULL/*&opt*/);
 	if (r < 0) {
-		printf("%s(%s): could not find codec parameters\n", __FUNCTION__, url);
+		printf("%s(%s): could not find codec parameters: %s\n", __FUNCTION__, url, av_err2str(r));
 		return r;
 	}
 

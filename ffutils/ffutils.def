@@ -6,6 +6,11 @@ EXPORTS
 	ffinput_destroy
 	ffinput_read
 
+	ffoutput_create
+	ffoutput_destroy
+	ffoutput_addstream
+	ffoutput_write
+
 	ffdecoder_create
 	ffdecoder_destroy
 	ffdecoder_input
@@ -15,6 +20,7 @@ EXPORTS
 	ffencoder_destroy
 	ffencoder_input
 	ffencoder_getpacket
+	ffencoder_getcodecpar
 
 	avdecoder_create_h264
 	avdecoder_create_h265
@@ -28,3 +34,7 @@ EXPORTS
 	fffilter_create_source
    
 	ffscale
+
+	ffresample_create
+	ffresample_destroy
+	ffresample_convert
