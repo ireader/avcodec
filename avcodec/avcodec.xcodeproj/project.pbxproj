@@ -27,6 +27,7 @@
 		46F3017624023F2A005EF41A /* avstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3016224023F2A005EF41A /* avstream.c */; };
 		46F3017724023F2A005EF41A /* avstatistic.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3016324023F2A005EF41A /* avstatistic.c */; };
 		46F3017824023F2A005EF41A /* rgb-overlay.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3016424023F2A005EF41A /* rgb-overlay.c */; };
+		4CEE46E227A70A9100740460 /* avdtsinfer.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE46E127A70A9100740460 /* avdtsinfer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		46F3016224023F2A005EF41A /* avstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = avstream.c; sourceTree = "<group>"; };
 		46F3016324023F2A005EF41A /* avstatistic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = avstatistic.c; sourceTree = "<group>"; };
 		46F3016424023F2A005EF41A /* rgb-overlay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "rgb-overlay.c"; sourceTree = "<group>"; };
+		4CEE46E127A70A9100740460 /* avdtsinfer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = avdtsinfer.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 		46F3015024023F2A005EF41A /* source */ = {
 			isa = PBXGroup;
 			children = (
+				4CEE46E127A70A9100740460 /* avdtsinfer.c */,
 				46F3015224023F2A005EF41A /* avbuffer.c */,
 				46F3015724023F2A005EF41A /* avframe.c */,
 				46F3015424023F2A005EF41A /* avpacket.c */,
@@ -187,6 +190,7 @@
 				46F3017824023F2A005EF41A /* rgb-overlay.c in Sources */,
 				46F3016924023F2A005EF41A /* faac-encoder.c in Sources */,
 				46BC16B726858C3D0008446D /* avsegment.c in Sources */,
+				4CEE46E227A70A9100740460 /* avdtsinfer.c in Sources */,
 				46F3017324023F2A005EF41A /* yuv-overlay.c in Sources */,
 				46F3016F24023F2A005EF41A /* opus-encoder.c in Sources */,
 				46F3016E24023F2A005EF41A /* text-render-freetype.c in Sources */,

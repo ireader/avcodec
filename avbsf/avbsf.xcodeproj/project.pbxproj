@@ -19,6 +19,7 @@
 		4685037E262413E600E7ABEC /* avpbs-av1.c in Sources */ = {isa = PBXBuildFile; fileRef = 46850372262413E500E7ABEC /* avpbs-av1.c */; };
 		469AAEAE264F4ED000559AA2 /* h264bsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 469AAEAD264F4ED000559AA2 /* h264bsf.c */; };
 		46E55E3F2460593300D8BDBA /* h265bsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E55E3C2460593200D8BDBA /* h265bsf.c */; };
+		4CEE46E827A70CA900740460 /* avpkt2bs.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE46E327A70AE600740460 /* avpkt2bs.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		46E55E302460588000D8BDBA /* libavbsf.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libavbsf.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		46E55E38246058CA00D8BDBA /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
 		46E55E3C2460593200D8BDBA /* h265bsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h265bsf.c; path = src/h265bsf.c; sourceTree = "<group>"; };
+		4CEE46E327A70AE600740460 /* avpkt2bs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avpkt2bs.c; path = src/avpkt2bs.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 		46E55E3A2460591E00D8BDBA /* src */ = {
 			isa = PBXGroup;
 			children = (
+				4CEE46E327A70AE600740460 /* avpkt2bs.c */,
 				4685036D262413E500E7ABEC /* avpbs.c */,
 				4685036B262413E500E7ABEC /* avpbs-aac.c */,
 				46850372262413E500E7ABEC /* avpbs-av1.c */,
@@ -153,6 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46850377262413E600E7ABEC /* avpbs-aac.c in Sources */,
+				4CEE46E827A70CA900740460 /* avpkt2bs.c in Sources */,
 				4685037A262413E600E7ABEC /* avpbs-mp3.c in Sources */,
 				4685037D262413E600E7ABEC /* aacbsf.c in Sources */,
 				46850374262413E500E7ABEC /* avpbs-h265.c in Sources */,
