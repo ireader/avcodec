@@ -10,6 +10,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"
+#include "libavutil/channel_layout.h"
 }
 
 static void video_test()
@@ -26,22 +27,25 @@ static void video_test()
 	av_dict_set(&opts, "preset", "fast", 0);
 	av_dict_set(&opts, "crt", "23", 0);
 	void* ff = ffencoder_create(codecpar, opts);
-	av_dict_free(&opts);
+	//av_dict_free(&opts);
 
 	AVCodecParameters* par = avcodec_parameters_alloc();
 	ffencoder_getcodecpar(ff, par);
 
-	void* w = ffoutput_create("1.mp4", "mp4");
+	AVDictionary* fmtOpts = NULL;
+	av_dict_set(&fmtOpts, "movflags", "frag_keyframe+empty_moov+default_base_moof", 0);
+	void* w = ffoutput_create("1.mp4", "mp4", fmtOpts);
 	AVStream* s = ffoutput_addstream(w, par);
 	s->time_base = av_make_q(1, 900000);
 	avcodec_parameters_free(&par);
+	//av_dict_free(&fmtOpts);
 
 	for (int64_t dts = 0; dts < 90 * 1000; dts += 40*90)
 	{
 		static const uint8_t yuv[1920 * 1080 * 3 / 2] = { 0 };
 		AVFrame* frame = av_frame_alloc();
 		frame->format = AV_PIX_FMT_YUV420P;
-		//frame->pict_type = AV_PICTURE_TYPE_I;
+		frame->pict_type = AV_PICTURE_TYPE_I;
 		//frame->flags = 0;
 		frame->width = 1920;
 		frame->height = 1080;
@@ -98,10 +102,12 @@ static void audio_test()
 	AVCodecParameters* par = avcodec_parameters_alloc();
 	ffencoder_getcodecpar(ff, par);
 
-	void* w = ffoutput_create("1.mp4", "mp4");
+	AVDictionary* fmtOpts = NULL;
+	void* w = ffoutput_create("1.mp4", "mp4", fmtOpts);
 	AVStream* s = ffoutput_addstream(w, par);
 	s->time_base = av_make_q(1, par->sample_rate);
 	avcodec_parameters_free(&par);
+	av_dict_free(&fmtOpts);
 
 	FILE* fp = fopen("C:\\Users\\Administrator\\Downloads\\rc_dev\\rc_dev\\RDP_Win\\000001946F7704A0.pcm", "rb");
 	for (int64_t dts = 48000; true || dts < 10 * 1000; dts += 480)
@@ -150,13 +156,17 @@ static void audio_test()
 	ffoutput_destroy(w);
 }
 
+extern "C" void ffutils_list(void);
+
 int main()
 {
 	//av_register_all();
 	//avcodec_register_all();
-	avformat_network_init();
+	//avformat_network_init();
 
-	audio_test();
+	ffutils_list();
+	//audio_test();
+	video_test();
 
     std::cout << "Hello World!\n";
 }

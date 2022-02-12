@@ -194,7 +194,7 @@ static inline void avframe_to_ffmpeg(struct avframe_t* frame, AVFrame* ff)
 	memset(ff, 0, sizeof(AVFrame));
 	ff->format = frame->samples > 0 ? avpacket_to_ffmpeg_audio_format(frame->format) : frame->format;
 	ff->pts = frame->pts;
-	ff->pkt_pts = frame->pts;
+	//ff->pkt_pts = frame->pts;
 	ff->pkt_dts = frame->dts;
 	ff->flags = frame->flags;
 	ff->width = frame->width;

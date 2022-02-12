@@ -1,6 +1,8 @@
 LIBRARY   ffutils
 EXPORTS
 	ffutils_init
+	ffutils_deinit
+	ffutils_list
 
 	ffinput_create
 	ffinput_destroy

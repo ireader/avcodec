@@ -15,7 +15,7 @@ static int ffoutput_interrupt(void* p)
 {
 	struct ffoutput_t* ff;
 	ff = (struct ffoutput_t*)p;
-	printf("ffoutput_interrupt: %s\n", ff->oc->filename);
+	printf("ffoutput_interrupt: %p\n", ff->oc);
 	return 0;
 }
 
@@ -73,11 +73,9 @@ AVStream* ffoutput_addstream(void* p, AVCodecParameters* codecpar)
 	return st;
 }
 
-static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* format)
+static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* format, AVDictionary* opts)
 {
 	int r;
-	AVDictionary* opts = NULL;
-
 	r = avformat_alloc_output_context2(&ff->oc, NULL, format, url);
 	if (NULL == ff->oc)
 	{
@@ -99,13 +97,15 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* for
 	//	avcodec_parameters_copy(st->codecpar, streams[i]->codecpar);
 	//}
 
+	avformat_init_output(ff->oc, &opts);
+
 //	avformat_write_header(ff->oc, NULL);
 
-	av_dict_free(&opts);
+	//av_dict_free(&opts);
 	return 0;
 }
 
-void* ffoutput_create(const char* url, const char* format)
+void* ffoutput_create(const char* url, const char* format, AVDictionary* opts)
 {
 	struct ffoutput_t* ff;
 	ff = (struct ffoutput_t*)malloc(sizeof(*ff));
@@ -116,7 +116,7 @@ void* ffoutput_create(const char* url, const char* format)
 	ff->interrupt_callback.callback = ffoutput_interrupt;
 	ff->interrupt_callback.opaque = ff;
 
-	if (0 != ffoutput_open(ff, url, format))
+	if (0 != ffoutput_open(ff, url, format, opts))
 	{
 		ffoutput_destroy(ff);
 		return NULL;
@@ -147,7 +147,6 @@ int ffoutput_write(void* p, AVPacket* pkt)
 	if (!ff->header)
 	{
 		ff->header = 1;
-		//avformat_init_output(ff->oc, NULL);
 		avformat_write_header(ff->oc, NULL);
 	}
 

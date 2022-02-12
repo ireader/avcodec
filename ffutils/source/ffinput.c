@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
+#include "libavcodec/bsf.h"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "ffhelper.h"

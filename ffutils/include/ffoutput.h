@@ -8,7 +8,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 
-void* ffoutput_create(const char* url, const char* format);
+void* ffoutput_create(const char* url, const char* format, AVDictionary* opts);
 void ffoutput_destroy(void* ff);
 
 AVStream* ffoutput_addstream(void* ff, AVCodecParameters* codecpar);
