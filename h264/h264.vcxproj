@@ -27,6 +27,7 @@
     <ClCompile Include="source\h264-profile.c" />
     <ClCompile Include="source\h264-rbsp.c" />
     <ClCompile Include="source\h264-scaling.c" />
+    <ClCompile Include="source\h264-sei.c" />
     <ClCompile Include="source\h264-slice-header.c" />
     <ClCompile Include="source\h264-sps.c" />
     <ClCompile Include="source\h264-stream.c" />
@@ -40,6 +41,7 @@
     <ClInclude Include="include\h264-parser.h" />
     <ClInclude Include="include\h264-pps.h" />
     <ClInclude Include="include\h264-scaling.h" />
+    <ClInclude Include="include\h264-sei.h" />
     <ClInclude Include="include\h264-slice-header.h" />
     <ClInclude Include="include\h264-sps.h" />
     <ClInclude Include="include\h264-util.h" />

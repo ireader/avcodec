@@ -1,6 +1,7 @@
 #ifndef _h264_sps_h_
 #define _h264_sps_h_
 
+#include "h264-vui.h"
 #include <inttypes.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -54,6 +55,7 @@ struct h264_sps_t
 	} frame_cropping;
 
 	uint8_t vui_parameters_present_flag; // bool
+	struct h264_vui_t vui;
 };
 
 int h264_sps_parse(const void* data, uint32_t bytes, struct h264_sps_t* sps);

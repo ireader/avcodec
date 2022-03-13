@@ -51,6 +51,9 @@
     <ClCompile Include="source\h264-profile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\h264-sei.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bitstream.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\h264-parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\h264-sei.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

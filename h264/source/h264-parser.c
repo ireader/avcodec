@@ -1,5 +1,6 @@
 #include "h264-parser.h"
 #include "h264-internal.h"
+#include "h264-util.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,11 +10,13 @@
 struct h264_parser_t
 {
 	struct h264_context_t ctx;
+	struct h264_slice_header_t header;
 	uint32_t frame_num;
 	int flags;
+	int keyframe;
 };
 
-void* h264_parser_create(void)
+struct h264_parser_t* h264_parser_create(void)
 {
 	struct h264_parser_t* parser;
 	parser = (struct h264_parser_t*)malloc(sizeof(*parser));
@@ -23,11 +26,18 @@ void* h264_parser_create(void)
 	return parser;
 }
 
-void h264_parser_destroy(void* p)
+void h264_parser_destroy(struct h264_parser_t* parser)
 {
-	struct h264_parser_t* parser;
-	parser = (struct h264_parser_t*)p;
 	free(parser);
+}
+
+void h264_parser_clear(struct h264_parser_t* parser)
+{
+	// clear sei
+	parser->ctx.sei.recovery_point.recovery_frame_cnt = -1;
+
+	// clear keyframe
+	parser->keyframe = 0;
 }
 
 struct h264_sps_t* h264_sps_get(struct h264_context_t* h264, int id)
@@ -58,15 +68,14 @@ uint32_t h264_frame_num(struct h264_sps_t* sps)
 	return 1 << (sps->log2_max_frame_num_minus4 + 4);
 }
 
-int h264_parser_input(void* p, const void* nalu, size_t bytes)
+static int h264_parser_nal(struct h264_parser_t* parser, const void* nalu, size_t bytes)
 {
 	int r = -1;
 	bitstream_t stream;
 	struct h264_nal_t nal;
 	struct h264_sps_t sps;
 	struct h264_pps_t pps;
-	struct h264_parser_t* parser;
-	parser = (struct h264_parser_t*)p;
+	struct h264_slice_header_t *header;
 
 	bitstream_init(&stream, (const unsigned char*)nalu, bytes);
 
@@ -96,32 +105,51 @@ int h264_parser_input(void* p, const void* nalu, size_t bytes)
 		break;
 
 	case H264_NAL_SEI:
-		//TODO
+		r = h264_sei(&stream, &parser->ctx);
 		break;
 
 	default:
 		if (nal.nal_unit_type > 0 && nal.nal_unit_type <= H264_NAL_IDR)
 		{
-			struct h264_slice_header_t header;
-			r = h264_slice_header(&stream, &parser->ctx, &nal, &header);
+			header = &parser->header;
+			r = h264_slice_header(&stream, &parser->ctx, &nal, header);
 			if (0 == r)
 			{
+				parser->ctx._pps = h264_pps_get(&parser->ctx, header->pic_parameter_set_id);
+				parser->ctx._sps = h264_sps_from_pps_id(&parser->ctx, header->pic_parameter_set_id);
+				// 1. recovery_frame_cnt is set
+				// 2. heuristic to detect non marked keyframes
+				parser->keyframe = nal.nal_unit_type == H264_NAL_IDR
+					|| parser->ctx.sei.recovery_point.recovery_frame_cnt >= 0
+					|| (parser->ctx._sps && parser->ctx._pps && parser->ctx._sps->max_num_ref_frames <= 1 
+						&& parser->ctx._pps->num_ref_idx_l0_default_active_minus1 <= 0 && H264_SLICE_I == (header->slice_type % 5));
+
 				// check framenum
 				if (nal.nal_unit_type == H264_NAL_IDR)
 					parser->flags = 1;
 				else if(1 == parser->flags)
-					parser->flags = header.frame_num == parser->frame_num || header.frame_num == ((parser->frame_num + 1) % h264_frame_num(h264_sps_from_pps_id(&parser->ctx, header.pic_parameter_set_id)));
+					parser->flags = header->frame_num == parser->frame_num || header->frame_num == ((parser->frame_num + 1) % h264_frame_num(h264_sps_from_pps_id(&parser->ctx, header->pic_parameter_set_id)));
 				
-				parser->frame_num = header.frame_num;
+				parser->frame_num = header->frame_num;
 			}
 		}
 	}
 	return r;
 }
 
-int h264_parser_getflags(void* p)
+int h264_parser_input(struct h264_parser_t* parser, const void* annexb, size_t bytes)
 {
-	struct h264_parser_t* parser;
-	parser = (struct h264_parser_t*)p;
+	h264_parser_clear(parser);
+	h264_stream(annexb, bytes, h264_parser_nal, parser);
+	return 0;
+}
+
+int h264_parser_getflags(struct h264_parser_t* parser)
+{
 	return parser->flags;
+}
+
+int h264_parser_iskeyframe(struct h264_parser_t* parser)
+{
+	return parser->keyframe;
 }

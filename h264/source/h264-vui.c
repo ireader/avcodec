@@ -56,17 +56,15 @@ int h264_vui(bitstream_t* stream, struct h264_vui_t* vui)
 	vui->nal_hrd_parameters_present_flag = bitstream_read_bit(stream);
 	if (vui->nal_hrd_parameters_present_flag)
 	{
-		struct h264_hrd_t hrd;
-		memset(&hrd, 0, sizeof(struct h264_hrd_t));
-		h264_hrd(stream, &hrd);
+		memset(&vui->nal_hrd, 0, sizeof(vui->nal_hrd));
+		h264_hrd(stream, &vui->nal_hrd);
 	}
 
 	vui->vcl_hrd_parameters_present_flag = bitstream_read_bit(stream);
 	if (vui->vcl_hrd_parameters_present_flag)
 	{
-		struct h264_hrd_t hrd;
-		memset(&hrd, 0, sizeof(struct h264_hrd_t));
-		h264_hrd(stream, &hrd);
+		memset(&vui->vcl_hrd, 0, sizeof(vui->vcl_hrd));
+		h264_hrd(stream, &vui->vcl_hrd);
 	}
 
 	if (vui->nal_hrd_parameters_present_flag || vui->vcl_hrd_parameters_present_flag)

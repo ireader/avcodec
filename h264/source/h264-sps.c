@@ -102,9 +102,8 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 	sps->vui_parameters_present_flag = (uint8_t)bitstream_read_bit(stream);
 	if(sps->vui_parameters_present_flag)
 	{
-		struct h264_vui_t vui;
-		memset(&vui, 0, sizeof(struct h264_vui_t));
-		h264_vui(stream, &vui);
+		memset(&sps->vui, 0, sizeof(sps->vui));
+		h264_vui(stream, &sps->vui);
 	}
 
 	return h264_rbsp_trailing_bits(stream);
