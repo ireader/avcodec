@@ -114,7 +114,7 @@ int h264_sei(bitstream_t* stream, struct h264_context_t* h264)
 {
 	uint8_t v;
 	uint32_t n, t;
-	size_t off, bits;
+	size_t bits;
 	struct h264_sei_t* sei;
 	sei = &h264->sei;
 
@@ -134,7 +134,7 @@ int h264_sei(bitstream_t* stream, struct h264_context_t* h264)
 			n += v;
 		} while (v == 0xFF);
 
-		bitstream_get_offset(stream, &off, &bits);
+		bitstream_get_offset(stream, &bits);
 		switch (t)
 		{
 		case H264_SEI_BUFFERING_PERIOD:
@@ -154,7 +154,7 @@ int h264_sei(bitstream_t* stream, struct h264_context_t* h264)
 		}
 
 		// restore
-		bitstream_set_offset(stream, off, bits);
+		bitstream_set_offset(stream, bits);
 		while(n > 0)
 		{
 			bitstream_read_bits(stream, 8);

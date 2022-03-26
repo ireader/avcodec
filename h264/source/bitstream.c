@@ -6,92 +6,81 @@
 #define BIT_NUM 8
 //#define BIT_NUM (sizeof(char)*8)
 
-void bitstream_init(bitstream_t* stream, const unsigned char* h264, size_t bytes)
+void bitstream_init(bitstream_t* stream, const unsigned char* rbsp, size_t bytes)
 {
 	memset(stream, 0, sizeof(bitstream_t));
-	stream->h264 = h264;
-	stream->bytes = bytes;
-	stream->offsetBits = 0;
-	stream->offsetBytes = 0;
+	stream->rbsp = rbsp;
+	stream->size = bytes;
+	stream->bits = 0;
 }
 
 static inline void bitstream_move_next_bit(bitstream_t* stream)
 {
-	++stream->offsetBits;
-	if (stream->offsetBits >= BIT_NUM)
-	{
-		stream->offsetBits %= BIT_NUM;
+	size_t offset;
+	if (0 != (++stream->bits % BIT_NUM))
+		return;
 
-		if (stream->offsetBytes + 1 <= stream->bytes)
-		{
-			++stream->offsetBytes;
-
-			// 0x00 0x00 0x03 -> next
-			if (stream->offsetBytes < stream->bytes 
-				&& 0x03 == stream->h264[stream->offsetBytes] 
-				&& stream->offsetBytes > 1 
-				&& 0x00 == stream->h264[stream->offsetBytes - 1] 
-				&& 0x00 == stream->h264[stream->offsetBytes - 2])
-				++stream->offsetBytes;
-		}
-	}
+	// check 0x00 0x00 0x03
+	offset = stream->bits / BIT_NUM;
+	if (offset < stream->size && offset > 1
+		&& 0x03 == stream->rbsp[offset]
+		&& 0x00 == stream->rbsp[offset - 1]
+		&& 0x00 == stream->rbsp[offset - 2])
+		stream->bits += BIT_NUM; // skip 0x03
 }
 
-int bitstream_get_offset(bitstream_t* stream, size_t* bytes, size_t* bits)
+int bitstream_get_offset(bitstream_t* stream, size_t* bits)
 {
-	*bytes = stream->offsetBytes;
-	*bits = stream->offsetBits;
+	*bits = stream->bits;
 	return 0;
 }
 
-int bitstream_set_offset(bitstream_t* stream, size_t bytes, size_t bits)
+int bitstream_set_offset(bitstream_t* stream, size_t bits)
 {
-	if(bytes > stream->bytes || bits > sizeof(unsigned char))
+	if(bits > stream->size * BIT_NUM)
 		return -1;
 
-	stream->offsetBits = bits;
-	stream->offsetBytes = bytes;
+	stream->bits = bits;
 	return 0;
 }
 
 int bitstream_next_bit(bitstream_t* stream)
 {
-	assert(stream && stream->h264 && stream->bytes>0);
-	if(stream->offsetBytes >= stream->bytes)
+	assert(stream && stream->rbsp && stream->size > 0);
+	if(stream->bits >= stream->size * BIT_NUM)
 		return -1; // throw exception
 
-	return (stream->h264[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
+	return (stream->rbsp[stream->bits / BIT_NUM] >> (BIT_NUM - 1 - (stream->bits % BIT_NUM))) & 0x01;
 }
 
 int bitstream_next_bits(bitstream_t* stream, int bits)
 {
 	bitstream_t s;
-	bitstream_init(&s, stream->h264, stream->bytes);
-	s.offsetBits = stream->offsetBits;
-	s.offsetBytes = stream->offsetBytes;
+	bitstream_init(&s, stream->rbsp, stream->size);
+	s.bits = stream->bits;
 	return bitstream_read_bits(&s, bits);
 }
 
 int bitstream_read_bit(bitstream_t* stream)
 {
 	int bit;
-	assert(stream && stream->h264 && stream->bytes>0);
-	if(stream->offsetBytes >= stream->bytes)
+	assert(stream && stream->rbsp && stream->size > 0);
+	if (stream->bits >= stream->size * BIT_NUM)
 		return -1; // throw exception
 
-	bit = (stream->h264[stream->offsetBytes] >> (BIT_NUM-1-stream->offsetBits)) & 0x01;
+	bit = (stream->rbsp[stream->bits / BIT_NUM] >> (BIT_NUM - 1 - (stream->bits % BIT_NUM))) & 0x01;
 	bitstream_move_next_bit(stream); // update offset
 	assert(0 == bit || 1 == bit);
 	return bit;
 }
 
-int bitstream_read_bits(bitstream_t* stream, int bits)
+int64_t bitstream_read_bits(bitstream_t* stream, int num)
 {
 	int i, bit, value;
 
-	assert(stream && bits > 0 && bits <= 32);
+	assert(stream && num >= 0 && num <= 64);
 	value = 0;
-	for(i=0, bit = 0; i< bits && -1 != bit; i++)
+	for(i=0, bit = 0; i < num && -1 != bit; i++)
 	{
 		bit = bitstream_read_bit(stream);
 		assert(0 == bit || 1 == bit);
@@ -127,11 +116,11 @@ int bitstream_read_se(bitstream_t* stream)
 
 int bitstream_read_me(bitstream_t* stream, int chroma_format_idc, int coded_block_pattern)
 {
-	static int intra[48] = {0, 16, 1, 2, 4, 8, 32, 3, 5, 10, 12, 15, 47, 7, 11, 13, 14, 6, 9, 31, 35, 37, 42, 44, 33, 34, 36, 40, 39, 43, 45, 46, 17, 18, 20, 24, 19, 21, 26, 28, 23, 27, 29, 30, 22, 25, 38, 41};
-	static int intra_4x4_8x8[48] = {47, 31, 15, 0, 23, 27, 29, 30, 7, 11, 13, 14, 39, 43, 45, 46, 16, 3, 5, 10, 12, 19, 21, 26, 28, 35, 37, 42, 44, 1, 2, 4, 8, 17, 18, 20, 24, 6, 9, 22, 25, 32, 33, 34, 36, 40, 38, 41};
+	static const int intra[48] = {0, 16, 1, 2, 4, 8, 32, 3, 5, 10, 12, 15, 47, 7, 11, 13, 14, 6, 9, 31, 35, 37, 42, 44, 33, 34, 36, 40, 39, 43, 45, 46, 17, 18, 20, 24, 19, 21, 26, 28, 23, 27, 29, 30, 22, 25, 38, 41};
+	static const int intra_4x4_8x8[48] = {47, 31, 15, 0, 23, 27, 29, 30, 7, 11, 13, 14, 39, 43, 45, 46, 16, 3, 5, 10, 12, 19, 21, 26, 28, 35, 37, 42, 44, 1, 2, 4, 8, 17, 18, 20, 24, 6, 9, 22, 25, 32, 33, 34, 36, 40, 38, 41};
 
-	static int chroma_intra[16] = {15, 0, 7, 11, 13, 14, 3, 5, 10, 12, 1, 2, 4, 8, 6, 9};
-	static int chroma_intra_4x4_8x8[16] = {0, 1, 2, 4, 8, 3, 5, 10, 12, 15, 7, 11, 13, 14, 6, 9};
+	static const int chroma_intra[16] = {15, 0, 7, 11, 13, 14, 3, 5, 10, 12, 1, 2, 4, 8, 6, 9};
+	static const int chroma_intra_4x4_8x8[16] = {0, 1, 2, 4, 8, 3, 5, 10, 12, 15, 7, 11, 13, 14, 6, 9};
 
 	int v = bitstream_read_ue(stream);
 	if(chroma_format_idc)
