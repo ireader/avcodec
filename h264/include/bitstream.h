@@ -13,9 +13,13 @@ typedef struct _bitstream_t
 	const unsigned char* rbsp;
 	size_t size;
 	size_t bits; // offset bit
+	int error;
 } bitstream_t;
 
 void bitstream_init(bitstream_t* stream, const unsigned char* rbsp, size_t bytes);
+
+/// @return 0-ok, other-error
+int bitstream_error(bitstream_t* stream);
 
 int bitstream_get_offset(bitstream_t* stream, size_t* bits);
 int bitstream_set_offset(bitstream_t* stream, size_t bits);

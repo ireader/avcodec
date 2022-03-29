@@ -12,6 +12,12 @@ void bitstream_init(bitstream_t* stream, const unsigned char* rbsp, size_t bytes
 	stream->rbsp = rbsp;
 	stream->size = bytes;
 	stream->bits = 0;
+	stream->error = 0;
+}
+
+int bitstream_error(bitstream_t* stream)
+{
+	return stream->error;
 }
 
 static inline void bitstream_move_next_bit(bitstream_t* stream)
@@ -38,7 +44,10 @@ int bitstream_get_offset(bitstream_t* stream, size_t* bits)
 int bitstream_set_offset(bitstream_t* stream, size_t bits)
 {
 	if(bits > stream->size * BIT_NUM)
-		return -1;
+	{
+		stream->error = -1;
+		return -1; // throw exception
+	}
 
 	stream->bits = bits;
 	return 0;
@@ -48,7 +57,10 @@ int bitstream_next_bit(bitstream_t* stream)
 {
 	assert(stream && stream->rbsp && stream->size > 0);
 	if(stream->bits >= stream->size * BIT_NUM)
-		return -1; // throw exception
+	{
+		stream->error = -1;
+		return 0; // throw exception
+	}
 
 	return (stream->rbsp[stream->bits / BIT_NUM] >> (BIT_NUM - 1 - (stream->bits % BIT_NUM))) & 0x01;
 }
@@ -66,7 +78,10 @@ int bitstream_read_bit(bitstream_t* stream)
 	int bit;
 	assert(stream && stream->rbsp && stream->size > 0);
 	if (stream->bits >= stream->size * BIT_NUM)
-		return -1; // throw exception
+	{
+		stream->error = -1;
+		return 0; // throw exception
+	}
 
 	bit = (stream->rbsp[stream->bits / BIT_NUM] >> (BIT_NUM - 1 - (stream->bits % BIT_NUM))) & 0x01;
 	bitstream_move_next_bit(stream); // update offset
@@ -80,10 +95,9 @@ int64_t bitstream_read_bits(bitstream_t* stream, int num)
 
 	assert(stream && num >= 0 && num <= 64);
 	value = 0;
-	for(i=0, bit = 0; i < num && -1 != bit; i++)
+	for(i=0, bit = 0; i < num && 0 == stream->error; i++)
 	{
 		bit = bitstream_read_bit(stream);
-		assert(0 == bit || 1 == bit);
 		value = (value << 1) | bit;
 	}
 	return value;
@@ -93,7 +107,7 @@ int bitstream_read_ue(bitstream_t* stream)
 {
 	int bit;
 	int leadingZeroBits = -1;
-	for(bit = 0; !bit && -1 != bit; ++leadingZeroBits)
+	for(bit = 0; !bit && 0 == stream->error; ++leadingZeroBits)
 	{
 		bit = bitstream_read_bit(stream);
 		assert(0 == bit || 1 == bit);

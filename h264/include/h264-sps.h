@@ -37,7 +37,7 @@ struct h264_sps_t
 	int32_t offset_for_non_ref_pic;
 	int32_t offset_for_top_to_bottom_field;
 	uint8_t num_ref_frames_in_pic_order_cnt_cycle; // [0, 255]
-	int32_t *offset_for_ref_frame;
+	int32_t offset_for_ref_frame[64];
 	uint32_t max_num_ref_frames; // [0, MaxDpbFrames]
 	uint8_t	gaps_in_frame_num_value_allowed_flag; // bool
 	uint32_t pic_width_in_mbs_minus1;

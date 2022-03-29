@@ -160,7 +160,7 @@ int h264_sei(bitstream_t* stream, struct h264_context_t* h264)
 			bitstream_read_bits(stream, 8);
 			n--;
 		}
-	} while (h264_more_rbsp_data(stream));
+	} while (0 == bitstream_error(stream) && h264_more_rbsp_data(stream));
 
 	h264_rbsp_trailing_bits(stream);
 	return 0;
