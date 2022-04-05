@@ -16,7 +16,7 @@ static void h264_sei_buffering_period(bitstream_t* stream, struct h264_context_t
 
 	if (sps->vui.nal_hrd_parameters_present_flag)
 	{
-		for (i = 0; i <= sps->vui.nal_hrd.cpb_cnt_minus1 && i < 32; i++)
+		for (i = 0; i <= sps->vui.nal_hrd.cpb_cnt_minus1 && i < sizeof_array(bp->initial_cpb_removal_delay); i++)
 		{
 			bp->initial_cpb_removal_delay[i] = bitstream_read_bits(stream, sps->vui.nal_hrd.initial_cpb_removal_delay_length_minus1 + 1);
 			bp->initial_cpb_removal_delay_offset[i] = bitstream_read_bits(stream, sps->vui.nal_hrd.initial_cpb_removal_delay_length_minus1 + 1);
@@ -25,7 +25,7 @@ static void h264_sei_buffering_period(bitstream_t* stream, struct h264_context_t
 
 	if (sps->vui.vcl_hrd_parameters_present_flag)
 	{
-		for (i = 0; i <= sps->vui.vcl_hrd.cpb_cnt_minus1 && i < 32; i++)
+		for (i = 0; i <= sps->vui.vcl_hrd.cpb_cnt_minus1 && i < sizeof_array(bp->initial_cpb_removal_delay); i++)
 		{
 			bp->initial_cpb_removal_delay[i] = bitstream_read_bits(stream, sps->vui.vcl_hrd.initial_cpb_removal_delay_length_minus1 + 1);
 			bp->initial_cpb_removal_delay_offset[i] = bitstream_read_bits(stream, sps->vui.vcl_hrd.initial_cpb_removal_delay_length_minus1 + 1);

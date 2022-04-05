@@ -23,7 +23,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 		if (0 == pps->slice_group_map_type)
 		{
 			uint32_t iGroup;
-			for (iGroup = 0; iGroup < pps->num_slice_groups_minus1; ++iGroup)
+			for (iGroup = 0; iGroup < pps->num_slice_groups_minus1 && iGroup < sizeof_array(pps->group.run_length_minus1); ++iGroup)
 			{
 				pps->group.run_length_minus1[iGroup] = bitstream_read_ue(stream);
 			}
@@ -31,7 +31,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 		else if (2 == pps->slice_group_map_type)
 		{
 			uint32_t iGroup;
-			for (iGroup = 0; iGroup < pps->num_slice_groups_minus1; ++iGroup)
+			for (iGroup = 0; iGroup < pps->num_slice_groups_minus1 && iGroup < sizeof_array(pps->group.dispersed.top_left); ++iGroup)
 			{
 				pps->group.dispersed.top_left[iGroup] = bitstream_read_ue(stream);
 				pps->group.dispersed.bottom_right[iGroup] = bitstream_read_ue(stream);
@@ -48,7 +48,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 			pps->group.groups.pic_size_in_map_units_minus1 = bitstream_read_ue(stream);
 			for (i = 0; i < pps->group.groups.pic_size_in_map_units_minus1; i++)
 			{
-				pps->group.groups.slice_group_id[i] = bitstream_read_ue(stream);
+				/*pps->group.groups.slice_group_id[i] =*/ bitstream_read_ue(stream);
 			}
 		}
 	}
@@ -75,7 +75,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 			if (pps->seq_parameter_set_id >= sizeof(h264->sps) / sizeof(h264->sps[0]))
 				return -1; // invalid seq_parameter_set_id
 			sps = h264->sps + pps->seq_parameter_set_id;
-			for (i = 0; i < 6 + ((sps->chroma_format_idc != 3) ? 2 : 6) * pps->transform_8x8_mode_flag; i++)
+			for (i = 0; i < 6 + ((sps->chroma_format_idc != 3) ? 2 : 6) * pps->transform_8x8_mode_flag && i < sizeof_array(pps->pic_scaling_list_present_flag); i++)
 			{
 				pps->pic_scaling_list_present_flag[i] = (uint8_t)bitstream_read_bit(stream);
 				if (pps->pic_scaling_list_present_flag[i])

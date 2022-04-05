@@ -48,7 +48,7 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->chroma.seq_scaling_matrix_present_flag = (uint8_t)bitstream_read_bit(stream);
 		if(sps->chroma.seq_scaling_matrix_present_flag)
 		{
-			for (i = 0; i < ((sps->chroma_format_idc != 3) ? 8 : 12); i++)
+			for (i = 0; i < ((sps->chroma_format_idc != 3) ? 8 : 12) && i < sizeof_array(sps->chroma.seq_scaling_list_present_flag); i++)
 			{
 				sps->chroma.seq_scaling_list_present_flag[ i ] = (uint8_t)bitstream_read_bit(stream);
 				if(sps->chroma.seq_scaling_list_present_flag[ i ])
@@ -79,7 +79,7 @@ int h264_sps(bitstream_t* stream, struct h264_sps_t* sps)
 		sps->offset_for_top_to_bottom_field = (int32_t)bitstream_read_se(stream);
 		sps->num_ref_frames_in_pic_order_cnt_cycle = (uint8_t)bitstream_read_ue(stream);
 		assert(sps->num_ref_frames_in_pic_order_cnt_cycle < sizeof(sps->offset_for_ref_frame) / sizeof(sps->offset_for_ref_frame[0]));
-		for(i=0; i<sps->num_ref_frames_in_pic_order_cnt_cycle && i < sizeof(sps->offset_for_ref_frame) / sizeof(sps->offset_for_ref_frame[0]); i++)
+		for(i=0; i<sps->num_ref_frames_in_pic_order_cnt_cycle && i < sizeof_array(sps->offset_for_ref_frame); i++)
 			sps->offset_for_ref_frame[i] = (int32_t)bitstream_read_se(stream);
 	}
 

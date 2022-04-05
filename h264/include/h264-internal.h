@@ -11,6 +11,8 @@
 #include "h264-slice-header.h"
 #include "bitstream.h"
 
+#define sizeof_array(v) (sizeof(v) / sizeof((v)[0]))
+
 struct h264_context_t
 {
 	struct h264_sps_t sps[32];
