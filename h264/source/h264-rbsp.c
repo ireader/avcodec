@@ -19,14 +19,14 @@ int h264_rbsp_trailing_bits(bitstream_t* stream)
 
 int h264_more_rbsp_data(bitstream_t* stream)
 {
-	size_t bits, n;
-	int rbsp_next_bits;
+    size_t bits, n;
+    int rbsp_next_bits;
 
-	bitstream_get_offset(stream, &bits);
-	if (bits * 8 + bits >= stream->size * 8)
-		return 0; // no more data
+    bitstream_get_offset(stream, &bits);
+    if (bits >= stream->size * 8)
+        return 0; // no more data
 
-	n = bits < 8 ? 8 - bits : 8;
-	rbsp_next_bits = bitstream_next_bits(stream, (int)n);
-	return rbsp_next_bits != (1 << (n - 1));
+    n = 8 - (bits % 8);
+    rbsp_next_bits = bitstream_next_bits(stream, (int)n);
+    return rbsp_next_bits != (1 << (n - 1));
 }
