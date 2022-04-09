@@ -89,7 +89,7 @@ int64_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int
 
 		timestamp = avtimeline_map32(t, stream, dts);
 	}
-	else if (diff > 0)
+	else if (diff > t->streams[stream].repeat)
 	{
 		timestamp = avtimeline_map32(t, stream, dts);
 
@@ -114,7 +114,7 @@ int64_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int
 
 	t->streams[stream].t = timestamp;
 
-	t->streams[stream].repeat = (0 == *discontinuity && diff <= 0 && init) ? t->streams[stream].repeat + 1 : 0;
+	t->streams[stream].repeat = (0 == *discontinuity && diff <= t->streams[stream].repeat && init) ? t->streams[stream].repeat + 1 : 0;
 	timestamp += t->streams[stream].repeat; // monotone increasing timestamp
 	return timestamp;
 }
@@ -148,7 +148,7 @@ int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int*
 
 		timestamp = avtimeline_map64(t, stream, dts);
 	}
-	else if (diff > 0)
+	else if (diff > t->streams[stream].repeat)
 	{
 		timestamp = avtimeline_map64(t, stream, dts);
 
@@ -172,7 +172,7 @@ int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int*
 
 	t->streams[stream].t = timestamp;
 
-	t->streams[stream].repeat = (0 == *discontinuity && diff <= 0 && init) ? t->streams[stream].repeat + 1 : 0;
+	t->streams[stream].repeat = (0 == *discontinuity && diff <= t->streams[stream].repeat && init) ? t->streams[stream].repeat + 1 : 0;
 	timestamp += t->streams[stream].repeat; // monotone increasing timestamp
 	return timestamp;
 }
@@ -310,7 +310,10 @@ static void avtimeline_monotone_increment_test(void)
 	assert(timestamp + 2 == avtimeline_input32(&line, 0, dts, &discontinuity));
 	assert(timestamp + 3 == avtimeline_input32(&line, 0, dts, &discontinuity));
 	assert(timestamp + 4 == avtimeline_input32(&line, 0, dts, &discontinuity));
-	assert(timestamp + 10 == avtimeline_input32(&line, 0, dts+10, &discontinuity));
+	assert(timestamp + 5 == avtimeline_input32(&line, 0, dts+3, &discontinuity));
+	assert(timestamp + 10 == avtimeline_input32(&line, 0, dts + 10, &discontinuity));
+	assert(timestamp + 11 == avtimeline_input32(&line, 0, dts + 10, &discontinuity));
+	assert(timestamp + 12 == avtimeline_input32(&line, 0, dts + 10, &discontinuity));
 }
 
 static void avtimeline_dts_revert_test(void)
