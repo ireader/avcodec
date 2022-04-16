@@ -80,6 +80,12 @@ static int h265bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 	struct h265bsf_t* bsf;
 	bsf = (struct h265bsf_t*)param;
 
+	if (bytes > 3 && 0x00 == nalu[0] && 0x00 == nalu[1] && (0x01 == nalu[2] || (0x00 == nalu[2] && 0x01 == nalu[3])))
+	{
+		nalu += 0x01 == nalu[2] ? 3 : 4;
+		bytes -= 0x01 == nalu[2] ? 3 : 4;
+	}
+
 	if (bsf->vcl && (dts != bsf->dts || 0 == bytes || h265_is_new_access_unit(nalu, bytes)))
 	{
 		bsf->dts = avdtsinfer_update(&bsf->infer, 1 == bsf->vcl ? 1 : 0, bsf->pts, pts);
