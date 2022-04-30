@@ -56,6 +56,10 @@ static void* avpbs_h264_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 	bs = calloc(1, sizeof(*bs));
 	if (!bs) return NULL;
 
+	bs->onpacket = onpacket;
+	bs->param = param;
+	bs->avs = stream;
+
 	// can be failure
 	assert(AVCODEC_VIDEO_H264 == codec);
 	n = mpeg4_h264_bitstream_format(extra, bytes);
@@ -67,9 +71,6 @@ static void* avpbs_h264_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 
 	if (bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0)
 		avpbs_h264_create_stream(bs);
-	bs->onpacket = onpacket;
-	bs->param = param;
-	bs->avs = stream;
 	return bs;
 }
 

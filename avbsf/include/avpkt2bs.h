@@ -31,7 +31,6 @@ struct avpkt2bs_t
 	} v;
 
 	uint8_t* ptr;
-	int len;
 	int cap;
 };
 

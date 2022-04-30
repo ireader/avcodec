@@ -15,7 +15,7 @@ int avpkt2bs_destroy(struct avpkt2bs_t* bs)
 	{
 		assert(bs->cap > 0);
 		free(bs->ptr);
-		bs->cap = bs->len = 0;
+		bs->cap = 0;
 	}
 	return 0;
 }
@@ -23,7 +23,7 @@ int avpkt2bs_destroy(struct avpkt2bs_t* bs)
 static int avpkt2bs_realloc(struct avpkt2bs_t* bs, int bytes)
 {
 	void* p;
-	if (bytes + bs->len > bs->cap)
+	if (bytes > bs->cap)
 	{
 		p = realloc(bs->ptr, bytes);
 		if (NULL == p)
@@ -123,6 +123,9 @@ int avpkt2bs_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt)
 	case AVCODEC_VIDEO_AV1:
 	case AVCODEC_VIDEO_VP8:
 	case AVCODEC_VIDEO_VP9:
+		return avpkt2bs_copy_input(bs, pkt);
+
+	case AVCODEC_DATA_MP2P:
 		return avpkt2bs_copy_input(bs, pkt);
 
 	default:

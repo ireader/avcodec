@@ -66,6 +66,10 @@ static void* avpbs_h265_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 	bs = calloc(1, sizeof(*bs));
 	if (!bs) return NULL;
 
+	bs->onpacket = onpacket;
+	bs->param = param;
+	bs->avs = stream;
+
 	// can be failure
 	assert(AVCODEC_VIDEO_H265 == codec);
 	n = mpeg4_h264_bitstream_format(extra, bytes);
@@ -77,9 +81,6 @@ static void* avpbs_h265_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 
 	if (bs->hevc.numOfArrays >= 3)
 		avpbs_h265_create_stream(bs);
-	bs->onpacket = onpacket;
-	bs->param = param;
-	bs->avs = stream;
 	return bs;
 }
 
