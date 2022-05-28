@@ -5,7 +5,7 @@
 int fffilter_create_source(AVFilterContext** filter, AVFilterGraph* graph, const AVBufferSrcParameters* param, const char* name)
 {
 	char args[128] = { 0 };
-	snprintf(args, sizeof(args),
+	snprintf(args, sizeof(args)-1,
 		"video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d:frame_rate=%d/%d",
 		param->width, param->height, param->format, //frame->width, frame->height, frame->format,
 		param->time_base.num, param->time_base.den,

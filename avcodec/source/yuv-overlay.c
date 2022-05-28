@@ -82,7 +82,7 @@ static int yv12_overlay_rgb(struct avframe_t* yv12, const struct avframe_t* pic,
 	memcpy(&src, pic, sizeof(struct avframe_t));
 	src.data[0] = (uint8_t*)malloc(pic->width * pic->height * 3 / 2);
 	if (NULL == src.data[0])
-		return ENOMEM;
+		return -ENOMEM;
 	src.data[1] = src.data[0] + pic->width * pic->height;
 	src.data[2] = src.data[1] + pic->width * pic->height / 4;
 	src.linesize[0] = pic->width;
@@ -119,7 +119,7 @@ static int yv12_overlay_rgba(struct avframe_t* yv12, const struct avframe_t* pic
 	memcpy(&src, pic, sizeof(struct avframe_t));
 	src.data[0] = (uint8_t*)malloc(pic->width * pic->height * 5 / 2);
 	if (NULL == src.data[0])
-		return ENOMEM;
+		return -ENOMEM;
 
 	src.data[1] = src.data[0] + pic->width * pic->height;
 	src.data[2] = src.data[1] + pic->width * pic->height / 4;

@@ -105,7 +105,7 @@ static int text_render_bitmap(struct gdi_context_t* render, HBITMAP hBitmap)
 
 	p = realloc(render->bitmap, bmp.bmHeight * bmp.bmWidth * BYTES);
 	if (!p)
-		return ENOMEM;
+		return -ENOMEM;
 
 	render->bitmap = p;
 	GetDIBits(render->hDC, hBitmap, 0, bmp.bmHeight, p, (BITMAPINFO*)&bi, DIB_RGB_COLORS);

@@ -35,7 +35,7 @@ static int ffinput_open(struct ffinput_t* ff, const char* url)
 	if (NULL == ff->ic)
 	{
 		printf("%s(%s): avformat_alloc_context failed.\n", __FUNCTION__, url);
-		return ENOMEM;
+		return -ENOMEM;
 	}
 
 	//if (!av_dict_get(ff->opt, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {

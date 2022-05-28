@@ -56,7 +56,7 @@ int bitmap_save(const char* file, const BITMAPINFOHEADER* bi, const void* data)
 
 	fp = fopen(file, "wb");
 	if (!fp)
-		return errno;
+		return -errno;
 
 	memset(&h, 0, sizeof(h));
 	h.bfType = 0x4D42; // BM

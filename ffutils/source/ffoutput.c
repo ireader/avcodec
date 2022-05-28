@@ -80,7 +80,7 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* for
 	if (NULL == ff->oc)
 	{
 		printf("%s(%s): avformat_alloc_context failed.\n", __FUNCTION__, url);
-		return ENOMEM;
+		return -ENOMEM;
 	}
 
 	/* open the file */
