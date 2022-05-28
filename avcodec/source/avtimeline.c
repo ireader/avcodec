@@ -58,6 +58,31 @@ static void avtimeline_rebuild(struct avtimeline_t* t, int stream, int64_t dts)
 	t->streams[stream].repeat = 0;
 }
 
+static void avtimeline_stream_init(struct avtimeline_t* t, int stream, int64_t dts)
+{
+	int i;
+	int32_t diff;
+
+	for (i = 0; i < sizeof(t->streams) / sizeof(t->streams[0]); i++)
+	{
+		if (!t->streams[i].init)
+			continue;
+
+		diff = (int32_t)(dts - t->streams[i].dts);
+		if ((diff > 0 && diff < (int32_t)t->gap /*gap*/) || (diff < 0 && -diff < (int32_t)t->gap))
+		{
+			t->streams[stream].init = 1;
+			t->streams[stream].t = t->streams[i].t + diff;
+			t->streams[stream].dts = dts;
+			return;
+		}
+	}
+
+	t->streams[stream].init = 1;
+	t->streams[stream].t = avtimeline_max(t);
+	t->streams[stream].dts = dts;
+}
+
 int64_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int *discontinuity)
 {
 	int init;
@@ -71,9 +96,7 @@ int64_t avtimeline_input32(struct avtimeline_t* t, int stream, uint32_t dts, int
 	init = t->streams[stream].init;
 	if (!t->streams[stream].init)
 	{
-		t->streams[stream].init = 1;
-		t->streams[stream].t = avtimeline_max(t);
-		t->streams[stream].dts = dts;
+		avtimeline_stream_init(t, stream, dts);
 	}
 
 	*discontinuity = 0;
@@ -132,9 +155,7 @@ int64_t avtimeline_input64(struct avtimeline_t* t, int stream, int64_t dts, int*
 	init = t->streams[stream].init;
 	if (!t->streams[stream].init)
 	{
-		t->streams[stream].init = 1;
-		t->streams[stream].t = avtimeline_max(t);
-		t->streams[stream].dts = dts;
+		avtimeline_stream_init(t, stream, dts);
 	}
 
 	last = t->streams[stream].dts;
@@ -195,8 +216,7 @@ static void avtimeline_test1(void)
 	uint64_t i;
 	int discontinuity;
 	
-	adts = rand();
-	vdts = rand();
+	vdts = adts = rand();
 	//adts = 0xFFFFFF00;
 	//vdts = 0xFFFF0000;
 	
@@ -233,8 +253,7 @@ static void avtimeline_gap_test(void)
 	int64_t at[10], vt[10];
 	struct avtimeline_t line;
 
-	adts = rand();
-	vdts = rand();
+	vdts = adts = rand();
 	avtimeline_init(&line, 5000, adts);
 
 	at[0] = avtimeline_input32(&line, 0, adts, &ad);
@@ -330,6 +349,19 @@ static void avtimeline_dts_revert_test(void)
 	assert(601 == avtimeline_input32(&line, 0, 8143669, &discontinuity));
 }
 
+static void avtimeline_diff_start_test(void)
+{
+	int discontinuity;
+	struct avtimeline_t line;
+
+	avtimeline_init(&line, 5000, 0);
+	assert(0 == avtimeline_input32(&line, 1, 0, &discontinuity));
+	assert(10 == avtimeline_input32(&line, 1, 10, &discontinuity));
+	assert(300 == avtimeline_input32(&line, 1, 300, &discontinuity));
+	assert(320 == avtimeline_input32(&line, 0, 320, &discontinuity));
+	assert(290 == avtimeline_input32(&line, 2, 290, &discontinuity));
+}
+
 void avtimeline_test(void)
 {
 	unsigned int seed;
@@ -340,6 +372,7 @@ void avtimeline_test(void)
 	avtimeline_gap_test();
 	avtimeline_monotone_increment_test();
 	avtimeline_dts_revert_test();
+	avtimeline_diff_start_test();
 }
 
 #endif
