@@ -96,34 +96,30 @@ static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 	struct avpbs_aac_t* bs;
 
 	bs = (struct avpbs_aac_t*)param;
-	if (dts <= bs->dts && bs->aac.sampling_frequency > 0)
-		dts = bs->dts + 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
-	if (pts <= bs->pts && bs->aac.sampling_frequency > 0)
-		pts = bs->dts + 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
+	if (dts <= bs->dts)
+		dts = bs->dts + 1000 * 1024 /*samples per frame*/ / (bs->aac.sampling_frequency > 0 ? bs->aac.sampling_frequency : 44100);
+	if (pts <= bs->pts)
+		pts = bs->dts + 1000 * 1024 /*samples per frame*/ / (bs->aac.sampling_frequency > 0 ? bs->aac.sampling_frequency : 44100);
 
 	if (bytes >= 7 && 0xFF == data[0] && 0xF0 == (data[1] & 0xF0))
 	{
-		adts = mpeg4_aac_adts_load(data, bytes, &bs->aac);
-		if (adts < 0) return adts;
-		assert(adts >= 7);
-
-		len = mpeg4_aac_adts_frame_length((const uint8_t*)data, bytes);
-		while (bs->aac.sampling_frequency > 0 && len > adts && len <= bytes)
+		do
 		{
+			len = mpeg4_aac_adts_frame_length(data, bytes);
+			adts = mpeg4_aac_adts_load(data, bytes, &bs->aac);
+			if (adts <= 0 || len < adts || len > bytes)
+				return -1;
+
+			assert(adts >= 7);
 			r = avpbs_aac_input_one_frame(bs, pts, dts, (const uint8_t*)data + adts, len - adts, flags);
 			if (0 != r)
 				return r;
 
-			pts += 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
-			dts += 1000 * 1024 /*samples per frame*/ / bs->aac.sampling_frequency;
+			pts += 1000 * 1024 /*samples per frame*/ / (bs->aac.sampling_frequency > 0 ? bs->aac.sampling_frequency : 44100);
+			dts += 1000 * 1024 /*samples per frame*/ / (bs->aac.sampling_frequency > 0 ? bs->aac.sampling_frequency : 44100);
 			bytes -= len;
-			data = (const uint8_t*)data + len;
-			len = mpeg4_aac_adts_frame_length((const uint8_t*)data, bytes);
-
-			adts = mpeg4_aac_adts_load(data, bytes, &bs->aac);
-			if (adts < 0) return adts;
-		}
-
+			data += len;
+		} while (bytes >= 7 && 0xFF == data[0] && 0xF0 == (data[1] & 0xF0));
 		return 0;
 	}
 	else
