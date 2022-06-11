@@ -69,7 +69,8 @@ static void avtimeline_stream_init(struct avtimeline_t* t, int stream, int64_t d
 			continue;
 
 		diff = (int32_t)(dts - t->streams[i].dts);
-		if ((diff > 0 && diff < (int32_t)t->gap /*gap*/) || (diff < 0 && -diff < (int32_t)t->gap))
+		if (((diff > 0 && diff < (int32_t)t->gap /*gap*/) || (diff < 0 && -diff < (int32_t)t->gap)) 
+			&& t->streams[i].t + diff >= 0) // fix stream base timestamp < 0
 		{
 			t->streams[stream].init = 1;
 			t->streams[stream].t = t->streams[i].t + diff;

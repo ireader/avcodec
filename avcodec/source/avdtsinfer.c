@@ -86,7 +86,7 @@ void avdtsinfer_test(void)
 	for (i = 0; i < sizeof(pts) / sizeof(pts[0]) - 1; i++)
 	{
 		v = avdtsinfer_update(&infer, idr[i], pts[i], pts[i+1]);
-		printf("pts -> dts: %lld -> %lld(%lld) %s %s\n", pts[i], v, v-v0, idr[i] ? "[IDR]" : "", v > pts[i] ? "[-]" : "");
+		printf("pts -> dts: %"PRId64" -> %"PRId64"(%"PRId64") % s% s\n", pts[i], v, v-v0, idr[i] ? "[IDR]" : "", v > pts[i] ? "[-]" : "");
 		v0 = v;
 	}
 }
