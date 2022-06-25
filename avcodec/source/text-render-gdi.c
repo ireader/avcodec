@@ -147,7 +147,7 @@ static int text_render_getsize(struct gdi_context_t* render, const wchar_t* txt)
 
 static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
 {
-	HBITMAP hBitmap;
+	HBITMAP hBitmap, old;
 	struct gdi_context_t* render = (struct gdi_context_t*)p;
 
 	if (render->hFont)
@@ -156,10 +156,11 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 	if (0 != text_render_getsize(render, txt))
 		return NULL;
 
-	hBitmap = CreateCompatibleBitmap(render->hDC, render->pitch, render->height);
-	SelectObject(render->hDC, hBitmap);
+	hBitmap = CreateCompatibleBitmap(GetDC(NULL), render->pitch, render->height);
+	old = SelectObject(render->hDC, hBitmap);
 
 	text_render_draw_text(render, txt);
+	SelectObject(render->hDC, old);
 	text_render_bitmap(render, hBitmap);
 
 	DeleteObject(hBitmap);
