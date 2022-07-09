@@ -226,14 +226,14 @@ void rgb24_yv12(const unsigned char* rgb, int w, int h, int stride, unsigned cha
 	int i,j;
 	const unsigned char* p;
 
-	assert(stride >= w);
-	for(i=0; i<h; i++)
+	assert(stride >= 3*w);
+	for (i = 0; i < h; i++)
 	{
-		for(j=0; j<w/2; j++)
+		for (j = 0; j < w / 2; j++)
 		{
-			p = rgb + (i*stride+2*j)*3;
+			p = rgb + i * stride + 2 * j * 3;
 
-			if(0 == i%2)
+			if (0 == i % 2)
 			{
 				// even horizontal, even vertical				
 				rgb2yuv(p[2], p[1], p[0], y, u, v);
@@ -241,12 +241,12 @@ void rgb24_yv12(const unsigned char* rgb, int w, int h, int stride, unsigned cha
 				++u;
 				++v;
 
-				*y++ = ( ( 66*p[5] + 129*p[4] +  25*p[3] + 128) >> 8) + 16;
+				*y++ = ((66 * p[5] + 129 * p[4] + 25 * p[3] + 128) >> 8) + 16;
 			}
 			else
 			{
-				*y++ = ( ( 66*p[2] + 129*p[1] +  25*p[0] + 128) >> 8) + 16;
-				*y++ = ( ( 66*p[5] + 129*p[4] +  25*p[3] + 128) >> 8) + 16;
+				*y++ = ((66 * p[2] + 129 * p[1] + 25 * p[0] + 128) >> 8) + 16;
+				*y++ = ((66 * p[5] + 129 * p[4] + 25 * p[3] + 128) >> 8) + 16;
 			}
 		}
 	}
@@ -260,12 +260,12 @@ void yv12_rgb24(const unsigned char* y, const unsigned char* u, const unsigned c
 
 	assert(stride_y >= w);
 	assert(stride_uv*2 >= w);
-	for(i=0; i<h; i++)
+	for (i = 0; i < h; i++)
 	{
-		py = y + stride_y*i;
-		pu = u + stride_uv*(i/2);
-		pv = v + stride_uv*(i/2);
-		for(j=0; j<w/2; j++, ++pu, ++pv)
+		py = y + stride_y * i;
+		pu = u + stride_uv * (i / 2);
+		pv = v + stride_uv * (i / 2);
+		for (j = 0; j < w / 2; j++, ++pu, ++pv)
 		{
 			// Y[0], U[0], V[0] even horizontal, even vertical
 			yuv2rgb(*py++, *pu, *pv, &r, &g, &b);
@@ -287,30 +287,37 @@ void rgb32_yv12(const unsigned char* rgb, int w, int h, int stride, unsigned cha
 	int i,j;
 	const unsigned char* p;
 
-	assert(stride >= w);
-	for(i=0; i<h; i++)
-	{
-		for(j=0; j<w/2; j++)
-		{
-			p = rgb + (i*stride+2*j)*4;
+#define R 2
+#define G 1
+#define B 0
 
-			if(0 == i%2)
+	assert(stride >= 4*w);
+	for (i = 0; i < h; i++)
+	{
+		for (j = 0; j < w / 2; j++)
+		{
+			p = rgb + i * stride + 2 * j * 4;
+
+			if (0 == i % 2)
 			{
 				// even horizontal, even vertical				
-				rgb2yuv(p[2], p[1], p[0], y, u, v);
+				rgb2yuv(p[R], p[G], p[B], y, u, v);
 				++y;
 				++u;
 				++v;
 
-				*y++ = ( ( 66*p[6] + 129*p[5] +  25*p[4] + 128) >> 8) + 16;
+				*y++ = ((66 * p[R+4] + 129 * p[G+4] + 25 * p[B+4] + 128) >> 8) + 16;
 			}
 			else
 			{
-				*y++ = ( ( 66*p[2] + 129*p[1] +  25*p[0] + 128) >> 8) + 16;
-				*y++ = ( ( 66*p[6] + 129*p[5] +  25*p[4] + 128) >> 8) + 16;
+				*y++ = ((66 * p[R] + 129 * p[G] + 25 * p[B] + 128) >> 8) + 16;
+				*y++ = ((66 * p[R+4] + 129 * p[G+4] + 25 * p[B+4] + 128) >> 8) + 16;
 			}
 		}
 	}
+#undef R
+#undef G
+#undef B
 }
 
 void yv12_rgb32(const unsigned char* y, const unsigned char* u, const unsigned char* v, int stride_y, int stride_uv, int w, int h, unsigned char* rgb)
@@ -321,12 +328,12 @@ void yv12_rgb32(const unsigned char* y, const unsigned char* u, const unsigned c
 
 	assert(stride_y >= w);
 	assert(stride_uv*2 >= w);
-	for(i=0; i<h; i++)
+	for (i = 0; i < h; i++)
 	{
-		py = y + stride_y*i;
-		pu = u + stride_uv*(i/2);
-		pv = v + stride_uv*(i/2);
-		for(j=0; j<w/2; j++, ++pu, ++pv)
+		py = y + stride_y * i;
+		pu = u + stride_uv * (i / 2);
+		pv = v + stride_uv * (i / 2);
+		for (j = 0; j < w / 2; j++, ++pu, ++pv)
 		{
 			// Y[0], U[0], V[0] even horizontal, even vertical
 			yuv2rgb(*py++, *pu, *pv, &r, &g, &b);

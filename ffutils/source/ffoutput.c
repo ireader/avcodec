@@ -84,7 +84,7 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* for
 	}
 
 	/* open the file */
-	r = avio_open2(&ff->oc->pb, url, AVIO_FLAG_WRITE, &ff->oc->interrupt_callback, &opts);
+	r = avio_open2(&ff->oc->pb, url, AVIO_FLAG_WRITE, &ff->interrupt_callback, &opts);
 	if (r < 0) {
 		printf("%s(%s): avio_open2 failed: %s\n", __FUNCTION__, url, av_err2str(r));
 		return r;
