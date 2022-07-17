@@ -9,7 +9,7 @@ void avsegment_reset(struct avsegment_t* seg, int64_t timeline)
 		//seg->streams[i].first = 0;
 		//seg->streams[i].last = 0;
 		//seg->streams[i].duratoin = 0; // clear duation
-		seg->streams[i] = NULL;
+		seg->streams[i] = (struct avstream_t*)0;
 	}
 	
 	seg->size = 0;
