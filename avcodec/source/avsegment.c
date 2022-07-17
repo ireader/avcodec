@@ -3,14 +3,15 @@
 
 void avsegment_reset(struct avsegment_t* seg, int64_t timeline)
 {
-	//int i;
-	//for (i = 0; i < sizeof(seg->streams) / sizeof(seg->streams[0]); i++)
-	//{
-	//	seg->streams[i].first = 0;
-	//	seg->streams[i].last = 0;
-	//	seg->streams[i].duratoin = 0; // clear duation
-	//}
-
+	int i;
+	for (i = 0; i < sizeof(seg->streams) / sizeof(seg->streams[0]); i++)
+	{
+		//seg->streams[i].first = 0;
+		//seg->streams[i].last = 0;
+		//seg->streams[i].duratoin = 0; // clear duation
+		seg->streams[i] = NULL;
+	}
+	
 	seg->size = 0;
 	seg->packets = 0;
 	seg->timeline = timeline;
@@ -45,33 +46,33 @@ int avsegment_check(struct avsegment_t* seg, const struct avpacket_t* pkt, int64
 
 	// stream changed
 	if (seg->streams[pkt->stream->stream] && seg->streams[pkt->stream->stream] != pkt->stream)
-		return 1;
+		return 2;
 
 	duration = timeline - seg->timeline;
 	if (keyframe)
 	{
 		// TODO: gop length check
 		if(duration >= seg->limit.duratoin)
-			return 1;
+			return 3;
 	}
 	else
 	{
 		// audio only
 		if(!seg->video && (duration >= seg->limit.duratoin || seg->size + pkt->size >= seg->limit.size))
-			return 1;
+			return 4;
 
 		// force segment by duration
 		if (duration >= seg->limit.duratoin && duration >= 2 * 60 * 1000)
-			return 1;
+			return 5;
 	}
 
 	// force segment by size
 	if (seg->size + pkt->size >= seg->limit.size)
-		return 1;
+		return 6;
 
 	// force segment by packets
 	if (seg->packets + 1 >= seg->limit.packets)
-		return 1;
+		return 7;
 
 	return 0;
 }
@@ -84,7 +85,7 @@ int avsegment_input(struct avsegment_t* seg, const struct avpacket_t* pkt, int64
 		return -1;
 	}
 
-	if (!seg->streams[pkt->stream->stream])
+	if (!seg->streams[pkt->stream->stream] || seg->streams[pkt->stream->stream] != pkt->stream)
 	{
 		//seg->streams[pkt->stream->stream].first = timestamp;
 		seg->streams[pkt->stream->stream] = pkt->stream;
