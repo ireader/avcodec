@@ -14,7 +14,7 @@ struct avsegment_t
 	{
 		int64_t size; // bytes limit (A+V)
 		int64_t packets; // packets limit (A+V)
-		int64_t duratoin; // duration limit (ms)
+		int64_t duration; // duration limit (ms)
 	} limit;
 	
 	// current

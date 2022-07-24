@@ -52,17 +52,17 @@ int avsegment_check(struct avsegment_t* seg, const struct avpacket_t* pkt, int64
 	if (keyframe)
 	{
 		// TODO: gop length check
-		if(duration >= seg->limit.duratoin)
+		if(duration >= seg->limit.duration)
 			return 3;
 	}
 	else
 	{
 		// audio only
-		if(!seg->video && (duration >= seg->limit.duratoin || seg->size + pkt->size >= seg->limit.size))
+		if(!seg->video && (duration >= seg->limit.duration || seg->size + pkt->size >= seg->limit.size))
 			return 4;
 
 		// force segment by duration
-		if (duration >= seg->limit.duratoin && duration >= 2 * 60 * 1000)
+		if (duration >= seg->limit.duration && duration >= 2 * 60 * 1000)
 			return 5;
 	}
 
