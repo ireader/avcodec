@@ -109,7 +109,7 @@ static int avpbs_h265_input(void* param, int64_t pts, int64_t dts, const uint8_t
 
 	pkt->pts = pts;
 	pkt->dts = dts;
-	pkt->flags = flags | (1 == vcl ? AVPACKET_FLAG_KEY : 0);
+	pkt->flags = (flags & (~AVPACKET_FLAG_KEY)) | (1 == vcl ? AVPACKET_FLAG_KEY : 0);
 	pkt->stream = bs->stream;
 	avstream_addref(bs->stream);
 
