@@ -23,6 +23,8 @@ int avstatistic_input(struct avstatistic_t* stats, int64_t clock, int stream, in
     
     if(0 == stats->streams[stream].packets)
     {
+		stats->streams[stream].first_pts = pts;
+		stats->streams[stream].first_dts = dts;
         stats->streams[stream].first_recv = clock;
         stats->streams[stream].first_packet = clock;
     }

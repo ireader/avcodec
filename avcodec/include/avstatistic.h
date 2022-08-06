@@ -36,6 +36,8 @@ struct avstatistic_t
 		struct avjitter_t jitter;
 		struct avbitrate_t bitrate;
 
+		int64_t first_pts;
+		int64_t first_dts;
 		int64_t first_recv; // first data byte
 		int64_t first_packet; // first audio/video/data chunk/packet
 	} streams[8];
