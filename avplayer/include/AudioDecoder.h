@@ -49,11 +49,16 @@ private:
 			else if (AVCODEC_AUDIO_OPUS == pkt->stream->codecid)
 			{
 				m_audio_class = opus_decoder();
-				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, 1, 8000, pkt->stream->extra, pkt->stream->bytes);
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, pkt->stream->channels, pkt->stream->sample_rate, pkt->stream->extra, pkt->stream->bytes);
 			}
 			else if (AVCODEC_AUDIO_MP3 == pkt->stream->codecid)
 			{
 				m_audio_class = mp3_decoder();
+				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, pkt->stream->channels, pkt->stream->sample_rate, pkt->stream->extra, pkt->stream->bytes);
+			}
+			else if (AVCODEC_AUDIO_G711A == pkt->stream->codecid || AVCODEC_AUDIO_G711U == pkt->stream->codecid)
+			{
+				m_audio_class = AVCODEC_AUDIO_G711A == pkt->stream->codecid ? g711a_decoder() : g711u_decoder();
 				m_decoder = m_audio_class->create(PCM_SAMPLE_FMT_S16, pkt->stream->channels, pkt->stream->sample_rate, pkt->stream->extra, pkt->stream->bytes);
 			}
 		}

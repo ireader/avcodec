@@ -66,12 +66,12 @@ static int avpbs_opus_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	pkt = avpacket_alloc(bytes);
 	if (!pkt) return -1;
 
-	r = opus_head_load(data, bytes, &bs->opus);
-	if (r < 0)
-	{
-		assert(0);
-		return r;
-	}
+	//r = opus_head_load(data, bytes, &bs->opus);
+	//if (r > 0 && r < bytes)
+	//{
+	//	data += r;
+	//	bytes -= r;
+	//}
 
 	if (!bs->stream || bs->stream->channels != opus_head_channels(&bs->opus)
 		|| bs->stream->sample_rate != (int)bs->opus.input_sample_rate)
@@ -80,7 +80,7 @@ static int avpbs_opus_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	}
 
 	memcpy(pkt->data, data, bytes);
-	pkt->size = bytes - r;
+	pkt->size = bytes;
 	pkt->pts = pts;
 	pkt->dts = dts;
 	pkt->flags = flags;

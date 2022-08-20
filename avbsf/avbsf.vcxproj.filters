@@ -24,6 +24,12 @@
     <ClInclude Include="include\avpkt2bs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avpktutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\avpktutil2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\h264bsf.c">

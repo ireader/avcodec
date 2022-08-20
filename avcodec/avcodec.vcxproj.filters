@@ -113,9 +113,6 @@
     <ClCompile Include="source\opus-encoder.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\opus-decoder.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\avbuffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,6 +165,9 @@
       <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="source\avdtsinfer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\opus-decoder.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

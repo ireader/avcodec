@@ -34,7 +34,7 @@ static int CompileShaderFromFile(LPCWSTR filename, const char* functionName, con
 
 static int d3d11_compile()
 {
-	HMODULE hD3dCompile = LoadLibraryEx("D3DCompiler_47.dll", NULL, 0);
+	HMODULE hD3dCompile = LoadLibraryExA("D3DCompiler_47.dll", NULL, 0);
 	fpD3DCompileFromFile = (pD3DCompileFromFile)GetProcAddress(hD3dCompile, "D3DCompileFromFile");
 	if (NULL == fpD3DCompileFromFile)
 		return -1;

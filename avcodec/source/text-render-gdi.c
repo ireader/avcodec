@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define BYTES 4
+#define BYTES 3
 #define ALIGN(a, n) (((a) + (n) - 1) / (n) * (n))
 
 struct gdi_context_t
@@ -160,9 +160,9 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 	old = SelectObject(render->hDC, hBitmap);
 
 	text_render_draw_text(render, txt);
-	SelectObject(render->hDC, old);
 	text_render_bitmap(render, hBitmap);
 
+	SelectObject(render->hDC, old);
 	DeleteObject(hBitmap);
 
 	*w = render->pitch;
