@@ -12,6 +12,7 @@ extern "C" {
 #include "libavutil/avutil.h"
 #include "libavutil/channel_layout.h"
 }
+#include "../libavo/src/render/direct3d11/d3d11_compile.h"
 
 static void video_test()
 {
@@ -29,8 +30,7 @@ static void video_test()
 	void* ff = ffencoder_create(codecpar, opts);
 	//av_dict_free(&opts);
 
-	AVCodecParameters* par = avcodec_parameters_alloc();
-	ffencoder_getcodecpar(ff, par);
+	AVCodecParameters* par = ffencoder_getcodecpar(ff);
 
 	AVDictionary* fmtOpts = NULL;
 	av_dict_set(&fmtOpts, "movflags", "frag_keyframe+empty_moov+default_base_moof", 0);
@@ -91,17 +91,15 @@ static void audio_test()
 	codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 	codecpar->codec_id = AV_CODEC_ID_AAC;
 	codecpar->format = AV_SAMPLE_FMT_FLTP;
-	codecpar->channels = 2;
 	codecpar->sample_rate = 48000;
-	codecpar->channel_layout = av_get_default_channel_layout(codecpar->channels);
+	av_channel_layout_default(&codecpar->ch_layout, 2);
 	codecpar->bit_rate = 128000;
 
 	AVDictionary* opts = NULL;
 	void* ff = ffencoder_create(codecpar, opts);
 	void* swr = ffresample_create(AV_SAMPLE_FMT_S16, 48000, 2, AV_SAMPLE_FMT_FLTP, 48000, 2);
-	AVCodecParameters* par = avcodec_parameters_alloc();
-	ffencoder_getcodecpar(ff, par);
-
+	
+	AVCodecParameters* par = ffencoder_getcodecpar(ff);
 	AVDictionary* fmtOpts = NULL;
 	void* w = ffoutput_create("1.mp4", "mp4", fmtOpts);
 	AVStream* s = ffoutput_addstream(w, par);
@@ -116,8 +114,7 @@ static void audio_test()
 
 		AVFrame* frame = av_frame_alloc();
 		frame->format = AV_SAMPLE_FMT_FLTP;
-		frame->channels = 2;
-		frame->channel_layout = av_get_default_channel_layout(frame->channels);
+		av_channel_layout_default(&frame->ch_layout, 2);
 		frame->sample_rate = 48000;
 		frame->nb_samples = 480;
 		frame->pkt_dts = dts;
@@ -158,8 +155,15 @@ static void audio_test()
 
 extern "C" void ffutils_list(void);
 
+void audio_transcode_test(const char* url);
+
 int main()
 {
+	audio_transcode_test("d:\\video\\oceans-44100.mp4");
+
+	d3d11_compile();
+	//avtimeline_test();
+
 	//av_register_all();
 	//avcodec_register_all();
 	//avformat_network_init();

@@ -28,10 +28,10 @@ struct ffencoder_t
 //	//ff->avctx->ticks_per_frame = 2; // Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
 //}
 
-static int ffencoder_open(struct ffencoder_t* ff, AVCodecParameters* codecpar, AVDictionary* opts)
+static int ffencoder_open(struct ffencoder_t* ff, const AVCodecParameters* codecpar, AVDictionary* opts)
 {
 	int ret;
-	AVCodec* codec = NULL;
+	const AVCodec* codec = NULL;
 	//AVDictionary* opts = NULL;
 	AVCodecContext* avctx = NULL;
 
@@ -82,7 +82,7 @@ static int ffencoder_open(struct ffencoder_t* ff, AVCodecParameters* codecpar, A
 	return 0;
 }
 
-void* ffencoder_create(AVCodecParameters* codecpar, AVDictionary* opts)
+void* ffencoder_create(const AVCodecParameters* codecpar, AVDictionary* opts)
 {
 	struct ffencoder_t* ff;
 	ff = (struct ffencoder_t*)malloc(sizeof(*ff));
@@ -99,7 +99,11 @@ void* ffencoder_create(AVCodecParameters* codecpar, AVDictionary* opts)
 
 	if (AVMEDIA_TYPE_AUDIO == codecpar->codec_type && ff->avctx->frame_size != 0)
 	{
+#if LIBAVCODEC_VERSION_MAJOR < 59
 		ff->fifo = av_audio_fifo_alloc(codecpar->format, codecpar->channels, codecpar->sample_rate / 2); // 500ms
+#else
+		ff->fifo = av_audio_fifo_alloc(codecpar->format, codecpar->ch_layout.nb_channels, codecpar->sample_rate / 2); // 500ms
+#endif
 		if (!ff->fifo)
 		{
 			ffencoder_destroy(ff);
@@ -129,10 +133,17 @@ int ffencoder_input(void* p, const AVFrame* frame)
 
 	if (AVMEDIA_TYPE_AUDIO == ff->avctx->codec_type && ff->fifo)
 	{
+		ret = av_audio_fifo_realloc(ff->fifo, av_audio_fifo_size(ff->fifo) + frame->nb_samples);
+		if (ret < 0)
+		{
+			printf("[%s] av_audio_fifo_realloc(%d, %d) => %s\n", __FUNCTION__, av_audio_fifo_size(ff->fifo), frame->nb_samples, av_err2str(ret));
+			return ret;
+		}
+
 		ret = av_audio_fifo_write(ff->fifo, (void**)frame->data, frame->nb_samples);
 		if (ret < 0)
 		{
-			printf("[%s] av_audio_fifo_write() => %s\n", __FUNCTION__, av_err2str(ret));
+			printf("[%s] av_audio_fifo_write(%d) => %s\n", __FUNCTION__, frame->nb_samples, av_err2str(ret));
 			return ret;
 		}
 		else if (ret != frame->nb_samples)
@@ -147,8 +158,12 @@ int ffencoder_input(void* p, const AVFrame* frame)
 			audio->nb_samples = ff->avctx->frame_size;
 			audio->sample_rate = ff->avctx->sample_rate;
 			audio->format = ff->avctx->sample_fmt;
+#if LIBAVCODEC_VERSION_MAJOR < 59
 			audio->channels = ff->avctx->channels;
 			audio->channel_layout = ff->avctx->channel_layout;
+#else
+			av_channel_layout_copy(&audio->ch_layout, &ff->avctx->ch_layout);
+#endif
 			ret = av_frame_get_buffer(audio, 0);
 			if (ret < 0)
 			{
@@ -163,6 +178,8 @@ int ffencoder_input(void* p, const AVFrame* frame)
 				return -1; // error
 			}
 
+			audio->time_base = frame->time_base;
+			audio->pts = audio->pkt_dts = frame->pkt_dts + frame->nb_samples - av_audio_fifo_size(ff->fifo) /* - ff->avctx->frame_size */ ;
 			ret = avcodec_send_frame(ff->avctx, audio);
 			av_frame_free(&audio);
 			if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
@@ -199,6 +216,7 @@ int ffencoder_getpacket(void* p, AVPacket* pkt)
 	if (ret >= 0)
 	{
 		// ok
+		pkt->time_base = ff->avctx->time_base;
 	}
 
 	//if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
@@ -207,9 +225,21 @@ int ffencoder_getpacket(void* p, AVPacket* pkt)
 	return ret;
 }
 
-int ffencoder_getcodecpar(void* p, AVCodecParameters* codecpar)
+AVCodecParameters* ffencoder_getcodecpar(void* p)
 {
 	struct ffencoder_t* ff;
+	AVCodecParameters* codecpar;
 	ff = (struct ffencoder_t*)p;
-	return avcodec_parameters_from_context(codecpar, ff->avctx);
+	
+	codecpar = avcodec_parameters_alloc();
+	if (!codecpar)
+		return NULL;
+	
+	if (0 != avcodec_parameters_from_context(codecpar, ff->avctx))
+	{
+		avcodec_parameters_free(&codecpar);
+		return NULL;
+	}
+
+	return codecpar;
 }

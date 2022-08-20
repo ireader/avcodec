@@ -30,7 +30,7 @@ static inline enum AVCodecID avpacket_to_ffmpeg_codecid(enum AVPACKET_CODEC_ID i
 	case AVCODEC_IMAGE_GIF:		return AV_CODEC_ID_GIF;
 	case AVCODEC_IMAGE_JPEG:	return AV_CODEC_ID_JPEG2000;
 
-	case AVCODEC_AUDIO_AAC:		return AV_CODEC_ID_AAC_LATM;
+	case AVCODEC_AUDIO_AAC:		return AV_CODEC_ID_AAC;
 	case AVCODEC_AUDIO_MP3:		return AV_CODEC_ID_MP3;
 	case AVCODEC_AUDIO_OPUS:	return AV_CODEC_ID_OPUS;
 	case AVCODEC_AUDIO_G729:	return AV_CODEC_ID_G729;
@@ -135,7 +135,8 @@ static inline struct avpacket_t* ffmpeg_to_avpacket(AVPacket* ff)
 
 static inline int avpacket_to_ffmpeg(const struct avpacket_t* pkt, int stream_index, AVPacket* ff)
 {
-	av_init_packet(ff);
+	//av_init_packet(ff);
+	memset(ff, 0, sizeof(*ff));
 	ff->data = pkt->data;
 	ff->size = pkt->size;
 	ff->pts = pkt->pts;
@@ -174,7 +175,11 @@ static inline struct avframe_t* ffmpeg_to_avframe(AVFrame* ff)
 		frame->flags = ref->flags;
 		frame->width = ref->width;
 		frame->height = ref->height;
+#if LIBAVCODEC_VERSION_MAJOR < 59
 		frame->channels = ref->channels;
+#else
+		frame->channels = ref->ch_layout.nb_channels;
+#endif	
 		frame->samples = ref->nb_samples;
 		frame->sample_bits = 8 * av_get_bytes_per_sample((enum AVSampleFormat)ref->format);
 		frame->sample_rate = ref->sample_rate;
@@ -199,7 +204,12 @@ static inline void avframe_to_ffmpeg(struct avframe_t* frame, AVFrame* ff)
 	ff->flags = frame->flags;
 	ff->width = frame->width;
 	ff->height = frame->height;
-	ff->channels = frame->channels;
+#if LIBAVCODEC_VERSION_MAJOR < 59
+	ff->channels = pkt->stream->channels;
+	ff->channel_layout = av_get_default_channel_layout(codecpar.channels);
+#else
+	av_channel_layout_default(&ff->ch_layout, frame->channels);
+#endif
 	ff->nb_samples = frame->samples;
 	ff->sample_rate = frame->sample_rate;
 	for (i = 0; i < sizeof(frame->data) / sizeof(frame->data[0]); i++)
@@ -207,4 +217,38 @@ static inline void avframe_to_ffmpeg(struct avframe_t* frame, AVFrame* ff)
 		ff->data[i] = frame->data[i];
 		ff->linesize[i] = frame->linesize[i];
 	}
+}
+
+static inline struct avstream_t* ffmpeg_to_avstream(const AVCodecParameters* codecpar)
+{
+	struct avstream_t* stream;
+	stream = avstream_alloc(codecpar->extradata_size);
+	if (!stream)
+		return stream;
+
+	if (codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+	{
+		stream->width = codecpar->width;
+		stream->height = codecpar->height;
+	}
+	else if (codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+	{
+#if LIBAVCODEC_VERSION_MAJOR < 59
+		stream->channels = codecpar->channels;
+#else
+		stream->channels = codecpar->ch_layout.nb_channels;
+#endif
+		stream->sample_bits = codecpar->bits_per_raw_sample;
+		stream->sample_rate = codecpar->sample_rate;
+	}
+	else
+	{
+		avstream_release(stream);
+		return NULL;
+	}
+
+	stream->codecid = ffmpeg_to_avpacket_codecid(codecpar->codec_id);
+	memcpy(stream->extra, codecpar->extradata, codecpar->extradata_size);
+	stream->bytes = codecpar->extradata_size;
+	return stream;
 }

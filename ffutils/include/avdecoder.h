@@ -11,6 +11,8 @@ extern "C" {
 
 void* avdecoder_create_h264(const void* extra, int bytes);
 void* avdecoder_create_h265(const void* extra, int bytes);
+
+void* avdecoder_create(const struct avpacket_t* pkt);
 void avdecoder_destroy(void* ff);
 
 /// @return 0-ok, other-error

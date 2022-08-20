@@ -14,35 +14,84 @@
 
 void* avdecoder_create_h264(const void* extra, int bytes)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
 	param.codec_type = AVMEDIA_TYPE_VIDEO;
 	param.codec_id = AV_CODEC_ID_H264;
 	param.extradata = (void*)extra;
 	param.extradata_size = bytes;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
 }
 
 void* avdecoder_create_h265(const void* extra, int bytes)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
 	param.codec_type = AVMEDIA_TYPE_VIDEO;
 	param.codec_id = AV_CODEC_ID_H265;
 	param.extradata = (void*)extra;
 	param.extradata_size = bytes;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
 }
 
 void* avdecoder_create_aac(const void* extradata, int extradata_size)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
     param.extradata = (void*)extradata;
     param.extradata_size = extradata_size;
 	param.codec_type = AVMEDIA_TYPE_AUDIO;
 	param.codec_id = AV_CODEC_ID_AAC;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
+}
+
+static void* avdecoder_create_audio(const struct avpacket_t* pkt)
+{
+	AVDictionary* opts = NULL;
+	AVCodecParameters codecpar;
+	memset(&codecpar, 0, sizeof(AVCodecParameters));
+	codecpar.codec_type = AVMEDIA_TYPE_AUDIO;
+	codecpar.codec_id = avpacket_to_ffmpeg_codecid(pkt->stream->codecid);
+	codecpar.format = AV_SAMPLE_FMT_FLTP;
+	codecpar.sample_rate = pkt->stream->sample_rate;
+	codecpar.extradata = (uint8_t*)pkt->stream->extra;
+	codecpar.extradata_size = pkt->stream->bytes;
+#if LIBAVCODEC_VERSION_MAJOR < 59
+	codecpar.channels = pkt->stream->channels;
+	codecpar.channel_layout = av_get_default_channel_layout(codecpar.channels);
+#else
+	av_channel_layout_default(&codecpar.ch_layout, pkt->stream->channels);
+#endif
+	//codecpar.bit_rate = 128000;
+	return ffdecoder_create(&codecpar, opts);
+}
+
+static void* avdecoder_create_video(const struct avpacket_t* pkt)
+{
+	AVDictionary* opts = NULL;
+	AVCodecParameters codecpar;
+	memset(&codecpar, 0, sizeof(AVCodecParameters));
+	codecpar.codec_type = AVMEDIA_TYPE_VIDEO;
+	codecpar.codec_id = avpacket_to_ffmpeg_codecid(pkt->stream->codecid);
+	codecpar.extradata = (uint8_t*)pkt->stream->extra;
+	codecpar.extradata_size = pkt->stream->bytes;
+	return ffdecoder_create(&codecpar, opts);
+}
+
+void* avdecoder_create(const struct avpacket_t* pkt)
+{
+	switch (avstream_type(pkt->stream))
+	{
+	case AVSTREAM_AUDIO:
+		return avdecoder_create_audio(pkt);
+	case AVSTREAM_VIDEO:
+		return avdecoder_create_video(pkt);
+	default:
+		return NULL;
+	}
 }
 
 void avdecoder_destroy(void* ff)
@@ -77,6 +126,7 @@ int avdecoder_getframe(void* ff, struct avframe_t** frame)
 
 static void* aac_create(int format, int channels, int frequency, const void* extradata, int extradata_size)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
     param.extradata = (void*)extradata;
@@ -85,22 +135,24 @@ static void* aac_create(int format, int channels, int frequency, const void* ext
 	param.codec_id = AV_CODEC_ID_AAC;
     param.channels = channels;
     param.sample_rate = frequency;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
 }
 
 static void* mp3_create(int format, int channels, int frequency, const void* extradata, int extradata_size)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
     param.extradata = (void*)extradata;
     param.extradata_size = extradata_size;
     param.codec_type = AVMEDIA_TYPE_AUDIO;
 	param.codec_id = AV_CODEC_ID_MP3;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
 }
 
 void* g726_create(int format, int channels, int frequency, const void* extradata, int extradata_size)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
     param.extradata = (void*)extradata;
@@ -110,11 +162,12 @@ void* g726_create(int format, int channels, int frequency, const void* extradata
 	param.sample_rate = 8000;
 	param.bits_per_coded_sample = 2;
 	param.channels = 1;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
 }
 
 void* g729_create(int format, int channels, int frequency, const void* extradata, int extradata_size)
 {
+	AVDictionary* opts = NULL;
 	AVCodecParameters param;
 	memset(&param, 0, sizeof(AVCodecParameters));
     param.extradata = (void*)extradata;
@@ -123,7 +176,7 @@ void* g729_create(int format, int channels, int frequency, const void* extradata
 	param.codec_id = AV_CODEC_ID_G729;
 	param.sample_rate = 8000;
 	param.channels = 1;
-	return ffdecoder_create(&param);
+	return ffdecoder_create(&param, opts);
 }
 
 struct audio_decoder_t* aac_decoder()

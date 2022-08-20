@@ -52,6 +52,10 @@ void ffutils_list(void)
 	it = NULL;
 	for(codec = av_codec_iterate(&it); codec; codec = av_codec_iterate(&it))
 	{
+#if LIBAVCODEC_VERSION_MAJOR < 59
 		printf("AV Codec(%c): %s(%s)\n", codec->decode ? 'D' : 'E', codec->name, codec->long_name);
+#else
+		printf("AV Codec(%c): %s(%s)\n", av_codec_is_decoder(codec) ? 'D' : 'E', codec->name, codec->long_name);
+#endif
 	}
 }

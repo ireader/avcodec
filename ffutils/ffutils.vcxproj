@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -41,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -168,6 +168,7 @@
     <ClInclude Include="include\ffoutput.h" />
     <ClInclude Include="include\ffresample.h" />
     <ClInclude Include="include\ffscale.h" />
+    <ClInclude Include="include\fftranscode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\avdecoder.c" />
@@ -179,6 +180,7 @@
     <ClCompile Include="source\ffoutput.c" />
     <ClCompile Include="source\ffresample.c" />
     <ClCompile Include="source\ffscale.c" />
+    <ClCompile Include="source\fftranscode.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ffutils.def" />

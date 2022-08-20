@@ -4,11 +4,10 @@
 #include <assert.h>
 #include <string.h>
 
-void* ffdecoder_create(const AVCodecParameters* codecpar)
+void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary* opts)
 {
 	int r;
-	AVCodec* codec = NULL;
-	AVDictionary *opts = NULL;
+	const AVCodec* codec = NULL;
 	AVCodecContext *avctx = NULL;
 
 	avctx = avcodec_alloc_context3(NULL);
@@ -33,15 +32,18 @@ void* ffdecoder_create(const AVCodecParameters* codecpar)
 
 	//ff->avctx->codec_id = codec->id;
 	assert(avctx->codec_id == codec->id);
-	av_dict_set(&opts, "threads", "1"/*"auto"*/, 0); // disable multi-thread decode
+	//av_dict_set(&opts, "threads", "1"/*"auto"*/, 0); // disable multi-thread decode
 	r = avcodec_open2(avctx, codec, &opts);
-	av_dict_free(&opts);
+	//av_dict_free(&opts);
 	if (r < 0)
 	{
 		printf("[%s] avcodec_open2(%d) => %d, %s.\n", __FUNCTION__, codec->id, r, av_err2str(r));
 		avcodec_free_context(&avctx);
 		return NULL;
 	}
+
+	// set packet timebase for the decoder
+	avctx->time_base = av_make_q(1, avctx->sample_rate);
 
 	return avctx;
 }
@@ -87,10 +89,30 @@ int ffdecoder_getframe(void* p, AVFrame* frame)
 	{
 		// got picture
 		//assert(AV_PIX_FMT_YUV420P == frame->format || AV_PIX_FMT_YUVJ420P == frame->format);
+		frame->time_base = avctx->time_base;
 	}
 
 	//if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
 	//	ret = 0;
 
 	return ret;
+}
+
+AVCodecParameters* ffdecoder_getcodecpar(void* p)
+{
+	AVCodecContext* avctx;
+	AVCodecParameters* codecpar;
+	avctx = (AVCodecContext*)p;
+
+	codecpar = avcodec_parameters_alloc();
+	if (!codecpar)
+		return NULL;
+
+	if (0 != avcodec_parameters_from_context(codecpar, avctx))
+	{
+		avcodec_parameters_free(&codecpar);
+		return NULL;
+	}
+
+	return codecpar;
 }

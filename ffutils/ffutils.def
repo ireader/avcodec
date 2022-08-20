@@ -17,6 +17,7 @@ EXPORTS
 	ffdecoder_destroy
 	ffdecoder_input
 	ffdecoder_getframe
+	ffdecoder_getcodecpar
 
 	ffencoder_create
 	ffencoder_destroy
@@ -24,6 +25,7 @@ EXPORTS
 	ffencoder_getpacket
 	ffencoder_getcodecpar
 
+	avdecoder_create
 	avdecoder_create_h264
 	avdecoder_create_h265
 	avdecoder_destroy
@@ -40,3 +42,11 @@ EXPORTS
 	ffresample_create
 	ffresample_destroy
 	ffresample_convert
+
+	fftranscode_create
+	fftranscode_destroy
+	fftranscode_input
+	fftranscode_getcodecpar
+	fftranscode_create_aac
+	fftranscode_create_opus
+	fftranscode_create_h264
