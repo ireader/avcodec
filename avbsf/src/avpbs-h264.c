@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define H264_STARTCODE_PADDING 16  // 3->4 startcode
+#define H264_STARTCODE_PADDING 32  // 3->4 startcode
 
 struct avpbs_h264_t
 {
@@ -22,7 +22,7 @@ static int avpbs_h264_create_stream(struct avpbs_h264_t* bs)
 	struct h264_sps_t sps;
 
 	avstream_release(bs->stream);
-	bs->stream = avstream_alloc((int)(bs->avc.off + 8 * H264_STARTCODE_PADDING));
+	bs->stream = avstream_alloc((int)(bs->avc.off + (bs->avc.nb_sps + bs->avc.nb_pps) * 2 + 64));
 	if (!bs->stream)
 		return -1;
 
@@ -85,7 +85,7 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	if (!pkt) return -1;
 
 	pkt->size = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
-	if (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs))
+	if (pkt->size < 1 || (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs)))
 	{
 		avpacket_release(pkt);
 		return -1;
