@@ -12,6 +12,8 @@ struct avstream_t* avstream_alloc(int size)
 	{
 		stream = (struct avstream_t*)buf->data;
 		memset(stream, 0, sizeof(struct avstream_t));
+		stream->timebase.num = 1;
+		stream->timebase.den = 1000; // ms
 		stream->extra = (uint8_t*)(stream + 1);
 		stream->bytes = size;
 		stream->opaque = buf;

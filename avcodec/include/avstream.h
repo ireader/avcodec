@@ -16,10 +16,17 @@ typedef enum AVSTREAM_TYPE {
 	AVSTREAM_DATA,
 } AVSTREAM_TYPE;
 
+struct avtimebase_t
+{
+	int num; // numerator
+	int den; // denominator
+};
+
 struct avstream_t
 {
 	int stream; // stream index
 	enum AVPACKET_CODEC_ID codecid;
+	struct avtimebase_t timebase;
 
 	// video only
 	int width;
