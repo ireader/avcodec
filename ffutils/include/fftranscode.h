@@ -15,7 +15,16 @@ void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameter
 
 int fftranscode_destroy(void* transcode);
 
-int fftranscode_input(void* transcode, const AVPacket* in, AVPacket* out);
+/// transcode audio/video packet
+/// @param[in] transcode create by fftranscode_create
+/// @param[in] in input audio/video packet
+/// @return >=0-fftranscode_getpacket, <0-need more packets
+int fftranscode_input(void* transcode, const AVPacket* in);
+
+/// get transcoded audio/video packet(MUST call many times until return code <0)
+/// @param[out] out transcoded audio/video packet
+/// @return >=0-get a packet(maybe have more), <0-need more input
+int fftranscode_getpacket(void* transcode, AVPacket* out);
 
 /// @return should call avcodec_parameters_free
 AVCodecParameters* fftranscode_getcodecpar(void* transcode);

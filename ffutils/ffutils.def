@@ -46,6 +46,7 @@ EXPORTS
 	fftranscode_create
 	fftranscode_destroy
 	fftranscode_input
+	fftranscode_getpacket
 	fftranscode_getcodecpar
 	fftranscode_create_aac
 	fftranscode_create_opus

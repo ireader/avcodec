@@ -138,7 +138,7 @@ static int fftranscode_resample(struct fftranscode_t* fft, const AVFrame* in, AV
 	return r;
 }
 
-int fftranscode_input(void* transcode, const AVPacket* in, AVPacket* out)
+int fftranscode_input(void* transcode, const AVPacket* in)
 {
 	AVFrame decode, encode;
 	struct fftranscode_t* fft;
@@ -161,11 +161,14 @@ int fftranscode_input(void* transcode, const AVPacket* in, AVPacket* out)
 
 	r = ffencoder_input(fft->encoder, &encode);
 	av_frame_unref(&encode);
-	if (r < 0)
-		return r;
-
-	r = ffencoder_getpacket(fft->encoder, out);
 	return r;
+}
+
+int fftranscode_getpacket(void* transcode, AVPacket * out)
+{
+	struct fftranscode_t* fft;
+	fft = (struct fftranscode_t*)transcode;
+	return ffencoder_getpacket(fft->encoder, out);
 }
 
 void* fftranscode_create_opus(const AVCodecParameters* decode, int sample_rate, int channel, int bitrate)
