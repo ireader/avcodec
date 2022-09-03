@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #define H264_NAL_IDR		5 // Coded slice of an IDR picture
 #define H264_NAL_SPS		7 // Sequence parameter set
@@ -133,7 +134,7 @@ static int h264bsf_input(void* param, int64_t pts, int64_t dts, const uint8_t* n
 
 	if (cbuffer_append(&bsf->ptr, startcode, sizeof(startcode)) <= 0
 		|| cbuffer_append(&bsf->ptr, nalu, bytes) <= 0 )
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	bsf->pts = pts;
 	bsf->dts = dts;

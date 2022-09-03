@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 int avpkt2bs_create(struct avpkt2bs_t* bs)
 {
@@ -27,7 +28,7 @@ static int avpkt2bs_realloc(struct avpkt2bs_t* bs, int bytes)
 	{
 		p = realloc(bs->ptr, bytes);
 		if (NULL == p)
-			return -1;
+			return -(__ERROR__ + ENOMEM);
 		bs->ptr = (uint8_t*)p;
 		bs->cap = bytes;
 	}
@@ -50,7 +51,7 @@ static int avpkt2bs_aac_input(struct avpkt2bs_t* bs, const struct avpacket_t* pk
 
 	r = mpeg4_aac_adts_save(&bs->a.aac, pkt->size, bs->ptr, bs->cap);
 	if (r < 0 || r + pkt->size > bs->cap)
-		return -1;
+		return r < 0 ? r : (-(__ERROR__ + E2BIG));
 
 	memmove(bs->ptr + r, pkt->data, pkt->size);
 	return r + pkt->size;
@@ -129,6 +130,6 @@ int avpkt2bs_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt)
 		return avpkt2bs_copy_input(bs, pkt);
 
 	default:
-		return -1;
+		return -(__ERROR__ + ENOPROTOOPT);
 	}
 }

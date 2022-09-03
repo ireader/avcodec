@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 static struct avpbs_t* avpbs_common(void);
 
@@ -95,7 +96,7 @@ static int avpbs_common_input(void* param, int64_t pts, int64_t dts, const uint8
 
 	bs = (struct avpbs_common_t*)param;
 	pkt = avpacket_alloc(bytes);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	memcpy(pkt->data, data, bytes);
 	pkt->pts = pts;

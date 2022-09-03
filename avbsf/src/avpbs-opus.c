@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct avpbs_opus_t
 {
@@ -32,6 +33,9 @@ static void* avpbs_opus_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 	bs = calloc(1, sizeof(*bs));
 	if (!bs) return NULL;
 
+	// default
+	bs->opus.input_sample_rate = 48000;
+
 	// can be failure
 	opus_head_load(extra, bytes, &bs->opus);
 	assert(AVCODEC_AUDIO_OPUS == codec);
@@ -46,7 +50,7 @@ static int avpbs_opus_create_stream(struct avpbs_opus_t* bs)
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc(0);
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	bs->stream->stream = bs->avs;
 	bs->stream->codecid = AVCODEC_AUDIO_OPUS;
@@ -64,7 +68,7 @@ static int avpbs_opus_input(void* param, int64_t pts, int64_t dts, const uint8_t
 
 	bs = (struct avpbs_opus_t*)param;
 	pkt = avpacket_alloc(bytes);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	if (bytes > 8 && 0 == memcmp(data, "OpusHead", 8))
 	{

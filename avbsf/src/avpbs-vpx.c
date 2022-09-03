@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct avpbs_vpx_t
 {
@@ -32,7 +33,7 @@ static int avpbs_vpx_create_stream(struct avpbs_vpx_t* bs, const uint8_t* extra,
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc(bytes);
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	bs->stream->stream = bs->avs;
 	bs->stream->codecid = bs->codec;
@@ -65,7 +66,7 @@ static int avpbs_vpx_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 
 	bs = (struct avpbs_vpx_t*)param;
 	pkt = avpacket_alloc(bytes);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	if ( (AVCODEC_VIDEO_VP8 == bs->codec && webm_vpx_codec_configuration_record_from_vp8(&bs->vpx, &width, &height, data, bytes) >= 0)
 		|| (AVCODEC_VIDEO_VP9 == bs->codec && webm_vpx_codec_configuration_record_from_vp9(&bs->vpx, &width, &height, data, bytes) >= 0))

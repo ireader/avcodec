@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #define H264_STARTCODE_PADDING 32  // 3->4 startcode
 
@@ -24,7 +25,7 @@ static int avpbs_h264_create_stream(struct avpbs_h264_t* bs)
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc((int)(bs->avc.off + (bs->avc.nb_sps + bs->avc.nb_pps) * 2 + 64));
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	memset(&sps, 0, sizeof(sps));
 	h264_sps_parse(bs->avc.sps[0].data, bs->avc.sps[0].bytes, &sps);
@@ -82,13 +83,13 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	
 	bs = (struct avpbs_h264_t*)param;
 	pkt = avpacket_alloc(bytes + H264_STARTCODE_PADDING);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	pkt->size = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
 	if (pkt->size < 1 || (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs)))
 	{
 		avpacket_release(pkt);
-		return -1;
+		return pkt->size < 0 ? pkt->size : (-(__ERROR__ + E2BIG)); // h264 data process failed
 	}
 
 	if (!bs->stream)

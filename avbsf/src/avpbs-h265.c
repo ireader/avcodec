@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #define H265_NAL_SPS		33
 
@@ -27,7 +28,7 @@ static int avpbs_h265_create_stream(struct avpbs_h265_t* bs)
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc((int)(bs->hevc.off + bs->hevc.numOfArrays * 2 + 64));
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	for (x = 0; x < bs->hevc.numOfArrays; x++)
 	{
@@ -92,13 +93,13 @@ static int avpbs_h265_input(void* param, int64_t pts, int64_t dts, const uint8_t
 
 	bs = (struct avpbs_h265_t*)param;
 	pkt = avpacket_alloc(bytes + h265_STARTCODE_PADDING);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	pkt->size = h265_annexbtomp4(&bs->hevc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
 	if (pkt->size < 1 || (update && bs->hevc.numOfArrays >= 3 && 0 != avpbs_h265_create_stream(bs)))
 	{
 		avpacket_release(pkt);
-		return -1;
+		return pkt->size < 0 ? pkt->size : (-(__ERROR__ + E2BIG)); // h265 data process failed
 	}
 
 	if (!bs->stream)

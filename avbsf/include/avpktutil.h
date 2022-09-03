@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct avpktutil_t
 {
@@ -69,7 +70,7 @@ static inline int avpktutil_input(struct avpktutil_t* s, struct avstream_t* stre
 
     //app_log(LOG_DEBUG, "track %u pts: %lld, dts: %lld, size: %u, key: %d\n", stream->stream, pts, dts, bytes, flags ? 1 : 0);
     pkt = avpacket_alloc((int)bytes);
-    if (!pkt) return -1;
+    if (!pkt) return -(__ERROR__ + ENOMEM);
     
     avstream_addref(stream);
     memmove(pkt->data, buffer, bytes);

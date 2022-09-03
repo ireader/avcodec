@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct avpbs_aac_t
 {
@@ -47,7 +48,7 @@ static int avpbs_aac_create_stream(struct avpbs_aac_t* bs)
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc(2 + bs->aac.npce);
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	bs->stream->stream = bs->avs;
 	bs->stream->codecid = AVCODEC_AUDIO_AAC;
@@ -63,15 +64,16 @@ static int avpbs_aac_input_one_frame(struct avpbs_aac_t* bs, int64_t pts, int64_
 	int r;
 	struct avpacket_t* pkt;
 	pkt = avpacket_alloc(bytes);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	if (!bs->stream || bs->stream->channels != bs->aac.channels
 		|| bs->stream->sample_rate != (int)bs->aac.sampling_frequency)
 	{
-		if (0 != avpbs_aac_create_stream(bs))
+		r = avpbs_aac_create_stream(bs);
+		if (0 != r)
 		{
 			avpacket_release(pkt);
-			return -1;
+			return r;
 		}
 	}
 
@@ -108,7 +110,7 @@ static int avpbs_aac_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 			len = mpeg4_aac_adts_frame_length(data, bytes);
 			adts = mpeg4_aac_adts_load(data, bytes, &bs->aac);
 			if (adts <= 0 || len < adts || len > bytes)
-				return -1;
+				return -(__ERROR__ + EINVAL);
 
 			assert(adts >= 7);
 			r = avpbs_aac_input_one_frame(bs, pts, dts, (const uint8_t*)data + adts, len - adts, flags);

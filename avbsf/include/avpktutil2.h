@@ -91,7 +91,7 @@ static inline int avpktutil2_input(struct avpktutil2_t* s, int stream, AVPACKET_
     struct avstream_t* av;
     av = avpktutil2_findstream(s, stream, codec, data, bytes);
     if(!av)
-        return -1;
+        return -(__ERROR__ + ENOENT);
     
     return avpktutil_input(&s->pkt, av, data, bytes, pts, dts, flags, pkt0);
 }

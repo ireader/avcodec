@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct avpbs_av1_t
 {
@@ -30,7 +31,7 @@ static int avpbs_av1_create_stream(struct avpbs_av1_t* bs, int stream, const uin
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc(bytes);
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	bs->stream->stream = stream;
 	bs->stream->codecid = AVCODEC_VIDEO_AV1;
@@ -65,7 +66,7 @@ static int avpbs_av1_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 
 	bs = (struct avpbs_av1_t*)param;
 	pkt = avpacket_alloc(bytes);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	// TODO: stream width/height
 

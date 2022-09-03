@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 struct avpbs_mp3_t
 {
@@ -46,7 +47,7 @@ static int avpbs_mp3_create_stream(struct avpbs_mp3_t* bs)
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc(0);
 	if (!bs->stream)
-		return -1;
+		return -(__ERROR__ + ENOMEM);
 
 	bs->stream->stream = bs->avs;
 	bs->stream->codecid = AVCODEC_AUDIO_MP3;
@@ -64,7 +65,7 @@ static int avpbs_mp3_input(void* param, int64_t pts, int64_t dts, const uint8_t*
 
 	bs = (struct avpbs_mp3_t*)param;
 	pkt = avpacket_alloc(bytes);
-	if (!pkt) return -1;
+	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	r = mp3_header_load(&bs->mp3, data, bytes);
 	if (r < 0)
