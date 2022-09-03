@@ -22,25 +22,26 @@ static void video_test()
 	codecpar->format = AV_PIX_FMT_YUV420P;
 	codecpar->width = 1920;
 	codecpar->height = 1080;
-	codecpar->bit_rate = 2000000;
+	codecpar->bit_rate = 2000;
 
 	AVDictionary* opts = NULL;
+	av_dict_set(&opts, "profile", "baseline", 0);
 	av_dict_set(&opts, "preset", "fast", 0);
 	av_dict_set(&opts, "crt", "23", 0);
-	void* ff = ffencoder_create(codecpar, opts);
-	//av_dict_free(&opts);
+	void* ff = ffencoder_create(codecpar, &opts);
+	av_dict_free(&opts);
 
 	AVCodecParameters* par = ffencoder_getcodecpar(ff);
 
 	AVDictionary* fmtOpts = NULL;
 	av_dict_set(&fmtOpts, "movflags", "frag_keyframe+empty_moov+default_base_moof", 0);
-	void* w = ffoutput_create("1.mp4", "mp4", fmtOpts);
-	AVStream* s = ffoutput_addstream(w, par);
-	s->time_base = av_make_q(1, 900000);
+	void* w = ffoutput_create("1.mp4", "mp4", &fmtOpts);
+	AVStream* s = ffoutput_addstream(w, NULL, par);
+	s->time_base = av_make_q(1, 90000);
 	avcodec_parameters_free(&par);
-	//av_dict_free(&fmtOpts);
+	av_dict_free(&fmtOpts);
 
-	for (int64_t dts = 0; dts < 90 * 1000; dts += 40*90)
+	for (int64_t dts = 0; dts < 900 * 1000; dts += 40*90)
 	{
 		static const uint8_t yuv[1920 * 1080 * 3 / 2] = { 0 };
 		AVFrame* frame = av_frame_alloc();
@@ -49,6 +50,7 @@ static void video_test()
 		//frame->flags = 0;
 		frame->width = 1920;
 		frame->height = 1080;
+		frame->time_base = av_make_q(1, 90000);
 		av_frame_get_buffer(frame, 0);
 		//frame->linesize[0] = 1920;
 		//frame->linesize[1] = 1920 /2;
@@ -96,18 +98,19 @@ static void audio_test()
 	codecpar->bit_rate = 128000;
 
 	AVDictionary* opts = NULL;
-	void* ff = ffencoder_create(codecpar, opts);
+	void* ff = ffencoder_create(codecpar, &opts);
 	void* swr = ffresample_create(AV_SAMPLE_FMT_S16, 48000, 2, AV_SAMPLE_FMT_FLTP, 48000, 2);
-	
+	av_dict_free(&opts);
+
 	AVCodecParameters* par = ffencoder_getcodecpar(ff);
 	AVDictionary* fmtOpts = NULL;
-	void* w = ffoutput_create("1.mp4", "mp4", fmtOpts);
-	AVStream* s = ffoutput_addstream(w, par);
+	void* w = ffoutput_create("1.mp4", "mp4", &fmtOpts);
+	AVStream* s = ffoutput_addstream(w, NULL, par);
 	s->time_base = av_make_q(1, par->sample_rate);
 	avcodec_parameters_free(&par);
 	av_dict_free(&fmtOpts);
 
-	FILE* fp = fopen("C:\\Users\\Administrator\\Downloads\\rc_dev\\rc_dev\\RDP_Win\\000001946F7704A0.pcm", "rb");
+	FILE* fp = fopen("D:\\video\\oceans-g711.pcm", "rb");
 	for (int64_t dts = 48000; true || dts < 10 * 1000; dts += 480)
 	{
 		static uint8_t pcm[1024 * 2 * 4];
@@ -169,7 +172,7 @@ int main()
 	//avformat_network_init();
 
 	ffutils_list();
-	//audio_test();
+	audio_test();
 	video_test();
 
     std::cout << "Hello World!\n";

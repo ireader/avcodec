@@ -11,7 +11,7 @@ extern "C" {
 /// @param[in] encode FFmpeg encode parameters
 /// @param[in] opts FFmpeg encode options
 /// @return NULL-error, other-transcode pointer
-void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameters *encode, AVDictionary* opts);
+void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameters *encode, AVDictionary** opts);
 
 int fftranscode_destroy(void* transcode);
 

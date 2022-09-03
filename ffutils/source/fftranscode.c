@@ -16,7 +16,7 @@ struct fftranscode_t
 	AVCodecParameters *decpar;
 };
 
-void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameters* encode, AVDictionary* opts)
+void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameters* encode, AVDictionary** opts)
 {
 	AVDictionary* decopts = NULL;
 	struct fftranscode_t* fft;
@@ -24,7 +24,7 @@ void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameter
 	if (!fft)
 		return NULL;
 
-	fft->decoder = ffdecoder_create(decode, decopts);
+	fft->decoder = ffdecoder_create(decode, &decopts);
 	fft->encoder = ffencoder_create(encode, opts);
 	if (!fft->encoder || !fft->decoder)
 	{
@@ -39,6 +39,7 @@ void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameter
 		fftranscode_destroy(fft);
 		return NULL;
 	}
+	av_dict_free(&decopts);
 
 #if LIBAVCODEC_VERSION_MAJOR < 59
 	fft->resampler = ffresample_create((enum AVSampleFormat)fft->decpar->format, fft->decpar->sample_rate, fft->decpar->channels, (enum AVSampleFormat)fft->encpar->format, fft->encpar->sample_rate, fft->encpar->channels);
@@ -173,13 +174,18 @@ int fftranscode_getpacket(void* transcode, AVPacket * out)
 
 void* fftranscode_create_opus(const AVCodecParameters* decode, int sample_rate, int channel, int bitrate)
 {
+	void* ff;
 	AVDictionary* opts = NULL;
 	AVCodecParameters codecpar;
 
 	memset(&codecpar, 0, sizeof(AVCodecParameters));
 	codecpar.codec_type = AVMEDIA_TYPE_AUDIO;
 	codecpar.codec_id = AV_CODEC_ID_OPUS;
+#if defined(OS_LINUX)
+	codecpar.format = AV_SAMPLE_FMT_FLTP; // with ffmpeg opus
+#else
 	codecpar.format = AV_SAMPLE_FMT_FLT;
+#endif
 	codecpar.sample_rate = sample_rate;
 #if LIBAVCODEC_VERSION_MAJOR < 59
 	codecpar.channels = channel;
@@ -189,11 +195,15 @@ void* fftranscode_create_opus(const AVCodecParameters* decode, int sample_rate, 
 #endif
 	codecpar.bit_rate = bitrate;
 
-	return fftranscode_create(decode, &codecpar, opts);
+	av_dict_set(&opts, "strict", "experimental", 0);
+	ff = fftranscode_create(decode, &codecpar, &opts);
+	av_dict_free(&opts);
+	return ff;
 }
 
 void* fftranscode_create_aac(const AVCodecParameters* decode, int sample_rate, int channel, int bitrate)
 {
+	void* ff;
 	AVDictionary* opts = NULL;
 	AVCodecParameters codecpar;
 
@@ -210,11 +220,14 @@ void* fftranscode_create_aac(const AVCodecParameters* decode, int sample_rate, i
 #endif
 	codecpar.bit_rate = bitrate;
 
-	return fftranscode_create(decode, &codecpar, opts);
+	ff = fftranscode_create(decode, &codecpar, &opts);
+	av_dict_free(&opts);
+	return ff;
 }
 
 void* fftranscode_create_h264(const AVCodecParameters* decode, const char* preset, const char* profile, const char* tune, int gop, int width, int height, int bitrate)
 {
+	void* ff;
 	AVDictionary* opts = NULL;
 	AVCodecParameters codecpar;
 
@@ -233,5 +246,7 @@ void* fftranscode_create_h264(const AVCodecParameters* decode, const char* prese
 	//av_dict_set(&opts, "crt", "23", 0);
 	av_dict_set_int(&opts, "g", gop, 0);
 
-	return fftranscode_create(decode, &codecpar, opts);
+	ff = fftranscode_create(decode, &codecpar, &opts);
+	av_dict_free(&opts);
+	return ff;
 }

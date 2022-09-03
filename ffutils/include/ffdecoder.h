@@ -7,7 +7,7 @@ extern "C" {
 
 #include "libavcodec/avcodec.h"
 
-void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary* opts);
+void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary** opts);
 void ffdecoder_destroy(void* ff);
 
 /// @return 0-ok, other-error

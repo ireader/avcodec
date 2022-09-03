@@ -8,7 +8,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 
 /// @param[inout] codecpar in-encode parameter, out-with extradata
-void* ffencoder_create(const AVCodecParameters* codecpar, AVDictionary* opts);
+void* ffencoder_create(const AVCodecParameters* codecpar, AVDictionary** opts);
 void ffencoder_destroy(void* ff);
 
 /// @return 0-ok, other-error

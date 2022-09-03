@@ -29,7 +29,7 @@ struct ffencoder_t
 //	//ff->avctx->ticks_per_frame = 2; // Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
 //}
 
-static int ffencoder_open(struct ffencoder_t* ff, const AVCodecParameters* codecpar, AVDictionary* opts)
+static int ffencoder_open(struct ffencoder_t* ff, const AVCodecParameters* codecpar, AVDictionary** opts)
 {
 	int ret;
 	const AVCodec* codec = NULL;
@@ -58,9 +58,9 @@ static int ffencoder_open(struct ffencoder_t* ff, const AVCodecParameters* codec
 	if (codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
 	{
 		avctx->time_base = av_make_q(1, 90000); // 90kHZ
-		avctx->max_b_frames = 1;
-		avctx->thread_count = 4;
-		avctx->gop_size = 25;
+		//avctx->max_b_frames = 1;
+		//avctx->thread_count = 4;
+		//avctx->gop_size = 25;
 		//av_dict_set(&opts, "preset", "fast", 0);
 		//av_dict_set(&opts, "crt", "23", 0);
 	}
@@ -69,8 +69,8 @@ static int ffencoder_open(struct ffencoder_t* ff, const AVCodecParameters* codec
 		avctx->time_base = av_make_q(1, codecpar->sample_rate);
 	}
 
-	ret = avcodec_open2(avctx, codec, &opts);
-//	av_dict_free(&opts);
+	ret = avcodec_open2(avctx, codec, opts);
+//	av_dict_free(opts);
 	if (ret < 0)
 	{
 		printf("[%s] avcodec_open2(%d) => %s.\n", __FUNCTION__, codecpar->codec_id, av_err2str(ret));
@@ -83,7 +83,7 @@ static int ffencoder_open(struct ffencoder_t* ff, const AVCodecParameters* codec
 	return 0;
 }
 
-void* ffencoder_create(const AVCodecParameters* codecpar, AVDictionary* opts)
+void* ffencoder_create(const AVCodecParameters* codecpar, AVDictionary** opts)
 {
 	struct ffencoder_t* ff;
 	ff = (struct ffencoder_t*)malloc(sizeof(*ff));
@@ -125,7 +125,7 @@ void ffencoder_destroy(void* p)
 	free(ff);
 }
 
-static int ffencoder_encode(struct ffencoder_t* ff)
+static int ffencoder_encode_audio(struct ffencoder_t* ff)
 {
 	int r;
 	AVFrame* audio;
@@ -194,7 +194,7 @@ int ffencoder_input(void* p, const AVFrame* frame)
 
 		while (av_audio_fifo_size(ff->fifo) >= ff->avctx->frame_size)
 		{
-			ret = ffencoder_encode(ff);
+			ret = ffencoder_encode_audio(ff);
 			if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
 			{
 				printf("[%s] avcodec_send_frame() => %s\n", __FUNCTION__, av_err2str(ret));
@@ -235,7 +235,7 @@ int ffencoder_getpacket(void* p, AVPacket* pkt)
 
 		// drain buffer
 		if(ff->fifo && av_audio_fifo_size(ff->fifo) >= ff->avctx->frame_size)
-			ffencoder_encode(ff);
+			ffencoder_encode_audio(ff);
 	}
 
 	//if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)

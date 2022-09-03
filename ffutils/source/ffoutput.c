@@ -59,13 +59,13 @@ static int ffoutput_interrupt(void* p)
 //	return st->index;
 //}
 
-AVStream* ffoutput_addstream(void* p, AVCodecParameters* codecpar)
+AVStream* ffoutput_addstream(void* p, const AVCodec* codec, AVCodecParameters* codecpar)
 {
 	AVStream* st;
 	struct ffoutput_t* ff;
 	ff = (struct ffoutput_t*)p;
 
-	st = avformat_new_stream(ff->oc, NULL);
+	st = avformat_new_stream(ff->oc, codec);
 	if (!st)
 		return NULL;
 
@@ -73,7 +73,7 @@ AVStream* ffoutput_addstream(void* p, AVCodecParameters* codecpar)
 	return st;
 }
 
-static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* format, AVDictionary* opts)
+static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* format, AVDictionary** opts)
 {
 	int r;
 	r = avformat_alloc_output_context2(&ff->oc, NULL, format, url);
@@ -84,7 +84,7 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* for
 	}
 
 	/* open the file */
-	r = avio_open2(&ff->oc->pb, url, AVIO_FLAG_WRITE, &ff->interrupt_callback, &opts);
+	r = avio_open2(&ff->oc->pb, url, AVIO_FLAG_WRITE, &ff->interrupt_callback, opts);
 	if (r < 0) {
 		printf("%s(%s): avio_open2 failed: %s\n", __FUNCTION__, url, av_err2str(r));
 		return r;
@@ -97,7 +97,7 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* for
 	//	avcodec_parameters_copy(st->codecpar, streams[i]->codecpar);
 	//}
 
-	avformat_init_output(ff->oc, &opts);
+	//avformat_init_output(ff->oc, opts);
 
 //	avformat_write_header(ff->oc, NULL);
 
@@ -105,7 +105,7 @@ static int ffoutput_open(struct ffoutput_t* ff, const char* url, const char* for
 	return 0;
 }
 
-void* ffoutput_create(const char* url, const char* format, AVDictionary* opts)
+void* ffoutput_create(const char* url, const char* format, AVDictionary** opts)
 {
 	struct ffoutput_t* ff;
 	ff = (struct ffoutput_t*)malloc(sizeof(*ff));
@@ -147,6 +147,7 @@ int ffoutput_write(void* p, AVPacket* pkt)
 	if (!ff->header)
 	{
 		ff->header = 1;
+		//avformat_init_output(ff->oc, NULL);
 		avformat_write_header(ff->oc, NULL);
 	}
 

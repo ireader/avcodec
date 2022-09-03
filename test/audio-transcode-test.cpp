@@ -73,8 +73,8 @@ static int audio_transcode_open(audio_transcode_test_t* ctx, const char* url)
 
 	AVDictionary* fmtOpts = NULL;
 	AVCodecParameters *tgtpar = fftranscode_getcodecpar(ctx->transcode);
-	ctx->output = ffoutput_create("1.mkv", "matroska", fmtOpts);
-	ctx->s = ffoutput_addstream(ctx->output, tgtpar);
+	ctx->output = ffoutput_create("1.mkv", "matroska", &fmtOpts);
+	ctx->s = ffoutput_addstream(ctx->output, NULL, tgtpar);
 	ctx->s->time_base = av_make_q(1, tgtpar->sample_rate);
 	avcodec_parameters_free(&tgtpar);
 	av_dict_free(&fmtOpts);
@@ -105,17 +105,26 @@ static int audio_transcode_close(audio_transcode_test_t* ctx)
 
 static int audio_transcode_process(audio_transcode_test_t* ctx, AVPacket* pkt)
 {
+	int r = fftranscode_input(ctx->transcode, pkt);
+	if (r < 0)
+		return r;
+	
 	AVPacket out;
 	memset(&out, 0, sizeof(out));
-	int r = fftranscode_input(ctx->transcode, pkt, &out);
-	if (r >= 0)
+	r = fftranscode_getpacket(ctx->transcode, &out);
+	while (r >= 0)
 	{
 		out.stream_index = ctx->s->index;
 		r = ffoutput_write(ctx->output, &out);
 		av_packet_unref(&out);
+		if (r < 0)
+			return r;
+
+		memset(&out, 0, sizeof(out));
+		r = fftranscode_getpacket(ctx->transcode, &out);
 	}
 
-	return r;
+	return 0;
 }
 
 void audio_transcode_test(const char* url)

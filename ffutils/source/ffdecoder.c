@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary* opts)
+void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary** opts)
 {
 	int r;
 	const AVCodec* codec = NULL;
@@ -32,9 +32,9 @@ void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary* opts)
 
 	//ff->avctx->codec_id = codec->id;
 	assert(avctx->codec_id == codec->id);
-	//av_dict_set(&opts, "threads", "1"/*"auto"*/, 0); // disable multi-thread decode
-	r = avcodec_open2(avctx, codec, &opts);
-	//av_dict_free(&opts);
+	//av_dict_set(opts, "threads", "1"/*"auto"*/, 0); // disable multi-thread decode
+	r = avcodec_open2(avctx, codec, opts);
+	//av_dict_free(opts);
 	if (r < 0)
 	{
 		printf("[%s] avcodec_open2(%d) => %d, %s.\n", __FUNCTION__, codec->id, r, av_err2str(r));
