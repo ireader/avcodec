@@ -45,6 +45,7 @@ static void text_render_destroy(void* p)
 
 	if (render->hDC)
 	{
+		ReleaseDC(NULL, render->hDC);
 		DeleteDC(render->hDC);
 		render->hDC = NULL;
 	}
@@ -147,6 +148,7 @@ static int text_render_getsize(struct gdi_context_t* render, const wchar_t* txt)
 
 static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h, int* pitch)
 {
+	HDC hdc;
 	HBITMAP hBitmap, old;
 	struct gdi_context_t* render = (struct gdi_context_t*)p;
 
@@ -156,7 +158,8 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 	if (0 != text_render_getsize(render, txt))
 		return NULL;
 
-	hBitmap = CreateCompatibleBitmap(GetDC(NULL), render->pitch, render->height);
+	hdc = GetDC(NULL);
+	hBitmap = CreateCompatibleBitmap(hdc, render->pitch, render->height);
 	old = SelectObject(render->hDC, hBitmap);
 
 	text_render_draw_text(render, txt);
@@ -164,6 +167,7 @@ static const void* text_render_draw(void* p, const wchar_t* txt, int *w, int *h,
 
 	SelectObject(render->hDC, old);
 	DeleteObject(hBitmap);
+	ReleaseDC(NULL, hdc);
 
 	*w = render->pitch;
 	*h = render->height;
