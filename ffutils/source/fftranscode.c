@@ -181,8 +181,9 @@ void* fftranscode_create_opus(const AVCodecParameters* decode, int sample_rate, 
 	memset(&codecpar, 0, sizeof(AVCodecParameters));
 	codecpar.codec_type = AVMEDIA_TYPE_AUDIO;
 	codecpar.codec_id = AV_CODEC_ID_OPUS;
-#if defined(OS_LINUX)
+#if defined(FFMPEG_OPUS)
 	codecpar.format = AV_SAMPLE_FMT_FLTP; // with ffmpeg opus
+	av_dict_set(&opts, "strict", "experimental", 0);
 #else
 	codecpar.format = AV_SAMPLE_FMT_FLT;
 #endif
@@ -195,7 +196,6 @@ void* fftranscode_create_opus(const AVCodecParameters* decode, int sample_rate, 
 #endif
 	codecpar.bit_rate = bitrate;
 
-	av_dict_set(&opts, "strict", "experimental", 0);
 	ff = fftranscode_create(decode, &codecpar, &opts);
 	av_dict_free(&opts);
 	return ff;
@@ -239,8 +239,8 @@ void* fftranscode_create_h264(const AVCodecParameters* decode, const char* prese
 	codecpar.height = height;
 	codecpar.bit_rate = bitrate;
 
-	if (preset) av_dict_set(&opts, "preset", preset, 0);
 	if (tune) av_dict_set(&opts, "tune", tune, 0);
+	if (preset) av_dict_set(&opts, "preset", preset, 0);
 	if (profile) av_dict_set(&opts, "profile", profile, 0);
 	//av_dict_set(&opts, "preset", "fast", 0);
 	//av_dict_set(&opts, "crt", "23", 0);
