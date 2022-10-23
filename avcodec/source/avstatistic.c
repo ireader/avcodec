@@ -40,6 +40,28 @@ int avstatistic_input(struct avstatistic_t* stats, int64_t clock, int stream, in
     return 0;
 }
 
+double avstatistic_getfps(const struct avstatistic_t* stats, int stream)
+{
+	uint32_t i;
+	uint32_t N;
+	uint32_t total;
+	struct avbitrate_t* rate;
+
+	if (stream < 0 || stream >= sizeof(stats->streams) / sizeof(stats->streams[0]))
+		return -1;
+	rate = &stats->streams[stream].bitrate;
+
+	N = sizeof(rate->packets) / sizeof(rate->packets[0]);
+
+	total = 0;
+	for (i = (rate->i + 1) % N; i != rate->i; i = (i + 1) % N)
+	{
+		total += rate->packets[i];
+	}
+
+	return total * 1.0 / ((N - 1) * rate->interval);
+}
+
 void avbitrate_clear(struct avbitrate_t* rate)
 {
 	rate->i = 0;
@@ -47,6 +69,7 @@ void avbitrate_clear(struct avbitrate_t* rate)
 	rate->total = 0;
 	rate->interval = 1;
 	memset(rate->buckets, 0, sizeof(rate->buckets));
+	memset(rate->packets, 0, sizeof(rate->packets));
 }
 
 void avbitrate_input(struct avbitrate_t* rate, int64_t clock, uint64_t bytes)
@@ -63,14 +86,19 @@ void avbitrate_input(struct avbitrate_t* rate, int64_t clock, uint64_t bytes)
 	if (rate->i != i)
 	{
 		for (j = (rate->i + 1) % N; j != i; j = (j + 1) % N)
+		{
 			rate->buckets[j] = 0;
+			rate->packets[j] = 0;
+		}
 
 		rate->i = i;
 		rate->buckets[i] = 0;
+		rate->packets[i] = 0;
 	}
 
 	rate->clock = clock;
 	rate->total += bytes;
+	rate->packets[i] += 1;
 	rate->buckets[i] += bytes; // update bucket bytes
 }
 

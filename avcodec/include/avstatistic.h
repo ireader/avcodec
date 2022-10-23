@@ -18,8 +18,9 @@ struct avbitrate_t
 {
 	uint32_t i; // internal use only
 	uint32_t interval; // bucket interval(ms)
+	uint32_t packets[6]; // N + 1
 	uint64_t buckets[6]; // N + 1
-	
+
 	int64_t clock; // last clock
 	uint64_t total; // total bytes
 };
@@ -51,6 +52,9 @@ void avstatistic_init(struct avstatistic_t* stats, int64_t clock, int interval);
 /// update stream stats, include bitrate/jitter
 /// @return 0-ok, other-error
 int avstatistic_input(struct avstatistic_t* stats, int64_t clock, int stream, int64_t pts, int64_t dts, uint64_t bytes);
+
+/// @return stream frame rate(in (N-1) * interval)
+double avstatistic_getfps(const struct avstatistic_t* stats, int stream);
 
 /// avjitter_clear clear all data
 void avjitter_clear(struct avjitter_t* jitter);
