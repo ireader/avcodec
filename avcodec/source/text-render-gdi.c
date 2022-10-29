@@ -1,4 +1,5 @@
 #include "text-render.h"
+#if defined(OS_WINDOWS)
 #include <Windows.h>
 #include <stdlib.h>
 #include <string.h>
@@ -185,3 +186,5 @@ struct text_render_t* text_render_gdi()
 	};
 	return &render;
 }
+
+#endif /* OS_WINDOWS */

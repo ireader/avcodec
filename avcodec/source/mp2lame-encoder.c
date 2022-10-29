@@ -1,4 +1,5 @@
 #include "audio-encoder.h"
+#if defined(_AVCODEC_TWOLAME_)
 #include "twolame.h"
 #include <stdlib.h>
 #include <string.h>
@@ -118,3 +119,5 @@ struct audio_encoder_t* mp2lame_encoder(void)
     };
     return &s_encoder;
 }
+
+#endif /* _AVCODEC_TWOLAME_ */

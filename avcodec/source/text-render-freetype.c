@@ -5,6 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
+#if defined(_AVCODEC_FREETYPE_)
 #include <ft2build.h> 
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
@@ -285,3 +286,5 @@ struct text_render_t* text_render_freetype(void)
 	};
 	return &render;
 }
+
+#endif /* _AVCODEC_FREETYPE_ */

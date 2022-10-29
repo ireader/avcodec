@@ -105,7 +105,7 @@ endif
 #
 # DEFINES := $(addprefix -D,$(DEFINES)) # add -L prefix
 #--------------------------------------------------------------------
-DEFINES = NO_CRYPTO
+DEFINES = NO_CRYPTO _AVCODEC_FAAC_ _AVCODEC_OPUS_ _AVCODEC_TWOLAME_ _AVCODEC_X264_ _AVCODEC_OPENH264_ _AVCODEC_FREETYPE_
 
 include $(ROOT)/gcc.mk
 

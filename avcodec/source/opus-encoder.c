@@ -1,4 +1,5 @@
 #include "audio-encoder.h"
+#if defined(_AVCODEC_OPUS_)
 #include "opus/opus.h"
 #include <stdlib.h>
 #include <string.h>
@@ -86,3 +87,5 @@ struct audio_encoder_t* opus_encoder(void)
 	};
 	return &s_encoder;
 }
+
+#endif /* _AVCODEC_OPUS_ */

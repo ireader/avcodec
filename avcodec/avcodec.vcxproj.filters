@@ -72,6 +72,9 @@
     <ClInclude Include="include\avdtsinfer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\audio-resampler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\x264enc.c">
@@ -168,6 +171,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\opus-decoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\audio-resampler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

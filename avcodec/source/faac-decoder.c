@@ -1,4 +1,5 @@
 #include "audio-decoder.h"
+#if defined(_AVCODEC_FAAC_)
 #include "neaacdec.h"
 #include <stdlib.h>
 #include <string.h>
@@ -204,3 +205,5 @@ struct audio_decoder_t* faac_decoder(void)
 	};
 	return &s_decoder;
 }
+
+#endif /* _AVCODEC_FAAC_ */
