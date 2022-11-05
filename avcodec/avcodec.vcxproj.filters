@@ -176,5 +176,8 @@
     <ClCompile Include="source\audio-resampler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\x262enc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

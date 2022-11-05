@@ -1,4 +1,5 @@
 #include "h264-encoder.h"
+#if defined(_AVCODEC_X262_)
 #include "x264/x264.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -201,3 +202,5 @@ struct h264_encoder_t* x262_encoder(void)
     };
     return &s_encoder;
 }
+
+#endif /* _AVCODEC_X262_ */
