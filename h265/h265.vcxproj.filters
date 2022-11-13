@@ -30,6 +30,12 @@
     <ClInclude Include="include\h265-pps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\h265-vui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\h265-hrd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\h265-vps.c">
@@ -45,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\h265-parser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\h265-vui.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\h265-hrd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

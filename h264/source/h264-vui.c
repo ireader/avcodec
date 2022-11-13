@@ -27,14 +27,14 @@ int h264_vui(bitstream_t* stream, struct h264_vui_t* vui)
 	vui->video_signal_type_present_flag = bitstream_read_bit(stream);
 	if (vui->video_signal_type_present_flag)
 	{
-		/*int video_format =*/ bitstream_read_bits(stream, 3);
-		/*int video_full_range_flag =*/ bitstream_read_bit(stream);
-		int colour_description_present_flag = bitstream_read_bit(stream);
+		vui->video_format = (unsigned int)bitstream_read_bits(stream, 3);
+		vui->video_full_range_flag = (unsigned int)bitstream_read_bit(stream);
+		int colour_description_present_flag = (unsigned int)bitstream_read_bit(stream);
 		if (colour_description_present_flag)
 		{
-			/*int colour_primaries =*/ bitstream_read_bits(stream, 8);
-			/*int transfer_characteristics =*/ bitstream_read_bits(stream, 8);
-			/*int matrix_coefficients =*/ bitstream_read_bits(stream, 8);
+			vui->colour_primaries = (unsigned int)bitstream_read_bits(stream, 8);
+			vui->transfer_characteristics = (unsigned int)bitstream_read_bits(stream, 8);
+			vui->matrix_coefficients = (unsigned int)bitstream_read_bits(stream, 8);
 		}
 	}
 

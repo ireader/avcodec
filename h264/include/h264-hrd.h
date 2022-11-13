@@ -8,7 +8,7 @@ struct h264_hrd_t
 	uint8_t cpb_cnt_minus1; // [0, 32]
 	uint32_t bit_rate_value_minus1[32];
 	uint32_t cpb_size_value_minus1[32];
-	uint32_t cbr_flag[32];
+	uint8_t cbr_flag[32];
 
 	unsigned int bit_rate_scale : 4;
 	unsigned int cpb_size_scale : 4;

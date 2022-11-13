@@ -85,11 +85,11 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	pkt = avpacket_alloc(bytes + H264_STARTCODE_PADDING);
 	if (!pkt) return -(__ERROR__ + ENOMEM);
 
-	pkt->size = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
-	if (pkt->size < 1 || (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs)))
+	r = h264_annexbtomp4(&bs->avc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
+	if (r < 1 || (update && bs->avc.nb_sps > 0 && bs->avc.nb_pps > 0 && 0 != avpbs_h264_create_stream(bs)))
 	{
 		avpacket_release(pkt);
-		return pkt->size < 0 ? pkt->size : (-(__ERROR__ + E2BIG)); // h264 data process failed
+		return r < 0 ? r : (-(__ERROR__ + E2BIG)); // h264 data process failed
 	}
 
 	if (!bs->stream)
@@ -98,6 +98,7 @@ static int avpbs_h264_input(void* param, int64_t pts, int64_t dts, const uint8_t
 		return 0; // discard
 	}
 
+	pkt->size = r;
 	pkt->pts = pts;
 	pkt->dts = dts;
 	pkt->flags = (flags & (~AVPACKET_FLAG_KEY)) | (1 == vcl ? AVPACKET_FLAG_KEY : 0);

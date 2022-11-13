@@ -114,18 +114,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\h265-hrd.h" />
     <ClInclude Include="include\h265-nal.h" />
     <ClInclude Include="include\h265-parser.h" />
     <ClInclude Include="include\h265-pps.h" />
     <ClInclude Include="include\h265-sps.h" />
     <ClInclude Include="include\h265-vps.h" />
+    <ClInclude Include="include\h265-vui.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\h265-hrd.c" />
     <ClCompile Include="src\h265-nal.c" />
     <ClCompile Include="src\h265-parser.c" />
     <ClCompile Include="src\h265-pps.c" />
     <ClCompile Include="src\h265-sps.c" />
     <ClCompile Include="src\h265-vps.c" />
+    <ClCompile Include="src\h265-vui.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
