@@ -189,7 +189,7 @@ static void h265_st_ref_pic_set(bitstream_t* stream, struct h265_sps_t* sps, int
 	}
 }
 
-int h265_display_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int* h)
+int h265_codec_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int* h)
 {
 	*x = 0;
 	*y = 0;
@@ -198,7 +198,7 @@ int h265_display_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int*
 	return 0;
 }
 
-int h265_codec_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int* h)
+int h265_display_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int* h)
 {
 	// ITU H.265 Table 6-1 - SubWidthC, and SubHeightC values derived from chroma_format_idc and separate_colour_plane_flag
 	const int SubWidthC[] = { 1 /*4:0:0*/, 2 /*4:2:0*/, 2 /*4:2:2*/, 1 /*4:4:4*/ };
@@ -207,11 +207,8 @@ int h265_codec_rect(const struct h265_sps_t* sps, int *x, int *y, int *w, int* h
 	int ux, uy;
 	ux = SubWidthC[sps->chroma_format_id % 4];
 	uy = SubHeightC[sps->chroma_format_id % 4];
-
-	*x = ux * sps->conf_win_left_offset;
-	*y = uy * sps->conf_win_top_offet;
-	*w = sps->pic_width_in_luma_samples - ux * sps->conf_win_left_offset - *x;
-	*h = sps->pic_height_in_luma_samples - uy * sps->conf_win_bottom_offset - *y;
+	*w = sps->pic_width_in_luma_samples - ux * (sps->conf_win_right_offset - sps->conf_win_left_offset);
+	*h = sps->pic_height_in_luma_samples - uy * (sps->conf_win_bottom_offset - sps->conf_win_top_offet);
 	return 0;
 }
 
