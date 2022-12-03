@@ -1,6 +1,8 @@
 #include "h265-hrd.h"
 #include "h265-vui.h"
 #include "h265-parser.h"
+#include <stdlib.h>
+#include <string.h>
 
 static void h265_sub_layer_hrd_parameters(bitstream_t* stream, struct h265_hrd_t* hrd, int subLayerId, int CpbCnt, int subPicHrdParamsPresentFlag) 
 {

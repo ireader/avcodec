@@ -19,6 +19,7 @@
 		46A379A924455BB80015479F /* h264-scaling.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799D24455BB80015479F /* h264-scaling.c */; };
 		46A379AA24455BB80015479F /* h264-sps.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799E24455BB80015479F /* h264-sps.c */; };
 		46A379AB24455BB80015479F /* h264-vui.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A3799F24455BB80015479F /* h264-vui.c */; };
+		46EDF1F32938DED50055AF56 /* h264-sei.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1F22938DED50055AF56 /* h264-sei.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		46A3799D24455BB80015479F /* h264-scaling.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-scaling.c"; path = "source/h264-scaling.c"; sourceTree = "<group>"; };
 		46A3799E24455BB80015479F /* h264-sps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-sps.c"; path = "source/h264-sps.c"; sourceTree = "<group>"; };
 		46A3799F24455BB80015479F /* h264-vui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-vui.c"; path = "source/h264-vui.c"; sourceTree = "<group>"; };
+		46EDF1F22938DED50055AF56 /* h264-sei.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h264-sei.c"; path = "source/h264-sei.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 		46A3799324455BAD0015479F /* source */ = {
 			isa = PBXGroup;
 			children = (
+				46EDF1F22938DED50055AF56 /* h264-sei.c */,
 				46A3799624455BB70015479F /* bitstream.c */,
 				46A3799924455BB70015479F /* h264-hrd.c */,
 				46A3799B24455BB70015479F /* h264-nal.c */,
@@ -121,7 +124,7 @@
 		46A3798324455B690015479F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = ireader;
 				TargetAttributes = {
 					46A3798A24455B690015479F = {
@@ -163,6 +166,7 @@
 				46A379AA24455BB80015479F /* h264-sps.c in Sources */,
 				46A379A324455BB80015479F /* h264-slice-header.c in Sources */,
 				46A379A724455BB80015479F /* h264-nal.c in Sources */,
+				46EDF1F32938DED50055AF56 /* h264-sei.c in Sources */,
 				46A379A924455BB80015479F /* h264-scaling.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -196,6 +200,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -258,6 +263,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -270,6 +276,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;

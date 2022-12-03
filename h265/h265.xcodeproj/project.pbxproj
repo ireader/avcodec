@@ -12,6 +12,8 @@
 		46A379C524455C000015479F /* h265-vps.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A379C024455C000015479F /* h265-vps.c */; };
 		46A379C624455C000015479F /* h265-pps.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A379C124455C000015479F /* h265-pps.c */; };
 		46A379C724455C000015479F /* h265-nal.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A379C224455C000015479F /* h265-nal.c */; };
+		46EDF1ED2938DEA40055AF56 /* h265-vui.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1EC2938DEA40055AF56 /* h265-vui.c */; };
+		46EDF1F02938DEAF0055AF56 /* h265-hrd.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1EF2938DEAF0055AF56 /* h265-hrd.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		46A379C024455C000015479F /* h265-vps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h265-vps.c"; path = "src/h265-vps.c"; sourceTree = "<group>"; };
 		46A379C124455C000015479F /* h265-pps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h265-pps.c"; path = "src/h265-pps.c"; sourceTree = "<group>"; };
 		46A379C224455C000015479F /* h265-nal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h265-nal.c"; path = "src/h265-nal.c"; sourceTree = "<group>"; };
+		46EDF1EC2938DEA40055AF56 /* h265-vui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h265-vui.c"; path = "src/h265-vui.c"; sourceTree = "<group>"; };
+		46EDF1EF2938DEAF0055AF56 /* h265-hrd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h265-hrd.c"; path = "src/h265-hrd.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +59,8 @@
 		46A379BD24455BF70015479F /* src */ = {
 			isa = PBXGroup;
 			children = (
+				46EDF1EF2938DEAF0055AF56 /* h265-hrd.c */,
+				46EDF1EC2938DEA40055AF56 /* h265-vui.c */,
 				46A379C224455C000015479F /* h265-nal.c */,
 				46A379BF24455C000015479F /* h265-parser.c */,
 				46A379C124455C000015479F /* h265-pps.c */,
@@ -100,7 +106,7 @@
 		46A379AD24455BD10015479F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = ireader;
 				TargetAttributes = {
 					46A379B424455BD10015479F = {
@@ -132,8 +138,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				46A379C724455C000015479F /* h265-nal.c in Sources */,
+				46EDF1F02938DEAF0055AF56 /* h265-hrd.c in Sources */,
 				46A379C624455C000015479F /* h265-pps.c in Sources */,
 				46A379C524455C000015479F /* h265-vps.c in Sources */,
+				46EDF1ED2938DEA40055AF56 /* h265-vui.c in Sources */,
 				46A379C324455C000015479F /* h265-sps.c in Sources */,
 				46A379C424455C000015479F /* h265-parser.c in Sources */,
 			);
@@ -168,6 +176,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -231,6 +240,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

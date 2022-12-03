@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		46BC16B726858C3D0008446D /* avsegment.c in Sources */ = {isa = PBXBuildFile; fileRef = 46BC16B626858C3D0008446D /* avsegment.c */; };
 		46E55E592473849400D8BDBA /* avtimeline.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E55E582473849400D8BDBA /* avtimeline.c */; };
+		46EDF1F62938DF080055AF56 /* g711-decoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1F52938DF080055AF56 /* g711-decoder.c */; };
+		46EDF1F92938DF120055AF56 /* audio-mixer.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1F82938DF120055AF56 /* audio-mixer.c */; };
+		46EDF1FC2938DF1B0055AF56 /* audio-resampler.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1FB2938DF1B0055AF56 /* audio-resampler.c */; };
+		46EDF1FF2938DF280055AF56 /* g711-encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF1FE2938DF280055AF56 /* g711-encoder.c */; };
+		46EDF2022938DF3A0055AF56 /* x262enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 46EDF2012938DF3A0055AF56 /* x262enc.c */; };
 		46F3016524023F2A005EF41A /* mp2lame-encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3015124023F2A005EF41A /* mp2lame-encoder.c */; };
 		46F3016624023F2A005EF41A /* avbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3015224023F2A005EF41A /* avbuffer.c */; };
 		46F3016724023F2A005EF41A /* colorspace.c in Sources */ = {isa = PBXBuildFile; fileRef = 46F3015324023F2A005EF41A /* colorspace.c */; };
@@ -33,6 +38,11 @@
 /* Begin PBXFileReference section */
 		46BC16B626858C3D0008446D /* avsegment.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = avsegment.c; sourceTree = "<group>"; };
 		46E55E582473849400D8BDBA /* avtimeline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = avtimeline.c; sourceTree = "<group>"; };
+		46EDF1F52938DF080055AF56 /* g711-decoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "g711-decoder.c"; sourceTree = "<group>"; };
+		46EDF1F82938DF120055AF56 /* audio-mixer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "audio-mixer.c"; sourceTree = "<group>"; };
+		46EDF1FB2938DF1B0055AF56 /* audio-resampler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "audio-resampler.c"; sourceTree = "<group>"; };
+		46EDF1FE2938DF280055AF56 /* g711-encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "g711-encoder.c"; sourceTree = "<group>"; };
+		46EDF2012938DF3A0055AF56 /* x262enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x262enc.c; sourceTree = "<group>"; };
 		46F3010E24023837005EF41A /* libavcodec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libavcodec.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		46F3014C24023EB3005EF41A /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
 		46F3015124023F2A005EF41A /* mp2lame-encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mp2lame-encoder.c"; sourceTree = "<group>"; };
@@ -87,18 +97,22 @@
 		46F3015024023F2A005EF41A /* source */ = {
 			isa = PBXGroup;
 			children = (
-				4CEE46E127A70A9100740460 /* avdtsinfer.c */,
+				46EDF1F82938DF120055AF56 /* audio-mixer.c */,
+				46EDF1FB2938DF1B0055AF56 /* audio-resampler.c */,
 				46F3015224023F2A005EF41A /* avbuffer.c */,
+				4CEE46E127A70A9100740460 /* avdtsinfer.c */,
 				46F3015724023F2A005EF41A /* avframe.c */,
 				46F3015424023F2A005EF41A /* avpacket.c */,
+				46BC16B626858C3D0008446D /* avsegment.c */,
 				46F3016324023F2A005EF41A /* avstatistic.c */,
 				46F3016224023F2A005EF41A /* avstream.c */,
 				46E55E582473849400D8BDBA /* avtimeline.c */,
-				46BC16B626858C3D0008446D /* avsegment.c */,
 				46F3015624023F2A005EF41A /* bitmap.c */,
 				46F3015324023F2A005EF41A /* colorspace.c */,
 				46F3015D24023F2A005EF41A /* faac-decoder.c */,
 				46F3015524023F2A005EF41A /* faac-encoder.c */,
+				46EDF1F52938DF080055AF56 /* g711-decoder.c */,
+				46EDF1FE2938DF280055AF56 /* g711-encoder.c */,
 				46F3015924023F2A005EF41A /* interpolation-bilinear.c */,
 				46F3015124023F2A005EF41A /* mp2lame-encoder.c */,
 				46F3016124023F2A005EF41A /* openh264enc.cpp */,
@@ -106,6 +120,7 @@
 				46F3015B24023F2A005EF41A /* opus-encoder.c */,
 				46F3016424023F2A005EF41A /* rgb-overlay.c */,
 				46F3015A24023F2A005EF41A /* text-render-freetype.c */,
+				46EDF2012938DF3A0055AF56 /* x262enc.c */,
 				46F3016024023F2A005EF41A /* x264enc.c */,
 				46F3015F24023F2A005EF41A /* yuv-overlay.c */,
 			);
@@ -148,7 +163,7 @@
 		46F3010624023837005EF41A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = ireader;
 				TargetAttributes = {
 					46F3010D24023837005EF41A = {
@@ -181,17 +196,22 @@
 			files = (
 				46F3016724023F2A005EF41A /* colorspace.c in Sources */,
 				46F3016C24023F2A005EF41A /* opus-decoder.c in Sources */,
+				46EDF1FF2938DF280055AF56 /* g711-encoder.c in Sources */,
 				46F3017624023F2A005EF41A /* avstream.c in Sources */,
 				46F3016B24023F2A005EF41A /* avframe.c in Sources */,
+				46EDF1FC2938DF1B0055AF56 /* audio-resampler.c in Sources */,
 				46F3017124023F2A005EF41A /* faac-decoder.c in Sources */,
 				46F3017424023F2A005EF41A /* x264enc.c in Sources */,
 				46F3016624023F2A005EF41A /* avbuffer.c in Sources */,
 				46F3016A24023F2A005EF41A /* bitmap.c in Sources */,
+				46EDF1F62938DF080055AF56 /* g711-decoder.c in Sources */,
 				46F3017824023F2A005EF41A /* rgb-overlay.c in Sources */,
 				46F3016924023F2A005EF41A /* faac-encoder.c in Sources */,
 				46BC16B726858C3D0008446D /* avsegment.c in Sources */,
+				46EDF2022938DF3A0055AF56 /* x262enc.c in Sources */,
 				4CEE46E227A70A9100740460 /* avdtsinfer.c in Sources */,
 				46F3017324023F2A005EF41A /* yuv-overlay.c in Sources */,
+				46EDF1F92938DF120055AF56 /* audio-mixer.c in Sources */,
 				46F3016F24023F2A005EF41A /* opus-encoder.c in Sources */,
 				46F3016E24023F2A005EF41A /* text-render-freetype.c in Sources */,
 				46F3017524023F2A005EF41A /* openh264enc.cpp in Sources */,
@@ -232,6 +252,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -301,6 +322,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
