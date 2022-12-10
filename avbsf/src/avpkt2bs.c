@@ -91,6 +91,23 @@ static int avpkt2bs_h265_input(struct avpkt2bs_t* bs, const struct avpacket_t* p
 	return h265_mp4toannexb(&bs->v.hevc, pkt->data, pkt->size, bs->ptr, bs->cap);
 }
 
+static int avpkt2bs_h266_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt)
+{
+	int r;
+	if (0 == bs->v.vvc.off)
+	{
+		r = mpeg4_vvc_decoder_configuration_record_load((const uint8_t*)pkt->stream->extra, pkt->stream->bytes, &bs->v.vvc);
+		if (r < 0)
+			return r;
+	}
+
+	r = avpkt2bs_realloc(bs, pkt->size + 16 + sizeof(bs->v.vvc.data));
+	if (0 != r)
+		return r;
+
+	return h266_mp4toannexb(&bs->v.vvc, pkt->data, pkt->size, bs->ptr, bs->cap);
+}
+
 static int avpkt2bs_copy_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt)
 {
 	int r;
@@ -120,6 +137,9 @@ int avpkt2bs_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt)
 
 	case AVCODEC_VIDEO_H265:
 		return avpkt2bs_h265_input(bs, pkt);
+
+	case AVCODEC_VIDEO_H266:
+		return avpkt2bs_h266_input(bs, pkt);
 
 	case AVCODEC_VIDEO_AV1:
 	case AVCODEC_VIDEO_VP8:

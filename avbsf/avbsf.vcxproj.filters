@@ -71,5 +71,8 @@
     <ClCompile Include="src\avpkt2bs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\avpbs-h266.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

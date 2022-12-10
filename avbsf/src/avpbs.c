@@ -8,6 +8,7 @@ static struct avpbs_t* avpbs_common(void);
 
 struct avpbs_t* avpbs_h264(void);
 struct avpbs_t* avpbs_h265(void);
+struct avpbs_t* avpbs_h266(void);
 struct avpbs_t* avpbs_av1(void);
 struct avpbs_t* avpbs_vpx(void);
 
@@ -25,6 +26,8 @@ struct avpbs_t* avpbs_find(AVPACKET_CODEC_ID codec)
 		return avpbs_h264();
 	case AVCODEC_VIDEO_H265:
 		return avpbs_h265();
+	case AVCODEC_VIDEO_H266:
+		return avpbs_h266();
 	case AVCODEC_VIDEO_AV1:
 		return avpbs_av1();
 	case AVCODEC_VIDEO_VP8:

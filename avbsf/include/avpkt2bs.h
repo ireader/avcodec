@@ -6,6 +6,7 @@
 #include "avpacket.h"
 #include "mpeg4-aac.h"
 #include "mpeg4-avc.h"
+#include "mpeg4-vvc.h"
 #include "mpeg4-hevc.h"
 #include "mp3-header.h"
 #include "opus-head.h"
@@ -28,6 +29,7 @@ struct avpkt2bs_t
 		struct aom_av1_t av1;
 		struct mpeg4_avc_t avc;
 		struct mpeg4_hevc_t hevc;
+		struct mpeg4_vvc_t vvc;
 	} v;
 
 	uint8_t* ptr;

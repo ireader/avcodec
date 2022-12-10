@@ -30,6 +30,7 @@
     <ClCompile Include="src\avpbs-aac.c" />
     <ClCompile Include="src\avpbs-av1.c" />
     <ClCompile Include="src\avpbs-g7xx.c" />
+    <ClCompile Include="src\avpbs-h266.c" />
     <ClCompile Include="src\avpbs-mp3.c" />
     <ClCompile Include="src\avpbs-opus.c" />
     <ClCompile Include="src\avpbs-vpx.c" />
