@@ -2,6 +2,7 @@
 #define _avbsf_h_
 
 #include <stdint.h>
+#include "avcodecid.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,9 +20,12 @@ struct avbsf_t
 	int (*input)(void* bsf, int64_t pts, int64_t dts, const uint8_t* nalu, int bytes);
 };
 
-struct avbsf_t* avbsf_aac(void);
-struct avbsf_t* avbsf_h264(void);
-struct avbsf_t* avbsf_h265(void);
+//struct avbsf_t* avbsf_aac(void);
+//struct avbsf_t* avbsf_h264(void);
+//struct avbsf_t* avbsf_h265(void);
+//struct avbsf_t* avbsf_h266(void);
+
+struct avbsf_t* avbsf_find(AVPACKET_CODEC_ID codec);
 
 #ifdef __cplusplus
 }

@@ -6,6 +6,8 @@
 #include "mp3-header.h"
 #include "webm-vpx.h"
 
+// avpktutil2_t is deprecated, should use avpbs_find(@avbps.h) or AVPBitStream(@avbps.hpp)
+#pragma deprecated(avpktutil2_t)
 struct avpktutil2_t
 {
     struct avpktutil_t pkt;
@@ -27,6 +29,7 @@ static inline struct avstream_t* avpktutil2_findstream(struct avpktutil2_t* s, i
     {
     case AVCODEC_VIDEO_H264:
     case AVCODEC_VIDEO_H265:
+    case AVCODEC_VIDEO_H266:
         if (!s->video)
             s->video = avpktutil_addvideo(&s->pkt, s->pkt.count, codec, 0, 0, 0, 0);
         return s->video;

@@ -26,7 +26,11 @@
     <ClInclude Include="include\avpktutil2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\aacbsf.c" />
+    <ClCompile Include="src\avbsf-aac.c" />
+    <ClCompile Include="src\avbsf-h264.c" />
+    <ClCompile Include="src\avbsf-h265.c" />
+    <ClCompile Include="src\avbsf-h266.c" />
+    <ClCompile Include="src\avbsf.c" />
     <ClCompile Include="src\avpbs-aac.c" />
     <ClCompile Include="src\avpbs-av1.c" />
     <ClCompile Include="src\avpbs-g7xx.c" />
@@ -36,9 +40,7 @@
     <ClCompile Include="src\avpbs-vpx.c" />
     <ClCompile Include="src\avpbs.c" />
     <ClCompile Include="src\avpkt2bs.c" />
-    <ClCompile Include="src\h264bsf.c" />
     <ClCompile Include="src\avpbs-h264.c" />
-    <ClCompile Include="src\h265bsf.c" />
     <ClCompile Include="src\avpbs-h265.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

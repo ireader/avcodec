@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\nalu">
+      <UniqueIdentifier>{b400754a-da08-44b3-bf21-18886b75a95d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pkt2bs">
+      <UniqueIdentifier>{9d789f34-842e-4d7b-8273-438e2ad08cd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\bs2pkt">
+      <UniqueIdentifier>{04272f84-8ed2-4a97-abcb-04009e46b57a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\avbsf.h">
@@ -32,47 +41,53 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\h264bsf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\aacbsf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\avpbs-h264.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\h265bsf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\avpbs-h265.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\avpbs.c">
+      <Filter>Source Files\bs2pkt</Filter>
     </ClCompile>
     <ClCompile Include="src\avpbs-aac.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\avpbs-mp3.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\avpbs-opus.c">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\bs2pkt</Filter>
     </ClCompile>
     <ClCompile Include="src\avpbs-av1.c">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\bs2pkt</Filter>
     </ClCompile>
     <ClCompile Include="src\avpbs-g7xx.c">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\bs2pkt</Filter>
     </ClCompile>
-    <ClCompile Include="src\avpbs-vpx.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\avpbs-h264.c">
+      <Filter>Source Files\bs2pkt</Filter>
     </ClCompile>
-    <ClCompile Include="src\avpbs.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\avpkt2bs.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\avpbs-h265.c">
+      <Filter>Source Files\bs2pkt</Filter>
     </ClCompile>
     <ClCompile Include="src\avpbs-h266.c">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\bs2pkt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-mp3.c">
+      <Filter>Source Files\bs2pkt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-opus.c">
+      <Filter>Source Files\bs2pkt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpbs-vpx.c">
+      <Filter>Source Files\bs2pkt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avpkt2bs.c">
+      <Filter>Source Files\pkt2bs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avbsf.c">
+      <Filter>Source Files\nalu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avbsf-h266.c">
+      <Filter>Source Files\nalu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avbsf-aac.c">
+      <Filter>Source Files\nalu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avbsf-h264.c">
+      <Filter>Source Files\nalu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\avbsf-h265.c">
+      <Filter>Source Files\nalu</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

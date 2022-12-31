@@ -19,8 +19,6 @@ struct avpbs_h266_t
 
 static int avpbs_h266_create_stream(struct avpbs_h266_t* bs)
 {
-	int x, y;
-
 	avstream_release(bs->stream);
 	bs->stream = avstream_alloc((int)(bs->vvc.off + bs->vvc.numOfArrays * 2 + 64));
 	if (!bs->stream)
