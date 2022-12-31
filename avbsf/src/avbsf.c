@@ -1,4 +1,5 @@
 #include "avbsf.h"
+#include <stdlib.h>
 
 struct avbsf_t* avbsf_aac(void);
 struct avbsf_t* avbsf_h264(void);
