@@ -22,6 +22,9 @@
     <Filter Include="Source Files\bs2pkt">
       <UniqueIdentifier>{04272f84-8ed2-4a97-abcb-04009e46b57a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\flv">
+      <UniqueIdentifier>{5fcf7895-5c97-41d7-b695-4058140fe8dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\avbsf.h">
@@ -38,6 +41,15 @@
     </ClInclude>
     <ClInclude Include="include\avpktutil2.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\avpbs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\flv\flv2pkt.h">
+      <Filter>Header Files\flv</Filter>
+    </ClInclude>
+    <ClInclude Include="include\flv\pkt2flv.h">
+      <Filter>Header Files\flv</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
