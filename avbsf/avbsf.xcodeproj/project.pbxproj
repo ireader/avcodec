@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C9FC5F2298D010A00FB85DD /* avbsf-h265.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FC5EC298D010A00FB85DD /* avbsf-h265.c */; };
+		0C9FC5F3298D010A00FB85DD /* avbsf-h264.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FC5ED298D010A00FB85DD /* avbsf-h264.c */; };
+		0C9FC5F4298D010A00FB85DD /* avbsf-h266.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FC5EE298D010A00FB85DD /* avbsf-h266.c */; };
+		0C9FC5F5298D010A00FB85DD /* avbsf-aac.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FC5EF298D010A00FB85DD /* avbsf-aac.c */; };
+		0C9FC5F6298D010A00FB85DD /* avbsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FC5F0298D010A00FB85DD /* avbsf.c */; };
+		0C9FC5F7298D010A00FB85DD /* avpbs-h266.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FC5F1298D010A00FB85DD /* avpbs-h266.c */; };
 		46850374262413E500E7ABEC /* avpbs-h265.c in Sources */ = {isa = PBXBuildFile; fileRef = 46850368262413E500E7ABEC /* avpbs-h265.c */; };
 		46850375262413E600E7ABEC /* avpbs-vpx.c in Sources */ = {isa = PBXBuildFile; fileRef = 46850369262413E500E7ABEC /* avpbs-vpx.c */; };
 		46850376262413E600E7ABEC /* avpbs-g7xx.c in Sources */ = {isa = PBXBuildFile; fileRef = 4685036A262413E500E7ABEC /* avpbs-g7xx.c */; };
@@ -15,14 +21,17 @@
 		46850379262413E600E7ABEC /* avpbs.c in Sources */ = {isa = PBXBuildFile; fileRef = 4685036D262413E500E7ABEC /* avpbs.c */; };
 		4685037A262413E600E7ABEC /* avpbs-mp3.c in Sources */ = {isa = PBXBuildFile; fileRef = 4685036E262413E500E7ABEC /* avpbs-mp3.c */; };
 		4685037B262413E600E7ABEC /* avpbs-h264.c in Sources */ = {isa = PBXBuildFile; fileRef = 4685036F262413E500E7ABEC /* avpbs-h264.c */; };
-		4685037D262413E600E7ABEC /* aacbsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46850371262413E500E7ABEC /* aacbsf.c */; };
 		4685037E262413E600E7ABEC /* avpbs-av1.c in Sources */ = {isa = PBXBuildFile; fileRef = 46850372262413E500E7ABEC /* avpbs-av1.c */; };
-		469AAEAE264F4ED000559AA2 /* h264bsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 469AAEAD264F4ED000559AA2 /* h264bsf.c */; };
-		46E55E3F2460593300D8BDBA /* h265bsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E55E3C2460593200D8BDBA /* h265bsf.c */; };
 		4CEE46E827A70CA900740460 /* avpkt2bs.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE46E327A70AE600740460 /* avpkt2bs.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0C9FC5EC298D010A00FB85DD /* avbsf-h265.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avbsf-h265.c"; path = "src/avbsf-h265.c"; sourceTree = "<group>"; };
+		0C9FC5ED298D010A00FB85DD /* avbsf-h264.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avbsf-h264.c"; path = "src/avbsf-h264.c"; sourceTree = "<group>"; };
+		0C9FC5EE298D010A00FB85DD /* avbsf-h266.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avbsf-h266.c"; path = "src/avbsf-h266.c"; sourceTree = "<group>"; };
+		0C9FC5EF298D010A00FB85DD /* avbsf-aac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avbsf-aac.c"; path = "src/avbsf-aac.c"; sourceTree = "<group>"; };
+		0C9FC5F0298D010A00FB85DD /* avbsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = avbsf.c; path = src/avbsf.c; sourceTree = "<group>"; };
+		0C9FC5F1298D010A00FB85DD /* avpbs-h266.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-h266.c"; path = "src/avpbs-h266.c"; sourceTree = "<group>"; };
 		46850368262413E500E7ABEC /* avpbs-h265.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-h265.c"; path = "src/avpbs-h265.c"; sourceTree = "<group>"; };
 		46850369262413E500E7ABEC /* avpbs-vpx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-vpx.c"; path = "src/avpbs-vpx.c"; sourceTree = "<group>"; };
 		4685036A262413E500E7ABEC /* avpbs-g7xx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-g7xx.c"; path = "src/avpbs-g7xx.c"; sourceTree = "<group>"; };
@@ -31,12 +40,9 @@
 		4685036D262413E500E7ABEC /* avpbs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = avpbs.c; path = src/avpbs.c; sourceTree = "<group>"; };
 		4685036E262413E500E7ABEC /* avpbs-mp3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-mp3.c"; path = "src/avpbs-mp3.c"; sourceTree = "<group>"; };
 		4685036F262413E500E7ABEC /* avpbs-h264.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-h264.c"; path = "src/avpbs-h264.c"; sourceTree = "<group>"; };
-		46850371262413E500E7ABEC /* aacbsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aacbsf.c; path = src/aacbsf.c; sourceTree = "<group>"; };
 		46850372262413E500E7ABEC /* avpbs-av1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "avpbs-av1.c"; path = "src/avpbs-av1.c"; sourceTree = "<group>"; };
-		469AAEAD264F4ED000559AA2 /* h264bsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h264bsf.c; path = src/h264bsf.c; sourceTree = "<group>"; };
 		46E55E302460588000D8BDBA /* libavbsf.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libavbsf.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		46E55E38246058CA00D8BDBA /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
-		46E55E3C2460593200D8BDBA /* h265bsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h265bsf.c; path = src/h265bsf.c; sourceTree = "<group>"; };
 		4CEE46E327A70AE600740460 /* avpkt2bs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = avpkt2bs.c; path = src/avpkt2bs.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -81,9 +87,12 @@
 				4685036E262413E500E7ABEC /* avpbs-mp3.c */,
 				4685036C262413E500E7ABEC /* avpbs-opus.c */,
 				46850369262413E500E7ABEC /* avpbs-vpx.c */,
-				46850371262413E500E7ABEC /* aacbsf.c */,
-				469AAEAD264F4ED000559AA2 /* h264bsf.c */,
-				46E55E3C2460593200D8BDBA /* h265bsf.c */,
+				0C9FC5EF298D010A00FB85DD /* avbsf-aac.c */,
+				0C9FC5ED298D010A00FB85DD /* avbsf-h264.c */,
+				0C9FC5EC298D010A00FB85DD /* avbsf-h265.c */,
+				0C9FC5EE298D010A00FB85DD /* avbsf-h266.c */,
+				0C9FC5F0298D010A00FB85DD /* avbsf.c */,
+				0C9FC5F1298D010A00FB85DD /* avpbs-h266.c */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -155,17 +164,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C9FC5F5298D010A00FB85DD /* avbsf-aac.c in Sources */,
 				46850377262413E600E7ABEC /* avpbs-aac.c in Sources */,
 				4CEE46E827A70CA900740460 /* avpkt2bs.c in Sources */,
 				4685037A262413E600E7ABEC /* avpbs-mp3.c in Sources */,
-				4685037D262413E600E7ABEC /* aacbsf.c in Sources */,
 				46850374262413E500E7ABEC /* avpbs-h265.c in Sources */,
 				46850379262413E600E7ABEC /* avpbs.c in Sources */,
 				46850376262413E600E7ABEC /* avpbs-g7xx.c in Sources */,
-				46E55E3F2460593300D8BDBA /* h265bsf.c in Sources */,
 				4685037E262413E600E7ABEC /* avpbs-av1.c in Sources */,
+				0C9FC5F4298D010A00FB85DD /* avbsf-h266.c in Sources */,
+				0C9FC5F6298D010A00FB85DD /* avbsf.c in Sources */,
+				0C9FC5F2298D010A00FB85DD /* avbsf-h265.c in Sources */,
+				0C9FC5F3298D010A00FB85DD /* avbsf-h264.c in Sources */,
+				0C9FC5F7298D010A00FB85DD /* avpbs-h266.c in Sources */,
 				46850378262413E600E7ABEC /* avpbs-opus.c in Sources */,
-				469AAEAE264F4ED000559AA2 /* h264bsf.c in Sources */,
 				4685037B262413E600E7ABEC /* avpbs-h264.c in Sources */,
 				46850375262413E600E7ABEC /* avpbs-vpx.c in Sources */,
 			);
