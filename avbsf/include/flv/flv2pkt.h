@@ -140,7 +140,7 @@ static inline int flv2avpkt_input(struct flv2avpkt_t* ctx, int avtype, const voi
 {
 	int stream;
 
-	stream = flv2avpkt_find(ctx, avtype, data, bytes, onpacket, param);
+	stream = flv2avpkt_find(ctx, avtype, data, (int)bytes, onpacket, param);
 	if (stream < 0 || stream >= sizeof(ctx->streams) / sizeof(ctx->streams[0]))
 		return -1;
 

@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClInclude Include="include\avpbs.h" />
     <ClInclude Include="include\avbsf.h" />
-    <ClInclude Include="include\avpbs.hpp" />
     <ClInclude Include="include\avpkt2bs.h" />
     <ClInclude Include="include\avpktutil.h" />
     <ClInclude Include="include\avpktutil2.h" />

@@ -42,9 +42,6 @@
     <ClInclude Include="include\avpktutil2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\avpbs.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\flv\flv2pkt.h">
       <Filter>Header Files\flv</Filter>
     </ClInclude>
