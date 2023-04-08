@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <errno.h>
 
+#define N_PACKER_SIZE (32 * 1024 * 1024)
+
 int avpkt2bs_create(struct avpkt2bs_t* bs)
 {
 	memset(bs, 0, sizeof(*bs));
@@ -16,6 +18,7 @@ int avpkt2bs_destroy(struct avpkt2bs_t* bs)
 	{
 		assert(bs->cap > 0);
 		free(bs->ptr);
+		bs->ptr = NULL;
 		bs->cap = 0;
 	}
 	return 0;
@@ -26,6 +29,8 @@ static int avpkt2bs_realloc(struct avpkt2bs_t* bs, int bytes)
 	void* p;
 	if (bytes > bs->cap)
 	{
+		if(bytes > N_PACKER_SIZE)
+			return -(__ERROR__ + ENOMEM);
 		p = realloc(bs->ptr, bytes);
 		if (NULL == p)
 			return -(__ERROR__ + ENOMEM);

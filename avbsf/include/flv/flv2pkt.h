@@ -58,7 +58,7 @@ static int flv2avpkt_find(struct flv2avpkt_t* ctx, int avtype, const void* data,
 	int stream;
 
 	stream = FLV_SCRIPT_METADATA == avtype ? 2 : ((avtype & 0xFF) <= 0x0F ? 0 : 1);
-	assert(stream >= 0 && stream < sizeof(ctx->streams) / sizeof(ctx->streams[0]));
+	assert(stream >= 0 && stream < (int)(sizeof(ctx->streams) / sizeof(ctx->streams[0])));
 	if (ctx->streams[stream].ptr)
 	{
 		if (0 == stream && (ctx->video & (1 << (avtype & 0x0F))))
@@ -141,7 +141,7 @@ static inline int flv2avpkt_input(struct flv2avpkt_t* ctx, int avtype, const voi
 	int stream;
 
 	stream = flv2avpkt_find(ctx, avtype, data, (int)bytes, onpacket, param);
-	if (stream < 0 || stream >= sizeof(ctx->streams) / sizeof(ctx->streams[0]))
+	if (stream < 0 || stream >= (int)(sizeof(ctx->streams) / sizeof(ctx->streams[0])))
 		return -1;
 
 	if (avtype >= FLV_AUDIO_ASC)

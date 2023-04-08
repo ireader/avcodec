@@ -44,6 +44,38 @@ int avpkt2bs_destroy(struct avpkt2bs_t* bs);
 int avpkt2bs_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt);
 
 #if defined(__cplusplus)
+
+struct AVPacket2BitStream
+{
+public:
+	AVPacket2BitStream()
+	{
+		avpkt2bs_create(&m_bs);
+	}
+
+	~AVPacket2BitStream()
+	{ 
+		avpkt2bs_destroy(&m_bs);
+	}
+
+public:
+	int Input(const struct avpacket_t* pkt)
+	{
+		return avpkt2bs_input(&m_bs, pkt);
+	}
+
+	// get ptr
+	operator const void* () const {
+		return m_bs.ptr;
+	}
+
+private:
+	AVPacket2BitStream(AVPacket2BitStream&) {}
+	AVPacket2BitStream& operator= (AVPacket2BitStream&) { return *this; }
+
+private:
+	avpkt2bs_t m_bs;
+};
 }
 #endif
 #endif /* !_avpkt2bs_h_ */

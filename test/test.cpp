@@ -26,7 +26,9 @@ static void video_test()
 
 	AVDictionary* opts = NULL;
 	av_dict_set(&opts, "profile", "baseline", 0);
-	av_dict_set(&opts, "preset", "fast", 0);
+	av_dict_set(&opts, "preset", "medium", 0);
+	av_dict_set(&opts, "tune", "zerolatency", 0);
+	av_dict_set(&opts, "threads", "0", 0);
 	av_dict_set(&opts, "crt", "23", 0);
 	void* ff = ffencoder_create(codecpar, &opts);
 	av_dict_free(&opts);
