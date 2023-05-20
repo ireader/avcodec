@@ -21,8 +21,9 @@ struct audio_decoder_t
 	int (*getframe)(void* audio, struct avframe_t** frame);
 };
 
-struct audio_decoder_t* opus_decoder(void);
+struct audio_decoder_t* fdk_decoder(void);
 struct audio_decoder_t* faac_decoder(void);
+struct audio_decoder_t* opus_decoder(void);
 struct audio_decoder_t* g711a_decoder(void);
 struct audio_decoder_t* g711u_decoder(void);
 

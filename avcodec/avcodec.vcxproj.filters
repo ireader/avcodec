@@ -179,5 +179,11 @@
     <ClCompile Include="source\x262enc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\fdk-decoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\fdk-decoder-test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
