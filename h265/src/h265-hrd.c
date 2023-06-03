@@ -1,6 +1,7 @@
 #include "h265-hrd.h"
 #include "h265-vui.h"
 #include "h265-parser.h"
+#include "h265-internal.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -54,7 +55,7 @@ int h265_hrd(bitstream_t* stream, struct h265_hrd_t* hrd, int commonInfPresentFl
 		}
 	}
 
-	for (i = 0; i <= maxNumSubLayersMinus1; i++)
+	for (i = 0; i <= maxNumSubLayersMinus1 && i < sizeof_array(hrd->sub_layer_hdr_parameters); i++)
 	{
 		memset(&hrd->sub_layer_hdr_parameters[i], 0, sizeof(hrd->sub_layer_hdr_parameters[i]));
 		hrd->sub_layer_hdr_parameters[i].fixed_pic_rate_within_cvs_flag = bitstream_read_bit(stream);

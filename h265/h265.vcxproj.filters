@@ -36,6 +36,9 @@
     <ClInclude Include="include\h265-hrd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\h265-internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\h265-vps.c">

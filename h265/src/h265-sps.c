@@ -1,5 +1,6 @@
 #include "h265-sps.h"
 #include "h265-parser.h"
+#include "h265-internal.h"
 #include <assert.h>
 
 int h265_vui(bitstream_t* stream, struct h265_vui_t* vui, int sps_max_sub_layers_minus1);
@@ -48,7 +49,7 @@ int h265_sps(bitstream_t* stream, struct h265_sps_t* sps)
 	sps->bit_depth_chroma_minus8 = (uint8_t)bitstream_read_ue(stream);
 	sps->log2_max_pic_order_cnt_lsb_minus4 = bitstream_read_ue(stream);
 	sps->sps_sub_layer_ordering_info_present_flag = (uint8_t)bitstream_read_bit(stream);
-	for (i = (sps->sps_sub_layer_ordering_info_present_flag ? 0 : sps->sps_max_sub_layers_minus1); i <= sps->sps_max_sub_layers_minus1; i++)
+	for (i = (sps->sps_sub_layer_ordering_info_present_flag ? 0 : sps->sps_max_sub_layers_minus1); i <= sps->sps_max_sub_layers_minus1 && i < sizeof_array(sps->sps_max_dec_pic_buffering_minus1); i++)
 	{
 		assert(i < sizeof(sps->sps_max_dec_pic_buffering_minus1) / sizeof(sps->sps_max_dec_pic_buffering_minus1[0]));
 		sps->sps_max_dec_pic_buffering_minus1[i] = bitstream_read_ue(stream);
@@ -83,14 +84,14 @@ int h265_sps(bitstream_t* stream, struct h265_sps_t* sps)
 	}
 
 	sps->num_short_term_ref_pic_sets = (uint8_t)bitstream_read_ue(stream);
-	for (i = 0; i < sps->num_short_term_ref_pic_sets; i++)
+	for (i = 0; i < sps->num_short_term_ref_pic_sets && i < sizeof_array(sps->inter_ref_pic_set_prediction_flag); i++)
 		h265_st_ref_pic_set(stream, sps, i);
 
 	sps->long_term_ref_pics_present_flag = (uint8_t)bitstream_read_bit(stream);
 	if (sps->long_term_ref_pics_present_flag)
 	{
 		sps->num_long_term_ref_pics_sps = (uint8_t)bitstream_read_ue(stream);
-		for (i = 0; i < sps->num_long_term_ref_pics_sps; i++)
+		for (i = 0; i < sps->num_long_term_ref_pics_sps && i < sizeof_array(sps->lt_ref_pic_poc_lsb_sps); i++)
 		{
 			sps->lt_ref_pic_poc_lsb_sps[i] = bitstream_read_bits(stream, sps->log2_max_pic_order_cnt_lsb_minus4 + 4);
 			sps->used_by_curr_pic_lt_sps_flag[i] = (uint8_t)bitstream_read_bit(stream);
@@ -161,7 +162,7 @@ static void h265_st_ref_pic_set(bitstream_t* stream, struct h265_sps_t* sps, int
 		// NumPositivePics[ stRpsIdx ] = num_positive_pics
 		// NumDeltaPocs[ stRpsIdx ] = NumNegativePics[ stRpsIdx ] + NumPositivePics[ stRpsIdx ]   //(7-71)
 		NumDeltaPocs = sps->num_negative_pics[stRpsIdx] + sps->num_positive_pics[stRpsIdx];
-		for (j = 0; j < NumDeltaPocs; j++)
+		for (j = 0; j < NumDeltaPocs && j < sizeof_array(sps->used_by_curr_pic_flag[0]); j++)
 		{
 			assert(j < sizeof(sps->used_by_curr_pic_flag[stRpsIdx]) / sizeof(sps->used_by_curr_pic_flag[stRpsIdx][0]));
 			sps->used_by_curr_pic_flag[stRpsIdx][j] = (uint8_t)bitstream_read_bit(stream);
@@ -173,14 +174,14 @@ static void h265_st_ref_pic_set(bitstream_t* stream, struct h265_sps_t* sps, int
 	{
 		sps->num_negative_pics[stRpsIdx] = bitstream_read_ue(stream);
 		sps->num_positive_pics[stRpsIdx] = bitstream_read_ue(stream);
-		for (i = 0; i < sps->num_negative_pics[stRpsIdx]; i++)
+		for (i = 0; i < sps->num_negative_pics[stRpsIdx] && i < sizeof_array(sps->delta_poc_s0_minus1[0]); i++)
 		{
 			assert(i < sizeof(sps->delta_poc_s0_minus1[stRpsIdx]) / sizeof(sps->delta_poc_s0_minus1[stRpsIdx][0]));
 			sps->delta_poc_s0_minus1[stRpsIdx][i] = bitstream_read_ue(stream);
 			sps->used_by_curr_pic_s0_flag[stRpsIdx][i] = (uint8_t)bitstream_read_bit(stream);
 		}
 
-		for (i = 0; i < sps->num_positive_pics[stRpsIdx]; i++)
+		for (i = 0; i < sps->num_positive_pics[stRpsIdx] && i < sizeof_array(sps->delta_poc_s1_minus1[0]); i++)
 		{
 			assert(i < sizeof(sps->delta_poc_s1_minus1[stRpsIdx]) / sizeof(sps->delta_poc_s1_minus1[stRpsIdx][0]));
 			sps->delta_poc_s1_minus1[stRpsIdx][i] = bitstream_read_ue(stream);

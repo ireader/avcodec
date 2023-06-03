@@ -1,5 +1,6 @@
 #include "h265-vps.h"
 #include "h265-parser.h"
+#include "h265-internal.h"
 #include <assert.h>
 
 int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_t* profile, int profilePresentFlag, int maxNumSubLayersMinus1)
@@ -16,7 +17,7 @@ int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_
 	
 	profile->general_level_idc = (uint8_t)bitstream_read_bits(stream, 8);
 
-	for(i = 0; i < maxNumSubLayersMinus1; i++)
+	for(i = 0; i < maxNumSubLayersMinus1 && i < sizeof_array(profile->sub_layer); i++)
 	{
 		profile->sub_layer[i].sub_layer_profile_present_flag = (uint8_t)bitstream_read_bit(stream);
 		profile->sub_layer[i].sub_layer_level_present_flag = (uint8_t)bitstream_read_bit(stream);
@@ -29,7 +30,7 @@ int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_
 			bitstream_read_bits(stream, 2); // reserved_zero_2bits
 	}
 
-	for(i = 0; i < maxNumSubLayersMinus1; i++)
+	for(i = 0; i < maxNumSubLayersMinus1 && i < sizeof_array(profile->sub_layer); i++)
 	{
 		if(profile->sub_layer[i].sub_layer_profile_present_flag)
 		{

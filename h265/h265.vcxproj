@@ -121,6 +121,7 @@
     <ClInclude Include="include\h265-sps.h" />
     <ClInclude Include="include\h265-vps.h" />
     <ClInclude Include="include\h265-vui.h" />
+    <ClInclude Include="src\h265-internal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\h265-hrd.c" />
