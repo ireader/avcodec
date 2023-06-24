@@ -232,7 +232,7 @@ void* fftranscode_create_h264(const AVCodecParameters* decode, const char* prese
 	AVCodecParameters codecpar;
 
 	memset(&codecpar, 0, sizeof(AVCodecParameters));
-	codecpar.codec_type = AVMEDIA_TYPE_AUDIO;
+	codecpar.codec_type = AVMEDIA_TYPE_VIDEO;
 	codecpar.codec_id = AV_CODEC_ID_H264;
 	codecpar.format = AV_PIX_FMT_YUV420P;
 	codecpar.width = width;
