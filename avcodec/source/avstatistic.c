@@ -45,7 +45,7 @@ double avstatistic_getfps(const struct avstatistic_t* stats, int stream)
 	uint32_t i;
 	uint32_t N;
 	uint32_t total;
-	struct avbitrate_t* rate;
+	const struct avbitrate_t* rate;
 
 	if (stream < 0 || stream >= sizeof(stats->streams) / sizeof(stats->streams[0]))
 		return -1;
@@ -59,7 +59,7 @@ double avstatistic_getfps(const struct avstatistic_t* stats, int stream)
 		total += rate->packets[i];
 	}
 
-	return total * 1.0 / ((N - 1) * rate->interval);
+	return total * 1000.0 / ((N - 1) * rate->interval); // ms -> seconds
 }
 
 void avbitrate_clear(struct avbitrate_t* rate)
