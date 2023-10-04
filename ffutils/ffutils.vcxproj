@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\avdecoder.h" />
+    <ClInclude Include="include\avencoder.h" />
     <ClInclude Include="include\ffdecoder.h" />
     <ClInclude Include="include\ffencoder.h" />
     <ClInclude Include="include\fffilter.h" />
@@ -172,9 +173,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\avdecoder.c" />
+    <ClCompile Include="source\avencoder.c" />
     <ClCompile Include="source\ffdecoder.c" />
     <ClCompile Include="source\ffencoder.c" />
     <ClCompile Include="source\fffilter.c" />
+    <ClCompile Include="source\ffhelper.c" />
     <ClCompile Include="source\ffinit.c" />
     <ClCompile Include="source\ffinput.c" />
     <ClCompile Include="source\ffoutput.c" />

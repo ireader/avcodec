@@ -41,15 +41,18 @@ void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameter
 	}
 	av_dict_free(&decopts);
 
-#if LIBAVCODEC_VERSION_MAJOR < 59
-	fft->resampler = ffresample_create((enum AVSampleFormat)fft->decpar->format, fft->decpar->sample_rate, fft->decpar->channels, (enum AVSampleFormat)fft->encpar->format, fft->encpar->sample_rate, fft->encpar->channels);
-#else
-	fft->resampler = ffresample_create((enum AVSampleFormat)(fft->decpar->format), fft->decpar->sample_rate, fft->decpar->ch_layout.nb_channels, (enum AVSampleFormat)fft->encpar->format, fft->encpar->sample_rate, fft->encpar->ch_layout.nb_channels);
-#endif
-	if (!fft->resampler)
+	if (encode->codec_type == AVMEDIA_TYPE_AUDIO)
 	{
-		fftranscode_destroy(fft);
-		return NULL;
+#if LIBAVCODEC_VERSION_MAJOR < 59
+		fft->resampler = ffresample_create((enum AVSampleFormat)fft->decpar->format, fft->decpar->sample_rate, fft->decpar->channels, (enum AVSampleFormat)fft->encpar->format, fft->encpar->sample_rate, fft->encpar->channels);
+#else
+		fft->resampler = ffresample_create((enum AVSampleFormat)(fft->decpar->format), fft->decpar->sample_rate, fft->decpar->ch_layout.nb_channels, (enum AVSampleFormat)fft->encpar->format, fft->encpar->sample_rate, fft->encpar->ch_layout.nb_channels);
+#endif
+		if (!fft->resampler)
+		{
+			fftranscode_destroy(fft);
+			return NULL;
+		}
 	}
 
 	return fft;
@@ -154,11 +157,20 @@ int fftranscode_input(void* transcode, const AVPacket* in)
 	if (r < 0)
 		return r;
 
-	memset(&encode, 0, sizeof(encode));
-	r = fftranscode_resample(fft, &decode, &encode);
-	av_frame_unref(&decode);
-	if (r < 0)
-		return r;
+	if (fft->resampler)
+	{
+		memset(&encode, 0, sizeof(encode));
+		r = fftranscode_resample(fft, &decode, &encode);
+		av_frame_unref(&decode);
+		if (r < 0)
+			return r;
+	}
+	else
+	{
+		av_frame_move_ref(&encode, &decode);
+		encode.pict_type = AV_PICTURE_TYPE_NONE;
+		encode.pts = encode.pkt_dts;
+	}
 
 	r = ffencoder_input(fft->encoder, &encode);
 	av_frame_unref(&encode);
@@ -242,8 +254,11 @@ void* fftranscode_create_h264(const AVCodecParameters* decode, const char* prese
 	if (tune) av_dict_set(&opts, "tune", tune, 0);
 	if (preset) av_dict_set(&opts, "preset", preset, 0);
 	if (profile) av_dict_set(&opts, "profile", profile, 0);
+	av_dict_set_int(&opts, "rc-lookahead", 3, 0);
+	av_dict_set_int(&opts, "bframe", 0, 0);
+	av_dict_set_int(&opts, "threads", 4, 0);
 	//av_dict_set(&opts, "preset", "fast", 0);
-	//av_dict_set(&opts, "crt", "23", 0);
+	av_dict_set_int(&opts, "crt", 23, 0);
 	av_dict_set_int(&opts, "g", gop, 0);
 
 	ff = fftranscode_create(decode, &codecpar, &opts);

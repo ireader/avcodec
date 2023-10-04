@@ -35,6 +35,8 @@ EXPORTS
 	aac_decoder
 	mp3_decoder
 
+	avencoder_create_h264
+
 	fffilter_create_source
    
 	ffscale
@@ -51,3 +53,9 @@ EXPORTS
 	fftranscode_create_aac
 	fftranscode_create_opus
 	fftranscode_create_h264
+
+	ffmpeg_to_avpacket
+	avpacket_to_ffmpeg
+	ffmpeg_to_avframe
+	avframe_to_ffmpeg
+	ffmpeg_to_avstream

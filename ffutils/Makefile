@@ -1,5 +1,5 @@
 ROOT:=../../sdk
-TOOLS:=../../3rd
+CONTRIB:=../../3rd
 
 #--------------------------------Output------------------------------
 # OUTTYPE: 0-exe, 1-dll, 2-static
@@ -14,7 +14,7 @@ OUTFILE = libffutils.a
 INCLUDES = . \
 			./include \
 			../avcodec/include \
-			(TOOLS)/ffmpeg/include
+			$(CONTRIB)/ffmpeg/include
 
 #-------------------------------Source-------------------------------
 #
