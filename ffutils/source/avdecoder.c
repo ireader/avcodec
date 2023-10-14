@@ -120,7 +120,7 @@ int avdecoder_input(void* ff, const struct avpacket_t* pkt)
 {
 	AVPacket pkt2;
 	if (pkt && pkt->data)
-		avpacket_to_ffmpeg(pkt, 0, &pkt2);
+		avpacket_to_ffmpeg(pkt, pkt->stream->stream, &pkt2);
 	return ffdecoder_input(ff, pkt ? &pkt2 : NULL);
 }
 

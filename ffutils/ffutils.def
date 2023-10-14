@@ -32,10 +32,15 @@ EXPORTS
 	avdecoder_input
 	avdecoder_getframe
 
+	avencoder_create_h264
+	avencoder_create_aac
+	avencoder_create_opus
+	avencoder_destroy
+	avencoder_input
+	avencoder_getpacket
+	
 	aac_decoder
 	mp3_decoder
-
-	avencoder_create_h264
 
 	fffilter_create_source
    

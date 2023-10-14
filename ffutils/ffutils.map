@@ -1,0 +1,69 @@
+{  
+global: 
+	ffutils_init;
+	ffutils_deinit;
+	ffutils_list;
+
+	ffinput_create;
+	ffinput_destroy;
+	ffinput_read;
+
+	ffoutput_create;
+	ffoutput_destroy;
+	ffoutput_addstream;
+	ffoutput_write;
+
+	ffdecoder_create;
+	ffdecoder_destroy;
+	ffdecoder_input;
+	ffdecoder_getframe;
+	ffdecoder_getcodecpar;
+
+	ffencoder_create;
+	ffencoder_destroy;
+	ffencoder_input;
+	ffencoder_getpacket;
+	ffencoder_getcodecpar;
+
+	avdecoder_create;
+	avdecoder_create_h264;
+	avdecoder_create_h265;
+	avdecoder_destroy;
+	avdecoder_input;
+	avdecoder_getframe;
+
+	avencoder_create_h264;
+	avencoder_create_aac;
+	avencoder_create_opus;
+	avencoder_destroy;
+	avencoder_input;
+	avencoder_getpacket;
+	
+	aac_decoder;
+	mp3_decoder;
+
+	fffilter_create_source;
+   
+	ffscale;
+
+	ffresample_create;
+	ffresample_destroy;
+	ffresample_convert;
+
+	fftranscode_create;
+	fftranscode_destroy;
+	fftranscode_input;
+	fftranscode_getpacket;
+	fftranscode_getcodecpar;
+	fftranscode_create_aac;
+	fftranscode_create_opus;
+	fftranscode_create_h264;
+
+	ffmpeg_to_avpacket;
+	avpacket_to_ffmpeg;
+	ffmpeg_to_avframe;
+	avframe_to_ffmpeg;
+	ffmpeg_to_avstream;
+	
+local: *;  
+};
