@@ -45,12 +45,13 @@ double avstatistic_getfps(const struct avstatistic_t* stats, int stream)
 	uint32_t i;
 	uint32_t N;
 	uint32_t total;
+	uint32_t interval;
 	const struct avbitrate_t* rate;
 
 	if (stream < 0 || stream >= sizeof(stats->streams) / sizeof(stats->streams[0]))
 		return -1;
 	rate = &stats->streams[stream].bitrate;
-
+	interval = rate->interval ? rate->interval : 1; // default 1
 	N = sizeof(rate->packets) / sizeof(rate->packets[0]);
 
 	total = 0;
@@ -59,7 +60,7 @@ double avstatistic_getfps(const struct avstatistic_t* stats, int stream)
 		total += rate->packets[i];
 	}
 
-	return total * 1000.0 / ((N - 1) * rate->interval); // ms -> seconds
+	return total * 1000.0 / ((N - 1) * interval); // ms -> seconds
 }
 
 void avbitrate_clear(struct avbitrate_t* rate)
@@ -106,8 +107,10 @@ uint64_t avbitrate_get(const struct avbitrate_t* rate)
 {
 	uint32_t i;
 	uint32_t N;
+	uint32_t interval;
 	uint64_t total;
 
+	interval = rate->interval ? rate->interval : 1; // default 1
 	N = sizeof(rate->buckets) / sizeof(rate->buckets[0]);
 
 	total = 0;
@@ -116,7 +119,7 @@ uint64_t avbitrate_get(const struct avbitrate_t* rate)
 		total += rate->buckets[i];
 	}
 
-	return total * 1000 / ((N - 1) * (uint64_t)rate->interval);
+	return total * 1000 / ((N - 1) * (uint64_t)interval);
 }
 
 void avjitter_clear(struct avjitter_t* jitter)
