@@ -24,6 +24,7 @@ void* fftranscode_create(const AVCodecParameters* decode, const AVCodecParameter
 	if (!fft)
 		return NULL;
 
+	av_dict_set(&decopts, "threads", "auto", 0); // disable multi-thread decode
 	fft->decoder = ffdecoder_create(decode, &decopts);
 	fft->encoder = ffencoder_create(encode, opts);
 	if (!fft->encoder || !fft->decoder)
@@ -144,44 +145,81 @@ static int fftranscode_resample(struct fftranscode_t* fft, const AVFrame* in, AV
 
 int fftranscode_input(void* transcode, const AVPacket* in)
 {
-	AVFrame decode, encode;
+	int r;
+	//int loop;
+	//AVFrame decode, encode;
 	struct fftranscode_t* fft;
 	fft = (struct fftranscode_t*)transcode;
 
-	int r = ffdecoder_input(fft->decoder, in);
-	if (r < 0)
-		return r;
+	r = ffdecoder_input(fft->decoder, in);
+	//for (loop = 0; r >= 0; loop++)
+	//{
+	//	memset(&decode, 0, sizeof(decode));
+	//	r = ffdecoder_getframe(fft->decoder, &decode);
+	//	if (r < 0)
+	//		return loop > 0 ? 0 : r;
 
-	memset(&decode, 0, sizeof(decode));
-	r = ffdecoder_getframe(fft->decoder, &decode);
-	if (r < 0)
-		return r;
+	//	if (fft->resampler)
+	//	{
+	//		memset(&encode, 0, sizeof(encode));
+	//		r = fftranscode_resample(fft, &decode, &encode);
+	//		av_frame_unref(&decode);
+	//		if (r < 0)
+	//			return r;
+	//	}
+	//	else
+	//	{
+	//		av_frame_move_ref(&encode, &decode);
+	//		encode.pict_type = encode.pict_type == AV_PICTURE_TYPE_I ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_NONE; // same i frame
+	//		encode.pts = encode.pkt_dts;
+	//	}
 
-	if (fft->resampler)
-	{
-		memset(&encode, 0, sizeof(encode));
-		r = fftranscode_resample(fft, &decode, &encode);
-		av_frame_unref(&decode);
-		if (r < 0)
-			return r;
-	}
-	else
-	{
-		av_frame_move_ref(&encode, &decode);
-		encode.pict_type = encode.pict_type == AV_PICTURE_TYPE_I ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_NONE; // same i frame
-		encode.pts = encode.pkt_dts;
-	}
+	//	r = ffencoder_input(fft->encoder, &encode);
+	//	av_frame_unref(&encode);
+	//}
 
-	r = ffencoder_input(fft->encoder, &encode);
-	av_frame_unref(&encode);
 	return r;
 }
 
 int fftranscode_getpacket(void* transcode, AVPacket * out)
 {
+	int r;
+	AVFrame decode, encode;
 	struct fftranscode_t* fft;
 	fft = (struct fftranscode_t*)transcode;
-	return ffencoder_getpacket(fft->encoder, out);
+
+	r = ffencoder_getpacket(fft->encoder, out);
+	while (r < 0)
+	{
+		memset(&decode, 0, sizeof(decode));
+		r = ffdecoder_getframe(fft->decoder, &decode);
+		if (r < 0)
+			return r;
+
+		if (fft->resampler)
+		{
+			memset(&encode, 0, sizeof(encode));
+			r = fftranscode_resample(fft, &decode, &encode);
+			av_frame_unref(&decode);
+			if (r < 0)
+				return r;
+		}
+		else
+		{
+			av_frame_move_ref(&encode, &decode);
+			encode.pict_type = encode.pict_type == AV_PICTURE_TYPE_I ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_NONE; // same i frame
+			encode.pts = encode.pkt_dts;
+		}
+
+		r = ffencoder_input(fft->encoder, &encode);
+		av_frame_unref(&encode);
+		if (r < 0)
+			return r;
+
+		r = ffencoder_getpacket(fft->encoder, out);
+	}
+
+	return r;
 }
 
 void* fftranscode_create_opus(const AVCodecParameters* decode, int sample_rate, int channel, int bitrate)
@@ -244,6 +282,7 @@ void* fftranscode_create_h264(const AVCodecParameters* decode, const char* prese
 	void* ff;
 	AVDictionary* opts = NULL;
 	AVCodecParameters* codecpar;
+	//char vbv[128];
 
 	codecpar = avcodec_parameters_alloc();
 	codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
@@ -251,17 +290,20 @@ void* fftranscode_create_h264(const AVCodecParameters* decode, const char* prese
 	codecpar->format = AV_PIX_FMT_YUV420P;
 	codecpar->width = width;
 	codecpar->height = height;
-	codecpar->bit_rate = bitrate;
+	//codecpar->bit_rate = bitrate;
+	//snprintf(vbv, sizeof(vbv), "ratetol=0.10:vbv-bufsize=%d:vbv-maxrate=%d", bitrate, bitrate);
 
 	if (tune) av_dict_set(&opts, "tune", tune, 0);
 	if (preset) av_dict_set(&opts, "preset", preset, 0);
 	if (profile) av_dict_set(&opts, "profile", profile, 0);
 	av_dict_set_int(&opts, "rc-lookahead", 3, 0);
 	av_dict_set_int(&opts, "bframe", 0, 0);
-	av_dict_set_int(&opts, "threads", 4, 0);
+	av_dict_set(&opts, "threads", "auto", 0);
 	//av_dict_set(&opts, "preset", "fast", 0);
-	av_dict_set_int(&opts, "crt", 23, 0);
+	av_dict_set_int(&opts, "crf", 21, 0);
 	av_dict_set_int(&opts, "g", gop, 0);
+	//av_dict_set(&opts, "nal-hrd", "cbr", 0);
+	//av_dict_set(&opts, "x264opts", vbv, 0);
 
 	ff = fftranscode_create(decode, codecpar, &opts);
 	avcodec_parameters_free(&codecpar);
