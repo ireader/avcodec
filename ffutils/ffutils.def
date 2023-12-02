@@ -38,6 +38,11 @@ EXPORTS
 	avencoder_destroy
 	avencoder_input
 	avencoder_getpacket
+
+	avtranscode_create_h264
+	avtranscode_destroy
+	avtranscode_input
+	avtranscode_getpacket
 	
 	aac_decoder
 	mp3_decoder

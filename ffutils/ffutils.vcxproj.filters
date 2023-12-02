@@ -48,6 +48,9 @@
     <ClInclude Include="include\avencoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\avtranscode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ffdecoder.c">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\ffhelper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\avtranscode.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

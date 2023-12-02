@@ -14,6 +14,9 @@ OUTFILE = libffutils.a
 INCLUDES = . \
 			./include \
 			../avcodec/include \
+			../avbsf/include \
+			../h264/include \
+			../h265/include \
 			$(CONTRIB)/ffmpeg/include
 
 #-------------------------------Source-------------------------------

@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FFUTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;../avbsf/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,7 +105,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;FFUTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;../avbsf/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,7 +124,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FFUTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;../avbsf/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;FFUTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;../avcodec/include;../../3rd/ffmpeg/include;../avbsf/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="include\avdecoder.h" />
     <ClInclude Include="include\avencoder.h" />
+    <ClInclude Include="include\avtranscode.h" />
     <ClInclude Include="include\ffdecoder.h" />
     <ClInclude Include="include\ffencoder.h" />
     <ClInclude Include="include\fffilter.h" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClCompile Include="source\avdecoder.c" />
     <ClCompile Include="source\avencoder.c" />
+    <ClCompile Include="source\avtranscode.c" />
     <ClCompile Include="source\ffdecoder.c" />
     <ClCompile Include="source\ffencoder.c" />
     <ClCompile Include="source\fffilter.c" />
@@ -189,8 +191,20 @@
     <None Include="ffutils.def" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\media-server\libflv\libflv.vcxproj">
+      <Project>{d5ba0bb6-0d84-48cb-8630-f617cb6de375}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\avbsf\avbsf.vcxproj">
+      <Project>{454fc5b7-c7dc-4e78-9803-254c35fc01e6}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\avcodec\avcodec.vcxproj">
       <Project>{01e9d416-4a49-416e-8182-22241f07c295}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\h264\h264.vcxproj">
+      <Project>{11fda5d5-41b7-4a1e-9b79-c38851b8d8ae}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\h265\h265.vcxproj">
+      <Project>{4a2e513d-9808-44ec-8329-bcb439d5c00a}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
