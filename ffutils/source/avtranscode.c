@@ -103,6 +103,8 @@ int avtranscode_input(struct avtranscode_t* avt, const struct avpacket_t* pkt)
 		r = avt->create_transcoder(avt, pkt);
 		if (0 != r)
 			return r;
+
+		avt->codecid = pkt->stream->codecid;
 	}
 
 	memset(&ff, 0, sizeof(ff));
@@ -146,7 +148,7 @@ static int avtranscode_create_h264_encoder(struct avtranscode_t* avt, const stru
 		avt->transcode = fftranscode_create_h264(&h265, avt->u.v.preset, avt->u.v.profile, avt->u.v.tune, avt->u.v.gop, avt->u.v.width, avt->u.v.height, avt->u.v.bitrate);
 		if (avt->transcode)
 		{
-			avt->pbs = avpbs_find(pkt->stream->codecid);
+			avt->pbs = avpbs_find(AVCODEC_VIDEO_H264);
 			h264 = fftranscode_getcodecpar(avt->transcode);
 			avt->h264 = avt->pbs->create(pkt->stream->stream, AVCODEC_VIDEO_H264, h264->extradata, h264->extradata_size, avtranscode_onpacket, avt);
 			avcodec_parameters_free(&h264);
