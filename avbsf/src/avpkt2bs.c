@@ -154,6 +154,10 @@ int avpkt2bs_input(struct avpkt2bs_t* bs, const struct avpacket_t* pkt)
 	case AVCODEC_DATA_MP2P:
 		return avpkt2bs_copy_input(bs, pkt);
 
+	case AVCODEC_VIDEO_SVAC:
+	case AVCODEC_AUDIO_SVAC:
+		return avpkt2bs_copy_input(bs, pkt);
+
 	default:
 		return -(__ERROR__ + ENOPROTOOPT);
 	}
