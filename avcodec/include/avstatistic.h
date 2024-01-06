@@ -56,6 +56,9 @@ int avstatistic_input(struct avstatistic_t* stats, int64_t clock, int stream, in
 /// @return stream frame rate(in (N-1) * interval)
 double avstatistic_getfps(const struct avstatistic_t* stats, int stream);
 
+/// @return total bitrate
+uint64_t avstatistic_getbitrate(const struct avstatistic_t* stats);
+
 /// avjitter_clear clear all data
 void avjitter_clear(struct avjitter_t* jitter);
 

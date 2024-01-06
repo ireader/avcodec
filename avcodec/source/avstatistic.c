@@ -63,6 +63,15 @@ double avstatistic_getfps(const struct avstatistic_t* stats, int stream)
 	return total * 1000.0 / ((N - 1) * interval); // ms -> seconds
 }
 
+uint64_t avstatistic_getbitrate(const struct avstatistic_t* stats)
+{
+	size_t i;
+	uint64_t bitrate;
+	for (bitrate = i = 0; i < sizeof(stats->streams) / sizeof(stats->streams[0]); i++)
+		bitrate += avbitrate_get(&stats->streams[i].bitrate);
+	return bitrate;
+}
+
 void avbitrate_clear(struct avbitrate_t* rate)
 {
 	rate->i = 0;

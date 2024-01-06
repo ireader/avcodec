@@ -375,6 +375,20 @@ static void avtimeline_diff_start_test(void)
 	assert(290 == avtimeline_input32(&line, 2, 290, 290, &discontinuity));
 }
 
+static void avtimeline_diff_start_test2(void)
+{
+	int discontinuity;
+	struct avtimeline_t line;
+
+	avtimeline_init(&line, 5000, 0);
+	avtimeline_input32(&line, 1, 65368, 65408, &discontinuity);
+	avtimeline_input32(&line, 1, 65402, 65442, &discontinuity);
+	avtimeline_input32(&line, 1, 65435, 65475, &discontinuity);
+	avtimeline_input32(&line, 1, 95443684, 7, &discontinuity);
+	avtimeline_input32(&line, 1, 0, 40, &discontinuity);
+	avtimeline_input32(&line, 1, 33, 73, &discontinuity);
+}
+
 void avtimeline_test(void)
 {
 	unsigned int seed;
@@ -386,6 +400,7 @@ void avtimeline_test(void)
 	avtimeline_monotone_increment_test();
 	avtimeline_dts_revert_test();
 	avtimeline_diff_start_test();
+	avtimeline_diff_start_test2();
 }
 
 #endif
