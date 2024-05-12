@@ -23,7 +23,7 @@ struct flv2avpkt_t
 {
 	struct
 	{
-		avpbs_t* bs;
+		struct avpbs_t* bs;
 		void* ptr;
 	} streams[3]; // 0-video, 1-audio, 2-metadata
 
@@ -53,7 +53,7 @@ static inline int flv2avpkt_destroy(struct flv2avpkt_t* ctx)
 static int flv2avpkt_find(struct flv2avpkt_t* ctx, int avtype, const void* data, int bytes, flv2avpkt_onpacket onpacket, void* param)
 {
 	void* ptr;
-	avpbs_t* bs;
+	struct avpbs_t* bs;
 	AVPACKET_CODEC_ID codec;
 	int stream;
 

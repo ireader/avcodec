@@ -19,6 +19,7 @@ inline int v_min(int x, int y)
 AVPlayerCore::AVPlayerCore(avplayer_onrender avrender, void* param)
 	: m_avrender(avrender), m_param(param)
 	, m_status(avplayer_status_close)
+	, m_lowlatency(1)
 {
 	memset(&m_video, 0, sizeof(m_video));
 	memset(&m_audio, 0, sizeof(m_audio));
@@ -89,7 +90,7 @@ int AVPlayerCore::OnPlay(uint64_t clock)
 {
 	if (NULL == m_video.frame) m_videoQ.Read(m_video);
 	if (NULL == m_audio.frame) m_audioQ.Read(m_audio);
-	if (NULL == m_video.frame && NULL == m_audio.frame)
+	if (NULL == m_video.frame && NULL == m_audio.frame && !m_lowlatency)
 	{
 		// TODO: pause audio playing
 		if(clock - m_vclock.clock > 2 * TIMEOUT_DEFAULT && GetAudioDuration(clock) <= 0)

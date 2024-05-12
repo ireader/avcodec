@@ -4,6 +4,7 @@
 #include "VOFilter.h"
 #include "ctypedef.h"
 #include "app-log.h"
+#include "sys/system.h"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -87,18 +88,21 @@ int AVLivePlayer::Input(struct avpacket_t* pkt)
 	avpacket_addref(pkt);
 	{
 		AutoThreadLocker locker(m_locker);
-		if (pkt->stream->codecid < AVCODEC_AUDIO_PCM)
+		switch (avstream_type(pkt->stream))
 		{
+		case AVSTREAM_VIDEO:
 			if (pkt->flags & AVPACKET_FLAG_KEY)
 				m_h264_idr = pkt->data;
 			m_videoQ.push_back(pkt);
-		}
-		else
-		{
-			m_audioQ.push_back(pkt);
+			break;
+
+		case AVSTREAM_AUDIO:
+			if (!m_lowlatency)
+				m_audioQ.push_back(pkt);
+			break;
 		}
 
-		//app_log(LOG_DEBUG, "[%s] input%s(pts: %" PRId64 ", dts: %" PRId64 ") => v: %d(%d), a: %d(%d)\n", __FUNCTION__, video ? "video" : "audio", pkt->pts, pkt->dts, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
+		//app_log(LOG_DEBUG, "[AVPlayer] recevie [%s] pts: %" PRId64 ", dts: %" PRId64 ", bytes: %d => vq: %d(%d), aq: %d(%d)\n", pkt->stream->codecid < AVCODEC_IMAGE_PNG ? "V" : "A", pkt->pts, pkt->dts, pkt->size, m_videoQ.size(), m_videos, m_audioQ.size(), m_audios);
 	}
 
 	m_event.Signal();
@@ -130,8 +134,10 @@ void AVLivePlayer::Present()
 
 void AVLivePlayer::Present(struct avframe_t* yuv)
 {
+	//uint64_t clock = system_clock();
 	// open and play video in same thread
 	int r = m_vfilter.get() ? m_vfilter->Process(yuv) : 0;
+	//app_log(LOG_DEBUG, "[AVPlayer] render [%s] pts: %" PRId64 ", dts: %" PRId64 ", cost: %d\n", "V", yuv->pts, yuv->dts, (int)(system_clock()-clock));
 	if (0 != r)
 	{
 		assert(0);
@@ -187,9 +193,13 @@ void AVLivePlayer::DecodeAudio()
 		//app_log(LOG_DEBUG, "[%s] pts: %" PRId64 ", dts: %" PRId64 "\n", __FUNCTION__, pkt->pts, pkt->dts);
 	}
 
+	//app_log(LOG_DEBUG, "[AVPlayer] decode [%s] pts: %" PRId64 ", dts: %" PRId64 "\n", pkt->stream->codecid < AVCODEC_IMAGE_PNG ? "V" : "A", pkt->pts, pkt->dts);
+	//uint64_t clock = system_clock();
+
 	avframe_t *pcm = NULL;
 	if (m_adecoder->Decode(pkt, &pcm) >= 0)
 	{
+		//app_log(LOG_DEBUG, "[AVPlayer] decode_done [%s] pts: %" PRId64 ", dts: %" PRId64 ", cost: %d\n", pkt->stream->codecid < AVCODEC_IMAGE_PNG ? "V" : "A", pcm->pts, pcm->dts, (int)(system_clock() - clock));
 		uint64_t duration = pcm->samples * 1000 / pcm->sample_rate;
 		avplayer_input_audio(m_player, pcm, pcm->pts, duration, 1);
 		atomic_increment32(&m_audios);
@@ -210,9 +220,13 @@ void AVLivePlayer::DecodeVideo()
 		//app_log(LOG_DEBUG, "[%s] pts: %" PRId64 ", dts: %" PRId64 "\n", __FUNCTION__, pkt->pts, pkt->dts);
 	}
 
+	//app_log(LOG_DEBUG, "[AVPlayer] decode [%s] pts: %" PRId64 ", dts: %" PRId64 "\n", pkt->stream->codecid < AVCODEC_IMAGE_PNG ? "V" : "A", pkt->pts, pkt->dts);
+	//uint64_t clock = system_clock();
+
 	avframe_t *yuv = NULL;
 	if (m_vdecoder->Decode(pkt, &yuv) >= 0)
 	{
+		//app_log(LOG_DEBUG, "[AVPlayer] decode_done [%s] pts: %" PRId64 ", dts: %" PRId64 ", cost: %d\n", pkt->stream->codecid < AVCODEC_IMAGE_PNG ? "V" : "A", yuv->pts, yuv->dts, (int)(system_clock() - clock));
 		if (0 == m_video_delay.m_pts)
 			m_video_delay.m_pts = yuv->pts;
 		avplayer_input_video(m_player, yuv, yuv->pts, 1);
@@ -276,9 +290,9 @@ uint64_t AVLivePlayer::GetVideoBuffering() const
 	AutoThreadLocker locker(m_locker);
 	const struct avpacket_t* front = m_videoQ.front();
 	if(m_video_delay.m_pts)
-		return front->pts - m_video_delay.m_pts;
+		return m_video_delay.m_pts - front->pts;
 	else
-		return front->pts - m_videoQ.back()->pts;
+		return m_videoQ.back()->pts - front->pts;
 }
 
 uint64_t AVLivePlayer::GetAudioBuffering() const
@@ -289,7 +303,7 @@ uint64_t AVLivePlayer::GetAudioBuffering() const
 		AutoThreadLocker locker(m_locker);
 		const struct avpacket_t* front = m_audioQ.front();
 		const struct avpacket_t* back = m_audioQ.back();
-		duration += front->pts - back->pts;
+		duration += back->pts - front->pts;
 	}
 	return duration;
 }
@@ -385,7 +399,9 @@ uint64_t AVLivePlayer::OnPlayAudio(avframe_t* pcm, int discard)
 
 	if (m_afilter.get()) m_afilter->Process(pcm);
 
+	//uint64_t clock = system_clock();
 	int r = m_audioout->write(pcm->data[0], pcm->samples);
+	//app_log(LOG_DEBUG, "[AVPlayer] render [%s] pts: %" PRId64 ", dts: %" PRId64 ", cost: %d\n", "A", pcm->pts, pcm->dts, (int)(system_clock() - clock));
 	if (r != pcm->samples)
 	{
 		assert(0);

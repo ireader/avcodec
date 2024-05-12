@@ -21,6 +21,10 @@ void* ffdecoder_create(const AVCodecParameters* codecpar, AVDictionary** opts)
 		return NULL;
 	}
 
+#ifdef AV_CODEC_FLAG_COPY_OPAQUE
+	avctx->flags |= AV_CODEC_FLAG_COPY_OPAQUE; // copy avframe.opaque_ref
+#endif
+
 	//av_codec_set_pkt_timebase(avctx, ic->streams[stream_index]->time_base);
 	codec = avcodec_find_decoder(avctx->codec_id);
 	if (NULL == codec)

@@ -43,6 +43,7 @@ private:
 	void* m_param;
 
 	int m_status; // avplayer_status_xxx
+	int m_lowlatency;
 
 	struct avclock_t
 	{

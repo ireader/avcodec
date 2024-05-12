@@ -26,7 +26,7 @@ public:
 		int r = avdecoder_input(m_decoder, pkt);
 		if(r >= 0)
 			return avdecoder_getframe(m_decoder, yuv);
-		return -1;
+		return r;
 	}
 
 private:
