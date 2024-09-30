@@ -144,7 +144,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>..\..\3rd\openh264\win32;..\..\3rd\x264\win32;..\..\3rd\freetype\win32;..\..\3rd\opus\win32;..\..\3rd\faac\win32;..\..\3rd\soxr\win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264-164.lib;openh264-v2.1.1.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib;libsoxr.lib;fdk-aac.lib</AdditionalDependencies>
+      <AdditionalDependencies>libx264-164.lib;openh264-v2.1.1.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib;libsoxr.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -184,7 +184,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>libx264-164.lib;openh264-v2.1.1.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib;libsoxr.lib;fdk-aac.lib</AdditionalDependencies>
+      <AdditionalDependencies>libx264-164.lib;openh264-v2.1.1.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib;libsoxr.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\3rd\openh264\win32;..\..\3rd\x264\win32;..\..\3rd\freetype\win32;..\..\3rd\opus\win32;..\..\3rd\faac\win32;..\..\3rd\soxr\win32</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
