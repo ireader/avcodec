@@ -26,6 +26,7 @@ struct avstream_t
 {
 	int stream; // stream index
 	enum AVPACKET_CODEC_ID codecid;
+	int stream_codecid;
 	struct avtimebase_t timebase;
 
 	// video only
