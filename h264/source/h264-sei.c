@@ -165,3 +165,17 @@ int h264_sei(bitstream_t* stream, struct h264_context_t* h264)
 	h264_rbsp_trailing_bits(stream);
 	return 0;
 }
+
+#if defined(DEBUG) || defined(_DEBUG)
+#include <stdlib.h>
+void h264_sei_test()
+{
+	const uint8_t data[] = { 0x00, 0x05, 0xcd, 0x2d, 0x45, 0x5b, 0x70, 0x06, 0x01, 0x84, 0x01, 0x03, 0x32, 0x40, 0x20, 0x80, };
+	struct h264_context_t* h264;
+	bitstream_t stream;
+
+	h264 = calloc(1, sizeof(*h264));
+	bitstream_init(&stream, data, sizeof(data));
+	assert(0 == h264_sei(&stream, h264));
+}
+#endif

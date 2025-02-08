@@ -26,6 +26,7 @@ struct avpkt2flv_t
 {
 	int ash; // audio sequence header
 	int vsh; // video sequence header
+	int enhanced_rtmp;
 };
 
 typedef int (*avpkt2flv_handler)(void* param, int type, const struct flv_vec_t* vec, int num, uint32_t timestamp);
@@ -99,6 +100,7 @@ static int avpkt2flv_video(struct avpkt2flv_t* flv, const struct avpacket_t* pkt
 
 	n = 0;
 	tag.codecid = codec;
+	tag.enhanced_rtmp = flv->enhanced_rtmp;
 
 	if (!flv->vsh)
 	{

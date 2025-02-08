@@ -206,7 +206,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>..\..\3rd\openh264\win64;..\..\3rd\x264\win64;..\..\3rd\freetype\win64;..\..\3rd\opus\win64;..\..\3rd\faac\win64;..\..\3rd\soxr\win64;..\..\3rd\fdk\win64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264-164.lib;openh264-v2.1.1.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib;libsoxr.lib;fdk-aac.lib</AdditionalDependencies>
+      <AdditionalDependencies>libx264-164.lib;openh264-v2.1.1.lib;freetype.lib;opus.lib;libfaac-1.30.lib;libfaad-2.10.0.lib;libsoxr.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -82,7 +82,7 @@ static int avpbs_h266_input(void* param, int64_t pts, int64_t dts, const uint8_t
 	if (!pkt) return -(__ERROR__ + ENOMEM);
 
 	r = h266_annexbtomp4(&bs->vvc, nalu, bytes, pkt->data, pkt->size, &vcl, &update);
-	if (r < 1 || (update && bs->vvc.numOfArrays >= 3 && 0 != avpbs_h266_create_stream(bs)))
+	if (r < 1 || (update && bs->vvc.numOfArrays >= 2 /*sps&pps only*/ && 0 != avpbs_h266_create_stream(bs)))
 	{
 		avpacket_release(pkt);
 		return r < 0 ? r : (-(__ERROR__ + E2BIG)); // h266 data process failed
