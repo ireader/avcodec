@@ -80,18 +80,22 @@ static int flv2avpkt_find(struct flv2avpkt_t* ctx, int avtype, const void* data,
 		break;
 
 	case FLV_VIDEO_AVCC:
+	case FLV_VIDEO_H264:
 		codec = AVCODEC_VIDEO_H264;
 		break;
 
 	case FLV_VIDEO_HVCC:
+	case FLV_VIDEO_H265:
 		codec = AVCODEC_VIDEO_H265;
 		break;
 
 	case FLV_VIDEO_VVCC:
+	case FLV_VIDEO_H266:
 		codec = AVCODEC_VIDEO_H266;
 		break;
 
 	case FLV_VIDEO_AV1C:
+	case FLV_VIDEO_AV1:
 		codec = AVCODEC_VIDEO_AV1;
 		break;
 
