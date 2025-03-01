@@ -8,7 +8,7 @@ int h265_profile_tier_level(bitstream_t* stream, struct h265_profile_tier_level_
 	int i;
 	if(profilePresentFlag)
 	{
-		profile->general_profile_idc = (uint8_t)bitstream_read_bits(stream, 2);
+		profile->general_profile_space = (uint8_t)bitstream_read_bits(stream, 2);
 		profile->general_tier_flag = (uint8_t)bitstream_read_bit(stream);
 		profile->general_profile_idc = (uint8_t)bitstream_read_bits(stream, 5);
 		profile->general_profile_compatibility_flag = bitstream_read_bits(stream, 32);

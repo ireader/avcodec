@@ -66,7 +66,7 @@ static void* avpbs_h266_create(int stream, AVPACKET_CODEC_ID codec, const uint8_
 		mpeg4_vvc_decoder_configuration_record_load(extra, bytes, &bs->vvc);
 	}
 
-	if (bs->vvc.numOfArrays >= 3)
+	if (bs->vvc.numOfArrays >= 2 /*sps&pps only*/ )
 		avpbs_h266_create_stream(bs);
 	return bs;
 }

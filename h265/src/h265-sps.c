@@ -166,7 +166,7 @@ static void h265_st_ref_pic_set(bitstream_t* stream, struct h265_sps_t* sps, int
 		{
 			assert(j < sizeof(sps->used_by_curr_pic_flag[stRpsIdx]) / sizeof(sps->used_by_curr_pic_flag[stRpsIdx][0]));
 			sps->used_by_curr_pic_flag[stRpsIdx][j] = (uint8_t)bitstream_read_bit(stream);
-			if (sps->used_by_curr_pic_flag[stRpsIdx][j])
+			if (!sps->used_by_curr_pic_flag[stRpsIdx][j])
 				sps->use_delta_flag[stRpsIdx][j] = (uint8_t)bitstream_read_bit(stream);
 		}
 	}
