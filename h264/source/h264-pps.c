@@ -16,13 +16,13 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 	pps->seq_parameter_set_id = bitstream_read_ue(stream);
 	pps->entropy_coding_mode_flag = (uint8_t)bitstream_read_bit(stream);
 	pps->bottom_field_pic_order_in_frame_present_flag = (uint8_t)bitstream_read_bit(stream);
-	pps->num_slice_groups_minus1 = bitstream_read_ue(stream);
+	pps->num_slice_groups_minus1 = (int32_t)bitstream_read_ue(stream);
 	if (pps->num_slice_groups_minus1 > 0)
 	{
 		pps->slice_group_map_type = bitstream_read_ue(stream);
 		if (0 == pps->slice_group_map_type)
 		{
-			uint32_t iGroup;
+			int32_t iGroup;
 			for (iGroup = 0; iGroup < pps->num_slice_groups_minus1 && iGroup < sizeof_array(pps->group.run_length_minus1); ++iGroup)
 			{
 				pps->group.run_length_minus1[iGroup] = bitstream_read_ue(stream);
@@ -30,7 +30,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 		}
 		else if (2 == pps->slice_group_map_type)
 		{
-			uint32_t iGroup;
+			int32_t iGroup;
 			for (iGroup = 0; iGroup < pps->num_slice_groups_minus1 && iGroup < sizeof_array(pps->group.dispersed.top_left); ++iGroup)
 			{
 				pps->group.dispersed.top_left[iGroup] = bitstream_read_ue(stream);
@@ -46,7 +46,7 @@ int h264_pps(bitstream_t* stream, struct h264_context_t* h264, struct h264_pps_t
 		{
 			uint32_t i;
 			pps->group.groups.pic_size_in_map_units_minus1 = bitstream_read_ue(stream);
-			for (i = 0; i < pps->group.groups.pic_size_in_map_units_minus1; i++)
+			for (i = 0; 0 == bitstream_error(stream) && i < pps->group.groups.pic_size_in_map_units_minus1; i++)
 			{
 				/*pps->group.groups.slice_group_id[i] =*/ bitstream_read_ue(stream);
 			}

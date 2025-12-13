@@ -103,6 +103,14 @@ int64_t bitstream_read_bits(bitstream_t* stream, int num)
 	return value;
 }
 
+int bitstream_read_nbytes(bitstream_t* stream, uint8_t buf[], int bytes)
+{
+	int i;
+	for (i = 0; i < bytes && 0 == stream->error; i++)
+		buf[i] = (uint8_t)bitstream_read_bits(stream, 8);
+	return i;
+}
+
 int bitstream_read_ue(bitstream_t* stream)
 {
 	int bit;

@@ -22,7 +22,7 @@ struct h264_pps_t
 	uint32_t seq_parameter_set_id; // [0, 31]
 	uint8_t entropy_coding_mode_flag; // 0-Exp-Golomb coded/CAVLC, 1-CABAC
 	uint8_t bottom_field_pic_order_in_frame_present_flag; // bool
-	uint32_t num_slice_groups_minus1; // Baseline/Extended profile[0-7], otherwise-0 only
+	int32_t num_slice_groups_minus1; // Baseline/Extended profile[0-7], otherwise-0 only
 	
 	//if(num_slice_groups_minus1 > 0) {
 	uint32_t slice_group_map_type; // [0, 6], 0-interleaved slice groups, 1-dispersed slice group mapping, ...

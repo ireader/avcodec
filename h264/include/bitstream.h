@@ -49,6 +49,7 @@ int bitstream_read_se(bitstream_t* stream);
 int bitstream_read_me(bitstream_t* stream, int chroma_format_idc, int coded_block_pattern);
 int bitstream_read_te(bitstream_t* stream);
 
+int bitstream_read_nbytes(bitstream_t* stream, uint8_t buf[], int bytes);
 
 #ifdef __cplusplus
 }
